@@ -1,0 +1,161 @@
+/* src/components/LandingPage.css */
+
+/* 폰트 쓰고 싶으면 이렇게 맨 위에 import 해도 됨 (선택) */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Gowun+Batang&display=swap');
+
+/* 전체 레이아웃 초기화 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body,
+html {
+  height: 100%;
+  width: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 1. 시작 화면 컨테이너 (Full Screen) */
+#landing-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* 2. 애니메이션 스테이지 (상단 영역 전체) */
+.animation-stage {
+  flex: 1; /* 남은 공간 모두 차지 */
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* 나무 바닥 정렬 */
+
+  /* 배경: 차분한 그라데이션 (새벽 느낌) */
+  background: linear-gradient(
+    to top,
+    #2c3e50 0%,
+    #4ca1af 60%,
+    #e0c3fc 100%
+  );
+}
+
+/* 3. 슬로건 텍스트 */
+.slogan-container {
+  position: absolute;
+  top: 20%; /* 화면 상단 20% 위치 */
+  left: 0;
+  width: 100%;
+  text-align: center;
+  z-index: 10; /* 나무보다 위에 표시 */
+}
+
+.slogan-text {
+  font-family: 'Gowun Batang', serif; /* 감성적인 명조체 추천 */
+  font-size: 1.8rem;
+  color: #fff;
+  line-height: 1.5;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+
+  /* 애니메이션: 4초 대기 후 1.5초간 나타남 */
+  opacity: 0;
+  animation: fadeInSlogan 1.5s ease-out forwards;
+  animation-delay: 3.5s; /* 나무가 다 자란 뒤 등장 */
+}
+
+/* 4. 나무 SVG 스타일 및 위치 */
+.tree-svg {
+  width: 60%; /* 화면 너비의 60% 크기 */
+  max-width: 400px;
+  height: auto;
+  margin-bottom: 20px;
+  overflow: visible;
+}
+
+/* 5. 애니메이션 정의 (Keyframes) */
+
+/* 줄기: 아래에서 위로 자라나기 */
+.trunk-group {
+  transform-origin: 100px 190px; /* 바닥 기준점 */
+  transform: scaleY(0);
+  animation: growTrunk 2s ease-out forwards;
+}
+
+/* 잎: 작았다가 커지기 */
+.leaves-group {
+  transform-origin: 100px 100px; /* 줄기 끝 기준점 */
+  transform: scale(0);
+  opacity: 0;
+  animation: bloomLeaves 2.5s
+    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; /* 탄성 효과 */
+  animation-delay: 1.8s; /* 줄기가 자란 후 시작 */
+}
+
+@keyframes growTrunk {
+  0% {
+    transform: scaleY(0);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes bloomLeaves {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInSlogan {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 6. 하단 버튼 영역 스타일 */
+.auth-actions {
+  background: #fff; /* 버튼 영역은 깔끔하게 흰색 배경 */
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+}
+
+/* 버튼 기본 스타일 */
+button {
+  padding: 15px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: 0.2s;
+}
+
+.btn-primary-fill {
+  background-color: #2c3e50;
+  color: white;
+}
+
+.btn-primary-outline {
+  background-color: transparent;
+  border: 1px solid #2c3e50;
+  color: #2c3e50;
+}

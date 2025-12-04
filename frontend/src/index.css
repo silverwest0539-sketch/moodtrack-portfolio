@@ -1,0 +1,27 @@
+/* src/index.css */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  font-family: 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
+  line-height: 1.5;
+}
+
+/* 화면 전체를 100% 쓰기 */
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+/* 혹시 기존에 #root 에 max-width, padding 이런 거 있었으면 싹 지우기 */
