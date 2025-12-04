@@ -1,0 +1,124 @@
+:root {
+  --primary-color: #6366f1; /* Indigo */
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --secondary-color: #f1f5f9;
+  --text-dark: #1e293b;
+  --text-light: #64748b;
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* 전체 화면 어두운 배경 */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* 모달 카드 */
+.modal-card {
+  background: rgb(230, 189, 189); /* wire3 배경색 그대로 */
+  width: 90%;
+  max-width: 420px;
+  padding: 2.5rem;
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-title {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+/* 단어 카드 */
+.card-elevation {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 2rem 1rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80px;
+}
+
+#random-word-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin: 0;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* fade-out */
+.fade-out {
+  opacity: 0 !important;
+}
+
+/* 버튼 영역 */
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  font-size: 1rem;
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+/* Primary */
+.btn-primary {
+  background: var(--primary-gradient);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+/* Secondary */
+.btn-secondary {
+  background-color: white;
+  border: 1px solid #cbd5e1;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+.btn-secondary:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+/* Text only */
+.btn-text-only {
+  background: transparent;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+.btn-text-only:hover {
+  color: var(--text-dark);
+  text-decoration: underline;
+}
