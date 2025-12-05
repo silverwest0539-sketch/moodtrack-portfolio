@@ -1,3 +1,5 @@
+// 메인 캘린더 페이지
+
 import React, { useState, useMemo } from 'react';
 import './MainCalendar.css';
 

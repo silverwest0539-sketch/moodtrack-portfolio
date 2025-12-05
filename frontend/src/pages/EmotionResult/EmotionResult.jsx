@@ -1,4 +1,6 @@
-// src/pages/EmotionResult/EmotionResultPage.jsx
+// 일기 작성 후 AI 분석 결과 페이지
+
+
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './EmotionResult.css';
 import { Chart as ChartJS } from 'chart.js/auto';

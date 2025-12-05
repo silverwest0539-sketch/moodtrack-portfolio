@@ -1,4 +1,5 @@
-// src/components/LandingPage.jsx
+// 첫 화면 (로그인, 회원가입)
+
 import React from 'react';
 import './LandingPage.css'; // 바로 아래에서 만들 CSS
 

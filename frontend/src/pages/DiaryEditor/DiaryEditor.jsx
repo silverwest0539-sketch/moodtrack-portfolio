@@ -1,4 +1,5 @@
-// src/pages/DiaryEditor/DiaryEditor.jsx
+// 일기 작성
+
 import React, { useMemo, useState } from 'react';
 import './DiaryEditor.css';
 

@@ -1,4 +1,6 @@
-// src/pages/EmotionStats/EmotionStatsPage.jsx
+// 통계 분석 페이지
+
+
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './EmotionStats.css';
 import { Chart as ChartJS } from 'chart.js/auto';

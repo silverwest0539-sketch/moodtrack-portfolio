@@ -1,3 +1,5 @@
+// 일기 주제 추천 (작성 이전)
+
 import React, { useEffect, useState } from 'react';
 import './DiaryPromptModal.css';
 
