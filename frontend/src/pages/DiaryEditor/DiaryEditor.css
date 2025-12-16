@@ -56,8 +56,9 @@ body {
 
 /* 2. 텍스트 입력 영역 */
 .input-area {
-  flex: 1; /* 남은 공간 모두 차지 */
   display: flex;
+  flex: none ;
+  height: 75vh; /* 화면 높이의 약 68% (이 숫자를 조절해 크기 변경 가능) */
   flex-direction: column;
   padding: 1.5rem;
   overflow-y: auto; /* 내용 길어지면 내부 스크롤 */
@@ -71,7 +72,7 @@ body {
   resize: none;
   border: 1px solid #e2e8f0;
   padding: 1rem 1.2rem;
-  font-size: 1rem;
+  font-size: 1.5rem;
   line-height: 1.6;
   font-family: 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont,
     'Segoe UI', sans-serif;

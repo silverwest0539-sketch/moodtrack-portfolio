@@ -1,0 +1,166 @@
+/* src/pages/HomeWeekly/HomeWeekly.css */
+
+/* 전체 화면 컨테이너 */
+.home-weekly-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 80px); /* 네비바 공간 제외 */
+  overflow: hidden; 
+  background: linear-gradient(180deg, #FDFBFB 0%, #EBEDEE 100%);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* 헤더 */
+.weekly-header {
+  flex-shrink: 0;
+  margin-bottom: 10px;
+  padding-left: 5px;
+}
+.weekly-header h2 { font-size: 1.8rem; font-weight: 800; color: #333; margin: 0; }
+.weekly-header .subtitle { font-size: 1rem; color: #777; margin-top: 5px; }
+
+
+/* 리스트 영역 */
+.day-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 10px; 
+}
+
+
+/* --- 공통 카드 스타일 --- */
+.day-card {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 20px;
+  padding: 0 25px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.day-card:active { transform: scale(0.98); }
+
+
+/* --- [과거 카드: 높이 확대] --- */
+.past-small {
+  /* ⭐ 수정: 90px -> 125px로 확대 */
+  /* 이 높이가 커지면서 오늘 박스를 자연스럽게 밀어내어 작게 만듭니다 */
+  height: 125px; 
+  
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #e0e0e0;
+}
+
+.past-content { display: flex; align-items: center; gap: 15px; }
+.past-content .emoji { font-size: 2.2rem; } /* 이모지 더 확대 */
+.past-content .score { font-size: 1.2rem; font-weight: 600; color: #555; }
+.past-small .action-icon { font-size: 1.6rem; }
+
+
+/* --- [오늘 카드: 비율 자동 조정] --- */
+.today-main {
+  flex-grow: 1; /* 남은 공간만 차지함 (과거 카드가 커져서 공간이 줄어듦) */
+  
+  background: #ffffff;
+  border: 3px solid #7F7FD5;
+  box-shadow: 0 10px 30px rgba(127, 127, 213, 0.2);
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center;
+  
+  /* ⭐ 수정: 박스 높이가 줄어들었으므로 내부 간격도 50px -> 25px로 줄임 */
+  /* 이렇게 해야 좁아진 공간 안에서도 내용이 중앙에 예쁘게 배치됩니다 */
+  gap: 25px; 
+  
+  position: relative;
+  
+  /* 최소 높이 설정: 화면이 너무 작아도 이만큼은 확보 */
+  min-height: 200px; 
+}
+
+/* 1) 날짜 영역 */
+.today-main .date-info {
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: center;
+  border-right: none;
+  margin: 0;
+  width: auto;
+}
+.today-main .date-info .day-num { font-size: 3.2rem; line-height: 1; }
+.today-main .date-info .day-name { font-size: 1.2rem; margin-left: 10px; }
+
+
+/* 2) 텍스트/뱃지 영역 */
+.today-main .card-content {
+    flex: 0; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px; /* 간격 미세 조정 */
+}
+
+/* [추가] 오늘 카드 내부 텍스트(라벨+문구) 전용 스타일 */
+.today-content {
+    display: flex;          /* 플렉스 박스 적용 */
+    flex-direction: column; /* ⭐ 가로가 아닌 '세로'로 배치 (핵심) */
+    align-items: center;    /* 가운데 정렬 */
+    justify-content: center;
+    gap: 25px;              /* <span> 사이의 위아래 간격 (여기서 조절!) */
+    width: 100%;
+}
+
+/* 라벨 스타일 (기존 유지) */
+.today-label {
+    /* display: block;  <- Flex 안에 있으면 굳이 없어도 되지만 명시적으로 둠 */
+    background: #7F7FD5;
+    color: white;
+    padding: 8px 24px;
+    border-radius: 30px;
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+/* 문구 스타일 (기존 유지) */
+.today-cta {
+    /* display: block; */
+    font-size: 1.5rem;
+    color: #666;
+    text-align: center;
+    line-height: 1.4; /* 줄 간격 조금 여유 있게 */
+}
+
+/* 연필 아이콘 */
+.today-main .action-icon {
+    position: absolute;
+    top: 20px; /* 위치 살짝 조정 */
+    right: 20px;
+    font-size: 2rem;
+    color: #7F7FD5;
+}
+
+
+/* --- 내부 요소 기본값 --- */
+.date-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  border-right: 2px solid #f0f0f0;
+  margin-right: 20px;
+}
+.day-name { font-size: 0.85rem; font-weight: bold; color: #999; }
+.day-name.sun { color: #ff6b6b; }
+.day-name.sat { color: #4dabf7; }
+.day-num { font-size: 1.6rem; font-weight: 800; color: #333; }
+
+.card-content { flex: 1; }
+.action-icon { color: #ccc; }

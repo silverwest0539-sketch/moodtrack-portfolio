@@ -1,0 +1,178 @@
+/* src/pages/Auth/Auth.css */
+
+/* 배경: 감성적인 오로라 그라데이션 애니메이션 */
+.auth-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 유리 질감 카드 (Glassmorphism) */
+.auth-card {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px); /* 뒤가 흐릿하게 비침 */
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 30px;
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    /* 등장 애니메이션 */
+    animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* 타이틀 영역 */
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.auth-subtitle {
+    font-size: 0.95rem;
+    color: #666;
+}
+
+/* 폼 영역 */
+.auth-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* 입력 필드 스타일 */
+.input-group {
+    position: relative;
+}
+
+.custom-input {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 16px;
+    border: 2px solid transparent;
+    background: #f0f2f5;
+    font-size: 1rem;
+    color: #333;
+    outline: none;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+
+.custom-input::placeholder {
+    color: #aaa;
+}
+
+.custom-input:focus {
+    background: white;
+    border-color: #7F7FD5;
+    box-shadow: 0 4px 15px rgba(127, 127, 213, 0.15);
+}
+
+/* 메인 버튼 */
+.btn-auth-submit {
+    margin-top: 10px;
+    padding: 16px;
+    border-radius: 16px;
+    border: none;
+    background: linear-gradient(135deg, #7F7FD5 0%, #86A8E7 100%);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(127, 127, 213, 0.3);
+}
+
+.btn-auth-submit:active {
+    transform: scale(0.98);
+}
+
+/* 구분선 */
+.divider {
+    display: flex;
+    align-items: center;
+    color: #999;
+    font-size: 0.8rem;
+    width: 100%;
+    margin: 25px 0;
+}
+.divider::before, .divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+.divider span { padding: 0 10px; }
+
+/* 소셜 로그인 버튼들 */
+.social-login-box {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    width: 100%;
+}
+
+.social-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: transform 0.2s;
+}
+.social-btn:hover { transform: translateY(-3px); }
+
+.kakao { background: #FEE500; color: #3c1e1e; }
+.google { background: white; border: 1px solid #eee; }
+
+/* 하단 링크 (로그인 <-> 회원가입) */
+.auth-footer {
+    margin-top: 30px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.link-text {
+    color: #7F7FD5;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 5px;
+    text-decoration: none;
+}
+.link-text:hover { text-decoration: underline; }
