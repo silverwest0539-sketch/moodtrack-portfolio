@@ -103,7 +103,7 @@ const Signup = () => {
                             인증번호 발송
                         </button>
                     </div>
-                    
+                    {isCodeSent && (
                         <div className="input-group email-group">
                             <input
                                 type="text"
@@ -120,6 +120,7 @@ const Signup = () => {
                                 확인
                             </button>
                         </div>
+                        )}
                     
 
                     <button type="submit" className="btn-auth-submit">회원가입 완료</button>
