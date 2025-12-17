@@ -1,10 +1,42 @@
 // src/pages/Auth/Signup.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Auth.css';
 
 const Signup = () => {
     const navigate = useNavigate();
+
+    const [email, setEmail] = useState('')
+    const [authCode, setAuthCode] = useState('')
+    const [inputCode, setInputCode] = useState('')
+
+    const [isCodeSent, setIsCodeSent] = useState(false)
+    const [isEmailVerified, setIsEmailVerified] = useState(false)
+
+    // 인증번호 발송
+    const sendAuthCode = () => {
+        if (!email) {
+            alert('이메일을 입력해주세요!')
+            return;
+        }
+
+        const generateCode = Math.floor(100000 + Math.random() * 900000).toString()
+
+        setAuthCode(generateCode)
+        setIsCodeSent(true)
+
+        alert(`인증번호가 발송되었습니다. (테스트 코드: ${generateCode})`)
+    }
+
+    // 인증번호 확인
+    const verifyAuthCode = () => {
+        if (inputCode === authCode) {
+            alert('이메일 인증이 완료되었습니다!')
+            setIsEmailVerified(true)
+        } else {
+            alert('인증번호가 올바르지 않습니다.')
+        }
+    }
 
     const handleSignup = (e) => {
         e.preventDefault();
@@ -24,21 +56,51 @@ const Signup = () => {
                     <div className="input-group">
                         <input type="text" placeholder="닉네임 (나를 부를 이름)" className="custom-input" required />
                     </div>
-                    <div className="input-group">
-                        <input type="email" placeholder="이메일" className="custom-input" required />
+                    <div className="input-group email-group">
+                        <input type="email"
+                            placeholder="이메일"
+                            className="custom-input"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            disabled={isEmailVerified}
+                        />
+                        <button
+                            type="button"
+                            className="btn-auth-small"
+                            onClick={sendAuthCode}
+                            disabled={isEmailVerified}>
+                            인증번호 발송
+                        </button>
                     </div>
+                    {isCodeSent && !isEmailVerified && (
+                        <div className="input-group email-group">
+                            <input
+                                type="text"
+                                placeholder="인증번호 입력"
+                                className="custom-input"
+                                value={inputCode}
+                                onChange={(e) => setInputCode(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                className="btn=auth-small"
+                                onClick={verifyAuthCode}>
+                                확인
+                            </button>
+                        </div>
+                    )}
                     <div className="input-group">
                         <input type="password" placeholder="비밀번호" className="custom-input" required />
                     </div>
                     <div className="input-group">
                         <input type="password" placeholder="비밀번호 확인" className="custom-input" required />
                     </div>
-                    
+
                     <button type="submit" className="btn-auth-submit">회원가입 완료</button>
                 </form>
 
                 <div className="auth-footer">
-                    이미 계정이 있으신가요? 
+                    이미 계정이 있으신가요?
                     <span className="link-text" onClick={() => navigate('/login')}>로그인</span>
                 </div>
             </div>
