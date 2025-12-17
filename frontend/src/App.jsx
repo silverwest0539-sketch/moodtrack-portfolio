@@ -14,13 +14,13 @@ import HomeWeekly from "./pages/HomeWeekly/HomeWeekly"; // 새로운 메인 화�
 
 
 // 컴포넌트 (Components)
-import BottomNav from "./components/layout/BottomNav";
+// import BottomNav from "./components/layout/BottomNav";
 import "./App.css"; // 스타일 파일이 있다면 유지
 
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 
-function AppContent() {
+function App() {
   const location = useLocation();
 
   // 하단 네비게이션 바를 숨길 경로들을 여기에 적어줍니다.
@@ -54,6 +54,8 @@ function AppContent() {
   return (
     <Routes>
      <Route path='/' element = {<LandingPage/>}/>
+     <Route path='login' element = {<Login/>} />
+     <Route path='signup' element = {<Signup/>} />
      <Route path='weekly' element={<HomeWeekly />} />
      <Route path='main' element = {<MainCalendar/>} />
      <Route path='diary' element = {<DiaryPromptModal/>}/>

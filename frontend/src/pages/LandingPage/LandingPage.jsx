@@ -2,15 +2,19 @@
 
 import React from 'react';
 import './LandingPage.css'; // 바로 아래에서 만들 CSS
+import { useNavigate } from 'react-router-dom';
 
 function LandingPage() {
+  const navigate = useNavigate();
   const handleLogin = () => {
     // 나중에 여기서 navigate('/login') 같은 거 붙이면 됨
     console.log('로그인 클릭!');
+    navigate('/login')
   };
 
   const handleSignup = () => {
     console.log('회원가입 클릭!');
+    navigate('/signup')
   };
 
   return (
