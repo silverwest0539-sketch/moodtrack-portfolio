@@ -11,7 +11,7 @@ import { useState } from "react"
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 import HomeWeekly from "./pages/HomeWeekly/HomeWeekly"; // 새로운 메인 화면
-
+import WriteMethodSelection from "./pages/WriteMethodSelection/WriteMethodSelection";
 
 // 컴포넌트 (Components)
 // import BottomNav from "./components/layout/BottomNav";
@@ -26,7 +26,7 @@ function App() {
   // 하단 네비게이션 바를 숨길 경로들을 여기에 적어줍니다.
   // 예: 랜딩페이지(/landing), 로그인 등에서는 네비게이션 바가 안 보이게 설정
   // AppContent 내부의 hideNavRoutes 에도 추가 (로그인 화면엔 하단바 숨김)
-  const hideNavRoutes = ["/landing", "/login", "/signup"];
+  const hideNavRoutes = ["/landing", "/login", "/signup", "/write-option", "/prompt"];
   
   // 현재 경로가 숨길 경로에 포함되지 않으면 Nav바를 보여줍니다.
   const showNav = !hideNavRoutes.includes(location.pathname);
@@ -62,6 +62,15 @@ function App() {
      <Route path='diaryEdit' element = {<DiaryEditor/>}/>
      <Route path='emotionResult' element = {<EmotionResult/>}/>
      <Route path='emotionStats' element = {<EmotionStats/>}/>
+
+     {/* [추가] 글쓰기 방식 선택 페이지 */}
+     <Route path="/write-option" element={<WriteMethodSelection />} />
+     {/*<Route path="/select-mode" element={<WriteModeSelect />} />*/}
+
+
+     {/* 4. 글쓰기 흐름 (주제 선택 -> 에디터) */}
+     {/*<Route path="/prompt" element={<DiaryPromptModal />} />*/}
+     {/*<Route path="/editor" element={<DiaryEditor />} />*/}
     </Routes>
   )
 }

@@ -35,8 +35,13 @@ const HomeWeekly = () => {
     return names[dayIndex];
   };
 
+  // handleCardClick 함수 내부 수정
   const handleCardClick = (day) => {
-    navigate(`/editor?date=${day.dateStr}`);
+      if (day.isFuture) { /* ... */ return; }
+    
+      // [변경] prompt -> write-option
+      navigate(`/write-option?date=${day.dateStr}`);
+
   };
 
   return (

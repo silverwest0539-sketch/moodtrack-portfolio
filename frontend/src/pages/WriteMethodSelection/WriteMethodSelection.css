@@ -1,0 +1,96 @@
+.selection-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 30px 20px;
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    box-sizing: border-box;
+    justify-content: center;
+}
+
+.selection-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.selection-date {
+    color: #888;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.selection-header h2 {
+    font-size: 1.8rem;
+    color: #333;
+    font-weight: 800;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.selection-options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.option-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px 25px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.option-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* 자유 쓰기 스타일 (보라색 포인트) */
+.free-write:hover { border-color: #7F7FD5; }
+.free-write .icon-area { background: #eef0ff; color: #7F7FD5; }
+
+/* 주제 쓰기 스타일 (노란색 포인트) */
+.topic-write:hover { border-color: #F7B731; }
+.topic-write .icon-area { background: #fff8e1; color: #F7B731; }
+
+.icon-area {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.text-area h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.text-area p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #777;
+    line-height: 1.4;
+}
+
+.btn-back {
+    margin-top: 40px;
+    background: none;
+    border: none;
+    color: #999;
+    text-decoration: underline;
+    cursor: pointer;
+}
