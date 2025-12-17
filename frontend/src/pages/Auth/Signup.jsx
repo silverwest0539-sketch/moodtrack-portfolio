@@ -19,7 +19,7 @@ const Signup = () => {
 
     const [isCodeSent, setIsCodeSent] = useState(false)
     const [isEmailVerified, setIsEmailVerified] = useState(false)
-    
+    const [isCodeVerified, setIsCodeVerified] = useState(false)
 
     // 인증번호 발송
     const sendAuthCode = () => {
@@ -41,6 +41,7 @@ const Signup = () => {
         if (inputCode === authCode) {
             alert('이메일 인증이 완료되었습니다!')
             setIsEmailVerified(true)
+            setIsCodeVerified(true)
         } else {
             alert('인증번호가 올바르지 않습니다.')
         }
@@ -62,6 +63,10 @@ const Signup = () => {
 
                 <form className="auth-form" onSubmit={handleSignup}>
 
+                    <div className="input-group">
+                        <input type="text" placeholder="닉네임 (나를 부를 이름)" className="custom-input" required />
+                    </div>
+
                     {/* [추가 2] 맨 윗줄: 아이디 입력 칸 */}
                     <div className="input-group">
                         <input 
@@ -74,14 +79,14 @@ const Signup = () => {
                         />
                     </div>
 
-                    
                     <div className="input-group">
-                        <input type="text" placeholder="닉네임 (나를 부를 이름)" className="custom-input" required />
+                        <input type="password" placeholder="비밀번호" className="custom-input" required />
+                    </div>
+                    <div className="input-group">
+                        <input type="password" placeholder="비밀번호 확인" className="custom-input" required />
                     </div>
 
-                    
-                    
-                    {/* 수정시작 */}
+
                     <div className="input-group email-group">
                         <input type="email"
                             placeholder="이메일"
@@ -98,7 +103,7 @@ const Signup = () => {
                             인증번호 발송
                         </button>
                     </div>
-                    {isCodeSent && !isEmailVerified && (
+                    
                         <div className="input-group email-group">
                             <input
                                 type="text"
@@ -109,19 +114,13 @@ const Signup = () => {
                             />
                             <button
                                 type="button"
-                                className="btn=auth-small"
-                                onClick={verifyAuthCode}>
+                                className="btn-auth-small"
+                                onClick={verifyAuthCode}
+                                disabled={isCodeVerified}>
                                 확인
                             </button>
                         </div>
-                    )}
-                    {/* 수정끝 */}
-                    <div className="input-group">
-                        <input type="password" placeholder="비밀번호" className="custom-input" required />
-                    </div>
-                    <div className="input-group">
-                        <input type="password" placeholder="비밀번호 확인" className="custom-input" required />
-                    </div>
+                    
 
                     <button type="submit" className="btn-auth-submit">회원가입 완료</button>
                 </form>
