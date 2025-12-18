@@ -22,7 +22,7 @@ const Login = () => {
 
                 <form className="auth-form" onSubmit={handleLogin}>
                     <div className="input-group">
-                        <input type="email" placeholder="이메일" className="custom-input" required />
+                        <input type="text" placeholder="아이디" className="custom-input" required />
                     </div>
                     <div className="input-group">
                         <input type="password" placeholder="비밀번호" className="custom-input" required />

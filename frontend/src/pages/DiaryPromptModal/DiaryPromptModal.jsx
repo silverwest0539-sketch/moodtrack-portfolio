@@ -221,12 +221,12 @@ const DiaryPromptModal = () => {
     // 질문 선택 시 에디터로 이동
     const handleSelect = (question) => {
         // 에디터로 이동하면서 날짜와 선택한 질문(topic)을 전달
-        navigate(`/editor?date=${dateStr}&topic=${encodeURIComponent(question)}`);
+        navigate(`/diaryedit?date=${dateStr}&topic=${encodeURIComponent(question)}`);
     };
 
     // 그냥 쓰기 (질문 없이)
     const handleSkip = () => {
-        navigate(`/editor?date=${dateStr}`);
+        navigate(`/diaryedit?date=${dateStr}`);
     };
 
     return (

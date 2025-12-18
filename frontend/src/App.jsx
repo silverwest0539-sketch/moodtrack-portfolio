@@ -65,12 +65,7 @@ function App() {
 
      {/* [추가] 글쓰기 방식 선택 페이지 */}
      <Route path="/write-option" element={<WriteMethodSelection />} />
-     {/*<Route path="/select-mode" element={<WriteModeSelect />} />*/}
-
-
-     {/* 4. 글쓰기 흐름 (주제 선택 -> 에디터) */}
-     {/*<Route path="/prompt" element={<DiaryPromptModal />} />*/}
-     {/*<Route path="/editor" element={<DiaryEditor />} />*/}
+     
     </Routes>
   )
 }
