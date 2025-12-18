@@ -19,7 +19,7 @@ const WriteMethodSelection = () => {
                 {/* 옵션 1: 자유롭게 쓰기 */}
                 <div 
                     className="option-card free-write" 
-                    onClick={() => navigate(`/editor?date=${dateStr}`)}
+                    onClick={() => navigate(`/diaryedit?date=${dateStr}`)}
                 >
                     <div className="icon-area">📝</div>
                     <div className="text-area">
@@ -31,7 +31,7 @@ const WriteMethodSelection = () => {
                 {/* 옵션 2: 주제(질문) 고르기 */}
                 <div 
                     className="option-card topic-write"
-                    onClick={() => navigate(`/prompt?date=${dateStr}`)}
+                    onClick={() => navigate(`/diary?date=${dateStr}`)}
                 >
                     <div className="icon-area">💡</div>
                     <div className="text-area">

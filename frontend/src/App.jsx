@@ -34,23 +34,23 @@ function App() {
   const [data, setData] = useState('')
   const [obj, setObj] = useState({})
 
-  const sendToServer = ()=>{
-    console.log('sendToServer', data);
-    axios.post('http://localhost:3000/getData', {
-      data : data
-    }).then(res => {
-      console.log('res', res.data)
-      setObj(res.data)
+  // const sendToServer = ()=>{
+  //   console.log('sendToServer', data);
+  //   axios.post('http://localhost:3000/getData', {
+  //     data : data
+  //   }).then(res => {
+  //     console.log('res', res.data)
+  //     setObj(res.data)
       
-    })
+  //   })
     
-  }
+  // }
 
-    useEffect(() => {
-    fetch('http://localhost:3000/')
-      .then(() => console.log('React -> Node 연결 성공!'))
-      .catch(err => console.error(err));
-  }, []);
+  //   useEffect(() => {
+  //   fetch('http://localhost:3000/')
+  //     .then(() => console.log('React -> Node 연결 성공!'))
+  //     .catch(err => console.error(err));
+  // }, []);
   return (
     <Routes>
      <Route path='/' element = {<LandingPage/>}/>
@@ -65,12 +65,7 @@ function App() {
 
      {/* [추가] 글쓰기 방식 선택 페이지 */}
      <Route path="/write-option" element={<WriteMethodSelection />} />
-     {/*<Route path="/select-mode" element={<WriteModeSelect />} />*/}
-
-
-     {/* 4. 글쓰기 흐름 (주제 선택 -> 에디터) */}
-     {/*<Route path="/prompt" element={<DiaryPromptModal />} />*/}
-     {/*<Route path="/editor" element={<DiaryEditor />} />*/}
+     
     </Routes>
   )
 }
