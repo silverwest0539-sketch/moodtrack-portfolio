@@ -1,6 +1,7 @@
 // src/pages/Auth/Signup.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Auth.css';
 
 const Signup = () => {
@@ -14,7 +15,6 @@ const Signup = () => {
 
 
     const [email, setEmail] = useState('')
-    const [authCode, setAuthCode] = useState('')
     const [inputCode, setInputCode] = useState('')
 
     const [isCodeSent, setIsCodeSent] = useState(false)
@@ -28,27 +28,50 @@ const Signup = () => {
             return;
         }
 
-        const generateCode = Math.floor(100000 + Math.random() * 900000).toString()
-
-        setAuthCode(generateCode)
-        setIsCodeSent(true)
-
-        alert(`인증번호가 발송되었습니다. (테스트 코드: ${generateCode})`)
+        axios.post('http://localhost:3000/sendAuthCode', {email})
+        .then((res)=>{
+            if (res.data.status === 200) {
+                alert('인증번호가 이메일로 발송되었습니다.')
+                setIsCodeSent(true)
+            } else {
+                alert('이메일이 올바르지 않습니다.')
+            }
+        })
+        .catch((error)=>{
+            console.error('에러:', error)
+            alert('서버 연결에 실패했습니다.')
+        })
     }
 
     // 인증번호 확인
     const verifyAuthCode = () => {
-        if (inputCode === authCode) {
-            alert('이메일 인증이 완료되었습니다!')
-            setIsEmailVerified(true)
-            setIsCodeVerified(true)
-        } else {
-            alert('인증번호가 올바르지 않습니다.')
-        }
+        axios.post('http://localhost:3000/verifyAuthCode', {
+            email,
+            code: inputCode
+        })
+        .then((res)=>{
+            if (res.data.status === 200) {
+                alert('이메일 인증이 완료되었습니다.')
+                setIsEmailVerified(true)
+                setIsCodeVerified(true)
+            } else {
+                alert('인증번호가 올바르지 않습니다.')
+            }
+        })
+        .catch((error)=>{
+            console.error('에러:', error)
+            alert('서버 연결에 실패했습니다.')
+        })
     }
-    // 수정 끝
+    
     const handleSignup = (e) => {
         e.preventDefault();
+
+        // 이메일 인증 확인
+        if (!isEmailVerified) {
+            alert('이메일 인증을 완료해주세요')
+            return
+        }
         alert("가입을 환영합니다! 🎉");
         navigate('/login');
     };
