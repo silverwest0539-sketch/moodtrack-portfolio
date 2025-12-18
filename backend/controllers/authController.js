@@ -4,6 +4,7 @@ const pool = require('../server/config/database');
 
 // 회원가입
 exports.signup = async (req, res) => {
+    console.log('📦 req.body:', req.body);
   try {
     const { loginId, email, password, confirmPassword, nickname } = req.body;
 
@@ -46,7 +47,7 @@ exports.signup = async (req, res) => {
     const [rows] = await pool.query(
       `
       SELECT user_id, login_id, email
-      FROM users
+      FROM USERS
       WHERE login_id = ? OR email = ?
       `,
       [loginId, email]
@@ -74,12 +75,13 @@ exports.signup = async (req, res) => {
     // 7) 회원 정보 저장
     const [result] = await pool.query(
       `
-      INSERT INTO users (login_id, email, password, nickname)
-      VALUES (?, ?, ?)
+      INSERT INTO USERS (login_id, email, password, nickname)
+      VALUES (?, ?, ?, ?)
       `,
       [loginId, email, hashedPassword, nickname]
     );
 
+    console.log('회원 가입 완료, insertId:', result.insertId);
     // 8) 성공 응답
     return res.status(201).json({
       success: true,
@@ -89,7 +91,7 @@ exports.signup = async (req, res) => {
         loginId,
         email,
       },
-    }), console.log(data);
+    })
   } catch (error) {
     console.error('회원가입 에러:', error);
     return res.status(500).json({
@@ -116,7 +118,7 @@ exports.login = async (req, res) => {
     const [rows] = await pool.query(
       `
       SELECT user_id, login_id, email, password
-      FROM users
+      FROM USERS
       WHERE login_id = ?
       `,
       [loginId]
@@ -142,16 +144,21 @@ exports.login = async (req, res) => {
       });
     }
 
+    // 🔥 세션에 저장
+    req.session.user = {
+      userId: user.user_id,
+      loginId: user.login_id,
+      email: user.email,
+      nickname: user.nickname
+    };
+
     // 4) 비밀번호 제거 후 응답
     delete user.password;
-
-    // (선택) 세션 로그인이라면 여기서 req.session.user = user; 같은 거 세팅
-    // req.session.user = { userId: user.user_id, loginId: user.login_id };
 
     return res.status(200).json({
       success: true,
       message: '로그인에 성공했습니다.',
-      data: user,
+      data: req.session.user,
     });
   } catch (error) {
     console.error('로그인 에러:', error);
@@ -161,3 +168,31 @@ exports.login = async (req, res) => {
     });
   }
 };
+
+// 로그인 유지 확인
+exports.me = (req, res) => {
+  if (req.session.user) {
+    return res.json({
+      loggedIn: true,
+      user: req.session.user
+    })
+  }
+
+  return res.status(401).json({
+    loggedIn: false,
+    user: null
+  })
+}
+
+// 로그아웃
+exports.logout = (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('세션 삭제 오류:', err)
+      return res.status(500).json({ success: false })
+    }
+
+    res.clearCookie('connect.sid')
+    return res.json({ success: true, message: '로그아웃 되었습니다.' })
+  })
+}

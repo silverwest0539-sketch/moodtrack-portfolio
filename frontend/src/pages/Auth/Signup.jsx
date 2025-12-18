@@ -9,9 +9,11 @@ const Signup = () => {
     // 수정 시작
 
     // [추가 1] 아이디를 저장할 변수 만들기
-    const [userId, setUserId] = useState('');
+    const [loginId, setLoginId] = useState('');
     // 닉네임 입력값도 관리하려면 아래 줄도 필요 
     const [nickname, setNickname] = useState(''); 
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
 
     const [email, setEmail] = useState('')
@@ -64,16 +66,34 @@ const Signup = () => {
         })
     }
     
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
+
+         try {
+        const response = await axios.post("http://localhost:3000/api/auth/signup", {
+            loginId: loginId,
+            email: email,
+            password: password,
+            confirmPassword: confirmPassword,
+            nickname: nickname
+        });
+
+        if (response.data.success) {
+            alert("가입을 환영합니다! 🎉");
+            navigate('/login');
+        } else {
+            alert(response.data.message);
+        }
+    } catch (error) {
+        console.error(error);
+        alert("회원가입 중 오류 발생!");
+    }
 
         // 이메일 인증 확인
         if (!isEmailVerified) {
             alert('이메일 인증을 완료해주세요')
             return
         }
-        alert("가입을 환영합니다! 🎉");
-        navigate('/login');
     };
 
     return (
@@ -87,7 +107,13 @@ const Signup = () => {
                 <form className="auth-form" onSubmit={handleSignup}>
 
                     <div className="input-group">
-                        <input type="text" placeholder="닉네임 (나를 부를 이름)" className="custom-input" required />
+                        <input 
+                        type="text" 
+                        placeholder="닉네임 (나를 부를 이름)" 
+                        className="custom-input" 
+                        value={nickname}
+                        onChange={(e) => setNickname(e.target.value)}
+                        required />
                     </div>
 
                     {/* [추가 2] 맨 윗줄: 아이디 입력 칸 */}
@@ -97,17 +123,30 @@ const Signup = () => {
                             placeholder="아이디" 
                             className="custom-input" 
                             required 
-                            value={userId}
-                            onChange={(e) => setUserId(e.target.value)}
+                            value={loginId}
+                            onChange={(e) => setLoginId(e.target.value)}
                         />
                     </div>
 
                     <div className="input-group">
-                        <input type="password" placeholder="비밀번호" className="custom-input" required />
+                        <input
+                         type="password" 
+                        placeholder="비밀번호" 
+                        className="custom-input"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required />
                     </div>
                     <div className="input-group">
-                        <input type="password" placeholder="비밀번호 확인" className="custom-input" required />
+                        <input 
+                        type="password" 
+                        placeholder="비밀번호 확인" 
+                        className="custom-input"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required />
                     </div>
+
 
 
                     <div className="input-group email-group">

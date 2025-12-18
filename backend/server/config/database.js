@@ -4,7 +4,7 @@
 const mysql = require('mysql2')
 
 // 3) DB 정보 기재 
-const conn = mysql.createConnection({
+const pool = mysql.createPool({
     host : 'project-db-campus.smhrd.com',
     user : 'cgi_25K_donga1_p2_2',
     password : 'smhrd2', 
@@ -12,5 +12,4 @@ const conn = mysql.createConnection({
     database : 'cgi_25K_donga1_p2_2'
 })
 
-conn.connect()
-module.exports = conn;
+module.exports = pool.promise();

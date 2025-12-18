@@ -46,11 +46,16 @@ function App() {
     
   // }
 
-  //   useEffect(() => {
-  //   fetch('http://localhost:3000/')
-  //     .then(() => console.log('React -> Node 연결 성공!'))
-  //     .catch(err => console.error(err));
-  // }, []);
+    useEffect(() => {
+      axios.get('http://localhost:3000/api/auth/me', { withCredentials: true })
+        .then(res => {
+          console.log('로그인 유지됨:', res.data.user)
+        })
+        .catch(err => {
+          console.log('로그인 안됨')
+        })
+    }, [])
+    
   return (
     <Routes>
      <Route path='/' element = {<LandingPage/>}/>

@@ -1,15 +1,31 @@
 // src/pages/Auth/Login.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Auth.css'; // 스타일 공유
 
 const Login = () => {
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const [loginId, setLoginId] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = async (e) => {
         e.preventDefault();
-        // 로그인 로직 처리 후 메인으로 이동
-        navigate('/');
+        try {
+            const res = await axios.post(
+                'http://localhost:3000/api/auth/login',
+                { loginId, password },
+                { withCredentials: true } // ⭐ 세션 쿠키 받기
+            );
+
+            if (res.data.success) {
+                alert('로그인 성공!');
+                navigate('/');
+            }
+        } catch (err) {
+            console.error(err);
+            alert(err.response?.data?.message || '로그인 실패');
+        }
     };
 
     return (
@@ -22,10 +38,24 @@ const Login = () => {
 
                 <form className="auth-form" onSubmit={handleLogin}>
                     <div className="input-group">
-                        <input type="text" placeholder="아이디" className="custom-input" required />
+                        <input 
+                          type="text"
+                          placeholder="아이디"
+                          className="custom-input"
+                          value={loginId}
+                          onChange={(e) => setLoginId(e.target.value)}
+                          required
+                        />
                     </div>
                     <div className="input-group">
-                        <input type="password" placeholder="비밀번호" className="custom-input" required />
+                        <input 
+                          type="password"
+                          placeholder="비밀번호"
+                          className="custom-input"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                        />
                     </div>
                     
                     <button type="submit" className="btn-auth-submit">로그인</button>
