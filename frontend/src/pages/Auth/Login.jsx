@@ -1,5 +1,6 @@
 // src/pages/Auth/Login.jsx
 import React, { useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Auth.css'; // 스타일 공유
 
@@ -20,7 +21,7 @@ const Login = () => {
 
             if (res.data.success) {
                 alert('로그인 성공!');
-                navigate('/');
+                navigate('/weekly');
             }
         } catch (err) {
             console.error(err);
