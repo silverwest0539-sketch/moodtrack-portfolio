@@ -34,23 +34,23 @@ function App() {
   const [data, setData] = useState('')
   const [obj, setObj] = useState({})
 
-  const sendToServer = ()=>{
-    console.log('sendToServer', data);
-    axios.post('http://localhost:3000/getData', {
-      data : data
-    }).then(res => {
-      console.log('res', res.data)
-      setObj(res.data)
+  // const sendToServer = ()=>{
+  //   console.log('sendToServer', data);
+  //   axios.post('http://localhost:3000/getData', {
+  //     data : data
+  //   }).then(res => {
+  //     console.log('res', res.data)
+  //     setObj(res.data)
       
-    })
+  //   })
     
-  }
+  // }
 
-    useEffect(() => {
-    fetch('http://localhost:3000/')
-      .then(() => console.log('React -> Node 연결 성공!'))
-      .catch(err => console.error(err));
-  }, []);
+  //   useEffect(() => {
+  //   fetch('http://localhost:3000/')
+  //     .then(() => console.log('React -> Node 연결 성공!'))
+  //     .catch(err => console.error(err));
+  // }, []);
   return (
     <Routes>
      <Route path='/' element = {<LandingPage/>}/>
