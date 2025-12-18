@@ -28,13 +28,13 @@ const Signup = () => {
             return;
         }
 
-        axios.post('http://localhost:3000/sendAuthCode', {email})
+        axios.post('http://localhost:3000/api/auth/sendAuthCode', {email})
         .then((res)=>{
-            if (res.data.status === 200) {
-                alert('인증번호가 이메일로 발송되었습니다.')
+            if (res.data.success) {
+                alert(res.data.message)
                 setIsCodeSent(true)
             } else {
-                alert('이메일이 올바르지 않습니다.')
+                alert(res.data.message)
             }
         })
         .catch((error)=>{
@@ -45,17 +45,17 @@ const Signup = () => {
 
     // 인증번호 확인
     const verifyAuthCode = () => {
-        axios.post('http://localhost:3000/verifyAuthCode', {
+        axios.post('http://localhost:3000/api/auth/verifyAuthCode', {
             email,
             code: inputCode
         })
         .then((res)=>{
-            if (res.data.status === 200) {
-                alert('이메일 인증이 완료되었습니다.')
+            if (res.data.success) {
+                alert(res.data.message)
                 setIsEmailVerified(true)
                 setIsCodeVerified(true)
             } else {
-                alert('인증번호가 올바르지 않습니다.')
+                alert(res.data.message)
             }
         })
         .catch((error)=>{

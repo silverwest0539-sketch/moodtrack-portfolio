@@ -1,6 +1,8 @@
 // controllers/authController.js
 const bcrypt = require('bcryptjs');
 const pool = require('../server/config/database');
+const transporter = require('../server/config/emailConfig')
+
 
 // 회원가입
 exports.signup = async (req, res) => {
@@ -98,6 +100,105 @@ exports.signup = async (req, res) => {
     });
   }
 };
+
+// 인증번호 임시 저장소
+const authCodes = {};
+
+// 이메일 인증번호 발송
+exports.sendAuthCode = async (req,res)=>{
+  try {
+    const {email} = req.body
+    
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: '이메일을 입력해주세요.',
+      })
+    }
+
+    // 랜덤 인증번호 생성
+    const authCode = Math.floor(100000 + Math.random()*900000).toString()
+
+    // 인증번호 저장 (5분 후 자동 삭제)
+    authCodes[email] = authCode
+    setTimeout(()=>{
+        delete authCodes[email]
+    }, 5*60*1000)
+
+    // 이메일 발송 설정
+    const mailOptions = {
+        from: 'silverwest0539@gmail.com',
+        to: email,
+        subject: 'MoodTrack 회원가입 인증번호',
+        html: `
+            <div style="padding: 20px; font-family: Arial, sans-serif;">
+                <h2 style="color: #7F7FD5;">MoodTrack 이메일 인증</h2>
+                <p>회원가입을 위한 인증번호입니다.</p>
+                <div style="background: #f0f2f5; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                    <h1 style="color: #333; text-align: center; letter-spacing: 5px;">${authCode}</h1>
+                </div>
+                <p style="color: #666;">인증번호는 5분간 유효합니다.</p>
+            </div>
+        `        
+    }
+
+    // 이메일 발송
+    transporter.sendMail(mailOptions, (err, rows)=>{
+        if (err) {
+            console.log('이메일 발송 실패:', err)
+            return res.status(500).json({
+              success: false,
+              message: '이메일 발송에 실패했습니다.',
+            })
+        } else {
+            console.log('이메일 발송 성공:', rows.response)
+              return res.status(200).json({
+              success: true,
+              message: '인증번호가 발송되었습니다.',
+            })
+        }
+    })
+  } catch (error) {
+    console.error('이메일 발송 에러: ', error)
+    return res.status(500).json({
+      success: false,
+      message: '서버 오류가 발생했습니다.',
+    })
+  }
+}
+
+// 인증번호 확인
+exports.verifyAuthCode = async (req,res)=>{
+  try{
+    const { email, code } = req.body
+
+    if (!code) {
+      return res.status(400).json({
+        success: false,
+        message: '인증번호를 입력해주세요.'
+      })
+    }
+
+    if (authCodes[email] === code) {
+      delete authCodes[email]
+      return res.status(200).json({
+        success: true,
+        message: '인증이 완료되었습니다.'
+      })
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: '인증번호가 올바르지 않습니다.'
+      })
+    }
+  } catch (error) {
+    console.error('인증번호 확인 에러: ', error)
+    return res.status(500).json({
+      success: false,
+      message: '서버 오류가 발생했습니다.'
+    })
+  }
+}
 
 // 로그인
 exports.login = async (req, res) => {
