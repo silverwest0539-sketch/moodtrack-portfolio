@@ -1,0 +1,9 @@
+flask
+flask-cors
+transformers
+torch
+numpy
+scikit-learn
+
+# Windows 사용자는 Visual C++ 재배포 패키지가 필요할 수 있습니다.
+# 다운로드: https://aka.ms/vs/17/release/vc_redist.x64.exe

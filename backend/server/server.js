@@ -6,6 +6,7 @@ const session = require('express-session')
 
 const indexRouter = require('./routes/index')
 const authRoutes = require('./routes/authRoutes')
+const diaryRoutes = require('./routes/diaryRoutes')
 
 // ⭐ 프론트(React: 5173)에서 오는 요청을 허용하고
 // ⭐ 쿠키(세션 쿠키 포함)도 같이 주고받을 수 있도록 허용하는 설정
@@ -43,6 +44,8 @@ app.use('/', indexRouter)
 // auth 라우트
 app.use('/api/auth', authRoutes)
 
+// diary 라우트
+app.use('/api/diary', diaryRoutes)
 
 app.set('port', process.env.PORT || 3000)
 app.listen(app.get('port'),()=>{

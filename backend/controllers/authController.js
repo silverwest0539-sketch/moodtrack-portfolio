@@ -297,3 +297,4 @@ exports.logout = (req, res) => {
     return res.json({ success: true, message: '로그아웃 되었습니다.' })
   })
 }
+
