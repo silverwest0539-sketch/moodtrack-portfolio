@@ -274,13 +274,13 @@ exports.login = async (req, res) => {
 exports.me = (req, res) => {
   if (req.session.user) {
     return res.json({
-      loggedIn: true,
+      isLoggedIn: true,
       user: req.session.user
     })
   }
 
   return res.status(401).json({
-    loggedIn: false,
+    isLoggedIn: false,
     user: null
   })
 }
