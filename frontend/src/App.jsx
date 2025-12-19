@@ -1,4 +1,7 @@
 import React from "react"
+import { AuthProvider } from "./auth/AuthContext" // 로그인 여부 확인
+import { ProtectedRoute, PublicOnlyRoute } from "./auth/RouteGuards" // 로그인 여부에 따른 라우트 설정
+
 import LandingPage from "./pages/LandingPage/LandingPage"
 import MainCalendar from "./pages/MainCalendar/MainCalendar"
 import DiaryPromptModal from "./pages/DiaryPromptModal/DiaryPromptModal"
@@ -57,21 +60,27 @@ function App() {
     }, [])
     
   return (
-    <Routes>
-     <Route path='/' element = {<LandingPage/>}/>
-     <Route path='login' element = {<Login/>} />
-     <Route path='signup' element = {<Signup/>} />
-     <Route path='weekly' element={<HomeWeekly />} />
-     <Route path='main' element = {<MainCalendar/>} />
-     <Route path='diary' element = {<DiaryPromptModal/>}/>
-     <Route path='diaryEdit' element = {<DiaryEditor/>}/>
-     <Route path='emotionResult' element = {<EmotionResult/>}/>
-     <Route path='emotionStats' element = {<EmotionStats/>}/>
+        <Routes>
+          {/* 로그인 X */}
+          <Route element = {<PublicOnlyRoute />}> 
+            <Route path='/login' element = {<Login/>} />
+            <Route path='/landing' element = {<LandingPage/>}/>
+            <Route path='/signup' element = {<Signup/>} />
+          </Route>
 
-     {/* [추가] 글쓰기 방식 선택 페이지 */}
-     <Route path="/write-option" element={<WriteMethodSelection />} />
-     
-    </Routes>
+          <Route element = {<ProtectedRoute/>}>
+            <Route path='/' element={<HomeWeekly />} />
+            <Route path='/main' element = {<MainCalendar/>} />
+            <Route path='/diary' element = {<DiaryPromptModal/>}/>
+            <Route path='/diaryEdit' element = {<DiaryEditor/>}/>
+            <Route path='/emotionResult' element = {<EmotionResult/>}/>
+            <Route path='/emotionStats' element = {<EmotionStats/>}/>
+            {/* [추가] 글쓰기 방식 선택 페이지 */}
+            <Route path="/write-option" element={<WriteMethodSelection />} />
+
+          </Route>
+
+        </Routes>
   )
 }
 

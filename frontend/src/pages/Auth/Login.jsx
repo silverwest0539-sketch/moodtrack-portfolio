@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Auth.css'; // 스타일 공유
+import { useAuth } from '../../auth/AuthContext';
 
 const Login = () => {
     const navigate = useNavigate();
+    const { refreshAuth } = useAuth();
 
     const [loginId, setLoginId] = useState('');
     const [password, setPassword] = useState('');
@@ -20,8 +22,9 @@ const Login = () => {
             );
 
             if (res.data.success) {
+                await refreshAuth();
                 alert('로그인 성공!');
-                navigate('/weekly');
+                navigate('/', { replace: true });
             }
         } catch (err) {
             console.error(err);
