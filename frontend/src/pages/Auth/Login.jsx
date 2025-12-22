@@ -68,7 +68,7 @@ const Login = () => {
                 <div className="divider"><span>또는 소셜 로그인</span></div>
 
                 <div className="social-login-box">
-                    <button className="social-btn kakao">💬</button>
+                    <button className="social-btn kakao" onClick={() => {window.location.href = 'http://localhost:3000/api/auth/kakao'}}>💬</button>
                     <button className="social-btn google">G</button>
                 </div>
 

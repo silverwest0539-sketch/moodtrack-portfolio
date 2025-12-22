@@ -20,4 +20,10 @@ router.get('/me', authController.me)
 // 로그아웃
 router.post('/logout', authController.logout)
 
+// 카카오 로그인
+router.get('/kakao', authController.kakaoAuth);
+router.get('/kakao/callback', authController.kakaoCallback);
+router.post('/kakao/complete', authController.kakaoComplete);
+router.get('/kakao/pending', authController.getSocialPending);
+
 module.exports = router;

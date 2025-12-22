@@ -1,11 +1,30 @@
 // src/pages/Auth/Signup.jsx
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import './Auth.css';
 
 const Signup = () => {
     const navigate = useNavigate();
+
+    // 모드 판별 (소셜 로그인 관련)
+    const [searchParams] = useSearchParams();
+    const isKakaoMode = searchParams.get('mode') === 'kakao';
+
+    useEffect(() => {
+    if (!isKakaoMode) return;
+
+    axios.get('http://localhost:3000/api/auth/kakao/pending', {
+        withCredentials: true
+    }).then(res => {
+        if (res.data.success) {
+        setNickname(res.data.nickname || '');
+        }
+    }).catch(() => {
+        navigate('/login');
+    });
+    }, [isKakaoMode, navigate]);
+
     // 수정 시작
 
     // [추가 1] 아이디를 저장할 변수 만들기
@@ -69,6 +88,41 @@ const Signup = () => {
     const handleSignup = async (e) => {
         e.preventDefault();
 
+
+         // 카카오 회원가입
+        if (isKakaoMode) {
+            if (!nickname.trim()) {
+            alert('닉네임을 입력해주세요');
+            return
+            }
+        
+          if (!isEmailVerified) {
+            alert('이메일 인증을 완료해주세요');
+            return;
+        }
+
+        try {
+        const res = await axios.post(
+            'http://localhost:3000/api/auth/kakao/complete',
+        {
+          email: email.trim(),
+          nickname: nickname.trim()
+        },
+        { withCredentials: true }
+      );
+
+        if (res.data.success) {
+            navigate('/');
+        } else {
+            alert(res.data.message);
+        }
+        } catch (err) {
+        alert('카카오 회원가입 실패');
+        }
+        return;
+    }
+
+
          try {
         const response = await axios.post("http://localhost:3000/api/auth/signup", {
             loginId: loginId,
@@ -117,6 +171,8 @@ const Signup = () => {
                     </div>
 
                     {/* [추가 2] 맨 윗줄: 아이디 입력 칸 */}
+                    {!isKakaoMode && (
+                        <>
                     <div className="input-group">
                         <input 
                             type="text" 
@@ -148,6 +204,8 @@ const Signup = () => {
                     </div>
 
 
+                        </>
+                        )}
 
                     <div className="input-group email-group">
                         <input type="email"
@@ -156,7 +214,7 @@ const Signup = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             disabled={isEmailVerified}
-                        />
+                            />
                         <button
                             type="button"
                             className="btn-auth-small"
@@ -173,7 +231,7 @@ const Signup = () => {
                                 className="custom-input"
                                 value={inputCode}
                                 onChange={(e) => setInputCode(e.target.value)}
-                            />
+                                />
                             <button
                                 type="button"
                                 className="btn-auth-small"
