@@ -24,7 +24,7 @@ const WriteMethodSelection = () => {
                     <div className="icon-area">📝</div>
                     <div className="text-area">
                         <h3>자유롭게 쓰기</h3>
-                        <p>형식 없이 내 마음가는 대로<br/>솔직하게 털어놓아요.</p>
+                        <p>형식 없이 내 마음가는 대로 솔직하게 털어놓아요.</p>
                     </div>
                 </div>
 
@@ -36,7 +36,7 @@ const WriteMethodSelection = () => {
                     <div className="icon-area">💡</div>
                     <div className="text-area">
                         <h3>질문 보고 쓰기</h3>
-                        <p>무엇을 쓸지 막막하다면<br/>영감을 주는 질문을 골라보세요.</p>
+                        <p>무엇을 쓸지 막막하다면 영감을 주는 질문을 골라보세요.</p>
                     </div>
                 </div>
             </div>
