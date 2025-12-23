@@ -98,8 +98,8 @@ exports.getWeekFullData = async (req,res)=>{
             currentDate.setDate(sunday.getDate() + i)
 
             const yyyy = currentDate.getFullYear()
-            const mm = String(date.getMonth() + 1).padStart(2, '0')
-            const dd = String(date.getDate()).padStart(2, '0')
+            const mm = String(currentDate.getMonth() + 1).padStart(2, '0')
+            const dd = String(currentDate.getDate()).padStart(2, '0')
             const dateKey = `${yyyy}-${mm}-${dd}`
             
             diaries.push({

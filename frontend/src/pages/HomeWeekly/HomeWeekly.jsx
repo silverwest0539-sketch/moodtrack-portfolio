@@ -150,24 +150,33 @@ const HomeWeekly = () => {
 
         <div className="emotion-list vertical">
           {weekDays.length > 0 ? (
-            weekDays.map((day) => (
-              <div key={day.dateStr} className="emotion-card vertical">
-                {/* 날짜 */}
-                <span className="emotion-date">
-                  {day.dayName} {day.dayNum}
-                </span>
+            (() => {
+              // 오늘의 인덱스 찾기
+              const todayIndex = weekDays.findIndex(d => d.isToday);
 
-                {/* 감정 이모지 */}
-                <span className="emotion-emoji">
-                  {day.emotion || ''}
-                </span>
+              // 오늘이 있으면 오늘부터 이전 3일 (총 4일)
+              const startIndex = todayIndex >= 3 ? todayIndex - 3 : 0;
+              const recentDays = weekDays.slice(startIndex, todayIndex + 1);
 
-                {/* 점수 */}
-                <span className="emotion-score">
-                  {day.score ? `${day.score}점` : ''}
-                </span>
-              </div>
-            ))
+              return recentDays.map((day) => (
+                <div key={day.dateStr} className="emotion-card vertical">
+                  {/* 날짜 */}
+                  <span className="emotion-date">
+                    {day.dayName} {day.dayNum}
+                  </span>
+
+                  {/* 감정 이모지 */}
+                  <span className="emotion-emoji">
+                    {day.emotion || ''}
+                  </span>
+
+                  {/* 점수 */}
+                  <span className="emotion-score">
+                    {day.score ? `${day.score}점` : ''}
+                  </span>
+                </div>
+              ));
+            })()
           ) : (
             <div className="no-record-message">아직 기록된 감정이 없어요.</div>
           )}
