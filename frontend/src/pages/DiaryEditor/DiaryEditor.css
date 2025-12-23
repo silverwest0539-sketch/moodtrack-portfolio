@@ -4,35 +4,38 @@
   --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
   --text-dark: #1e293b;
   --text-gray: #94a3b8;
-  --bg-color: #c6c4c7;
-  --tag-bg: #e0e7ff; /* 연한 인디고 */
-  --tag-text: #4338ca; /* 진한 인디고 */
+  --bg-color: #c7cce9;
+  --tag-bg: #e0e7ff;
+  --tag-text: #4338ca;
+
 }
 
-/* 전체 배경 톤 */
-html,
-body {
+html, body {
   margin: 0;
   padding: 0;
+  overflow: hidden; /* 페이지 전체 스크롤 막기 (중요) */
 }
 
 /* 에디터 전체 레이아웃 */
 #editor-page {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* 모바일 전체 화면 */
+  height: 100vh;      /* 화면 전체 높이 사용 */
+  height: 100dvh;     /* 모바일 브라우저 주소창 대응 */
   background-color: var(--bg-color);
+  overflow: hidden;   /* 자식 요소가 넘쳐도 페이지 스크롤 안 생기게 함 */
 }
 
 /* 1. 상단 정보 (Header) */
 .editor-header {
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #f1f5f9;
-  flex-shrink: 0; /* 높이 고정 */
+  border-bottom: none; 
+  flex-shrink: 0; /* 크기 고정 */
   background-color: var(--bg-color);
+  z-index: 10;
 }
 
 #editor-date {
@@ -41,7 +44,6 @@ body {
   color: var(--text-dark);
 }
 
-/* 태그 칩 */
 .chip {
   background-color: var(--tag-bg);
   color: var(--tag-text);
@@ -54,28 +56,46 @@ body {
   gap: 4px;
 }
 
-/* 2. 텍스트 입력 영역 */
-.input-area {
+/* 질문 박스 */
+.topic-box {
+  padding: 0 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-size: 0.95rem;
+  font-weight: 500;
+  flex-shrink: 0; /* 크기 줄어들지 않게 고정 */
+}
+
+
+/* 2. 텍스트 입력 영역 (중요 수정) */
+.input-area {  
+  position: relative;
+  flex: 1;           /* 남은 공간 모두 차지 */
   display: flex;
-  flex: none ;
-  height: 75vh; /* 화면 높이의 약 68% (이 숫자를 조절해 크기 변경 가능) */
   flex-direction: column;
-  padding: 1.5rem;
-  overflow-y: auto; /* 내용 길어지면 내부 스크롤 */
+  padding: 0.5rem 1.5rem;
+  overflow: hidden;  /* 내부 요소(textarea)가 넘치면 여기서 자름 */
+  min-height: 0;     /* Flexbox 내부 스크롤 버그 방지 */
 }
 
 #diary-content {
+  flex: 1;           /* input-area의 남은 높이 100% 차지 */
   width: 100%;
-  height: 100%;
   border-radius: 10px;
   outline: none;
   resize: none;
-  border: 1px solid #e2e8f0;
-  padding: 1rem 1.2rem;
-  font-size: 1.5rem;
+  border: none;
+  
+  /* 스크롤 관련 */
+  overflow-y: auto;  /* 내용 길어지면 흰 박스 안에만 스크롤 생김 */
+  
+  padding: 1.2rem;
+  padding-bottom: 40px; /* 글자 수 카운터 가리지 않게 */
+  
+  /* [수정] 글자 크기 키움 */
+  font-size: 1.35rem; 
   line-height: 1.6;
-  font-family: 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont,
-    'Segoe UI', sans-serif;
+  font-family: 'Noto Sans KR', system-ui, sans-serif;
   box-sizing: border-box;
   background-color: #ffffff;
   color: var(--text-dark);
@@ -85,15 +105,32 @@ body {
   color: var(--text-gray);
 }
 
-/* 3. 하단 저장 버튼 영역 */
+/* 글자 수 카운터 (textarea 안에 띄움) */
+.char-counter {
+  position: absolute;
+  bottom: 1.8rem;  /* input-area padding 고려하여 위치 잡기 */
+  right: 2.5rem;
+  font-size: 0.85rem;
+  color: #999;
+  pointer-events: none; /* 입력 방해 안 하게 */
+}
+
+.char-counter.valid {
+  color: #42c446;
+  font-weight: bold;
+}
+
+
+/* 3. 하단 저장 버튼 영역 (중요 수정) */
 .editor-footer {
   padding: 1rem 1.5rem;
-  background-color: #ebd1f5;
-  border-top: 1px solid #f1f5f9;
-  flex-shrink: 0;
+  background-color: var(--bg-color);
+  border-top: none;
+  flex-shrink: 0; /* 크기 고정 */
 
-  /* 아이폰 하단 제스처 바 대응 */
-  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  /* [핵심] 하단 네비게이션 바 높이만큼 띄워주기 */
+  /* safe-area와 네비게이션 바 높이를 합침 */
+  padding-bottom: calc(160px + env(safe-area-inset-bottom));
 }
 
 .btn-full-width {
@@ -107,10 +144,19 @@ body {
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, background 0.3s;
 }
 
 .btn-full-width:active {
   transform: scale(0.98);
-  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+}
+
+/* 저장 버튼 비활성화 */
+#btn-save-diary:disabled,
+#btn-save-diary.disabled {
+  background: #9fa4a7 !important;
+  color: #fff;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
