@@ -133,11 +133,20 @@ const HomeWeekly = () => {
 
         <div className="week-check">
           {DAY_NAMES_KO.map((dayName, index) => {
-            const recordExists = weekDays.some(d => d.dayIndex === index && d.score);
+            // ✅ 이번 주에 해당하는 날짜만 체크
+            const today = new Date();
+            const thisWeekStart = new Date(today);
+            thisWeekStart.setDate(today.getDate() - today.getDay()); // 이번 주 일요일
+            thisWeekStart.setHours(0, 0, 0, 0);
+
+            const recordExists = weekDays.some(d => {
+              return d.dayIndex === index &&
+                d.score &&
+                d.dateObj >= thisWeekStart; // ✅ 이번 주 데이터만
+            });
 
             return (
               <div key={index} className={`day-circle ${recordExists ? 'checked' : ''}`}>
-                {/* 기록이 있으면 체크, 없으면 요일 표시 */}
                 {recordExists ? '✓' : dayName}
               </div>
             );
@@ -156,7 +165,7 @@ const HomeWeekly = () => {
             (() => {
               const todayIndex = weekDays.findIndex(d => d.isToday);
               const startIndex = todayIndex >= 3 ? todayIndex - 3 : 0;
-              const recentDays = weekDays.slice(startIndex, todayIndex + 1);
+              const recentDays = weekDays.slice(startIndex, todayIndex);
 
               return recentDays.map((day) => (
                 <div
