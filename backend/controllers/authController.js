@@ -2,6 +2,8 @@
 const bcrypt = require('bcryptjs');
 const pool = require('../server/config/database');
 const transporter = require('../server/config/emailConfig')
+const kakaoConfig = require('../server/config/kakaoConfig')
+
 
 
 // 회원가입
@@ -297,3 +299,199 @@ exports.logout = (req, res) => {
     return res.json({ success: true, message: '로그아웃 되었습니다.' })
   })
 }
+
+// 카카오 로그인
+exports.kakaoAuth = (req, res) => {
+  try {
+    if (!kakaoConfig.CLIENT_ID || !kakaoConfig.REDIRECT_URI) {
+      return res.status(500).json({
+        success: false,
+        message: '환경변수 설정 오류'
+      });
+    }
+
+    const url = 
+      `${kakaoConfig.AUTH_URL}` +
+      `?client_id=${encodeURIComponent(kakaoConfig.CLIENT_ID)}` +
+      `&redirect_uri=${encodeURIComponent(kakaoConfig.REDIRECT_URI)}` +
+      `&response_type=code`;
+
+    return res.redirect(url);
+  } catch (err) {
+    console.error('kakaoAuth error : ', err);
+    return res.status(500).json({ success: false, message: '서버 오류' });
+  }
+
+};
+
+// 카카오 콜백 함수
+exports.kakaoCallback = async (req, res) => {
+  const { code } = req.query;
+  const axios = require('axios');
+
+  const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+  if (!code) {
+    return res.redirect(`${FRONTEND_URL}/login?error=kakao_no_code`);
+  }
+
+  try {
+    // 토큰 요청
+    const tokenRes = await axios.post(
+      kakaoConfig.TOKEN_URL,
+      new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: kakaoConfig.CLIENT_ID,
+        redirect_uri: kakaoConfig.REDIRECT_URI,
+        code
+      }).toString(),
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' } }
+    );
+
+    console.log('[KAKAO TOKEN RES]', tokenRes.data);
+
+    const accessToken = tokenRes.data.access_token;
+
+    console.log('[KAKAO ACCESS TOKEN]', accessToken ? accessToken.slice(0, 10) + '...' : accessToken);
+
+    
+    if (!accessToken) {
+      return res.status(500).json({
+        success: false,
+        message: '카카오 토큰 발급 실패 (access_token 없음)'
+      });
+    }
+
+    // 사용자 정보 요청
+    const meRes = await axios.get(kakaoConfig.USER_URL, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+
+    console.log('[KAKAO ME RES]', meRes.data);
+
+    const kakaoId = String(meRes.data.id);
+    const kakaoAccount = meRes.data.kakao_account || {};
+    const profile = kakaoAccount.profile || {};
+
+    const nickname = profile.nickname || null;
+
+    // 회원 조회
+    const [rows] = await pool.query(
+      `SELECT USER_ID, NICKNAME, PROVIDER
+       FROM USERS
+       WHERE PROVIDER = 'kakao'
+         AND PROVIDER_USER_ID = ?`,
+      [kakaoId]
+    );
+
+    // 이미 회원이면 => 세션 로그인
+    if (rows.length > 0) {
+      const user = rows[0];
+      req.session.user = {
+        userId: user.user_id,
+        nickname: user.nickname,
+        provider: user.provider,
+      };
+
+      return res.redirect(`${FRONTEND_URL}/`);
+    }
+
+    // 비회원이면 => 소셜 가입 플로우
+    req.session.socialSignup = {
+      provider: 'kakao',
+      providerUserId: kakaoId,
+      nickname
+    };
+
+    return res.redirect(`${FRONTEND_URL}/signup?mode=kakao`);
+    } catch (err) {
+      console.error('kakaoCallback error:', err.response?.data || err.message);
+      return res.redirect(`${FRONTEND_URL}/login?error=kakao_fail`);
+    }
+}
+
+// 비회원일 때 추가 정보 받아서 로그인
+
+exports.kakaoComplete = async (req, res) => {
+  try {
+    const social = req.session.socialSignup;
+
+    if (!social || social.provider !== 'kakao'){
+      return res.status(401).json({
+        success: false,
+        message: '소셜 가입 세션이 만료되었습니다. 다시 시도해 주세요.'
+      });
+    }
+
+    const { nickname } = req.body
+    const { providerUserId } = social;
+
+      // (1) 혹시 사이에 누가 가입했을 수도 있으니 한번 더 방어 조회
+    const [exists] = await pool.query(
+      `SELECT user_id FROM USERS
+        WHERE provider='kakao' AND provider_user_id=?`,
+      [social.providerUserId]
+    );
+
+    if (exists.length > 0) {
+      // 이미 가입되어 있으면 그냥 로그인 처리로
+      req.session.user = {
+        userId: exists[0].user_id,
+        nickname,
+        provider: 'kakao'
+      };
+      delete req.session.socialSignup;
+
+      return res.json({ success: true, message: '이미 가입된 계정으로 로그인했습니다.' });
+    }
+
+    // 회원 생성
+    const [result] = await pool.query(
+      `INSERT INTO USERS (
+        LOGIN_ID,
+        EMAIL,
+        PASSWORD,
+        NICKNAME,
+        PROVIDER,
+        PROVIDER_USER_ID
+      ) VALUES (
+        NULL,
+        NULL,
+        NULL,
+        ?,
+        'kakao',
+        ?
+      )`,
+      [nickname, providerUserId]
+    );
+
+    const userId = result.insertId;
+
+    // (3) 세션 로그인
+    req.session.user = {
+      userId,
+      nickname: nickname.trim(),
+      provider: 'kakao'
+    };
+
+    // (4) 임시 세션 제거
+    delete req.session.socialSignup;
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error('kakaoComplete error:', err);
+    return res.status(500).json({ success: false, message: '서버 오류' });
+  }
+};
+
+exports.getSocialPending = (req, res) => {
+  const social = req.session.socialSignup;
+  if (!social) {
+    return res.status(401).json({ success: false });
+  }
+
+  return res.json({
+    success: true,
+    nickname: social.nickname || ''
+  });
+};
