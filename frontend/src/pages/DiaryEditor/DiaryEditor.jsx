@@ -1,5 +1,3 @@
-// 일기 작성
-
 import React, { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import './DiaryEditor.css';
@@ -7,13 +5,14 @@ import './DiaryEditor.css';
 /**
  * props:
  * - initialTag: 모달에서 선택된 단어 (string | null)
- * - onSave: (payload) => void   // 저장 시 부모로 내용 넘기고 싶으면 사용
+ * - onSave: (payload) => void
  */
 function DiaryEditor({ initialTag = null, onSave }) {
   const navigate = useNavigate();
 
   // 날짜 문자열 만들기 (YYYY. MM. DD)
   const [searchParams] = useSearchParams()
+  const topic = searchParams.get('topic'); // 질문
   const dateParam = searchParams.get('date')
 
   const todayLabel = useMemo(() => {
@@ -28,6 +27,7 @@ function DiaryEditor({ initialTag = null, onSave }) {
     return `${y}. ${m}. ${d}`;
   }, [dateParam]);
 
+  /* ------------------ ✅ 상태 ------------------ */
   const [content, setContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,6 +38,12 @@ function DiaryEditor({ initialTag = null, onSave }) {
     }
 
     setIsLoading(true);
+    const payload = {
+      date: todayLabel,
+      tag: initialTag || null,
+      topic: topic || null, // ✅ 질문도 함께 저장 가능
+      content,
+    };
 
     try {
       console.log('감정 분석 요청');
@@ -102,7 +108,7 @@ function DiaryEditor({ initialTag = null, onSave }) {
       <header className="editor-header">
         <span id="editor-date">{todayLabel}</span>
 
-        {/* 선택된 태그가 있을 때만 칩 표시 */}
+        {/* ✅ 선택된 태그 */}
         {initialTag && (
           <div id="selected-tag" className="chip">
             <span>#</span>
@@ -111,18 +117,29 @@ function DiaryEditor({ initialTag = null, onSave }) {
         )}
       </header>
 
+      {/* ✅ 질문 표시 (선택) */}
+      {topic && (
+        <div className="topic-box">
+          💡 {topic}
+        </div>
+      )}
+
       {/* 2. 텍스트 입력 영역 */}
       <main className="input-area">
         <textarea
           id="diary-content"
-          placeholder="오늘 하루는 어땠나요? 편안하게 이야기 해주세요."
+          placeholder={
+            topic
+              ? topic
+              : '오늘 하루는 어땠나요? 편안하게 이야기 해주세요.'
+          }
           value={content}
           onChange={(e) => setContent(e.target.value)}
           disabled={isLoading}
         />
       </main>
 
-      {/* 3. 저장 버튼 영역 */}
+      {/* 3. 저장 버튼 */}
       <footer className="editor-footer">
         <button
           id="btn-save-diary"

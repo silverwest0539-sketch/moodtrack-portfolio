@@ -17,7 +17,7 @@ import HomeWeekly from "./pages/HomeWeekly/HomeWeekly"; // 새로운 메인 화�
 import WriteMethodSelection from "./pages/WriteMethodSelection/WriteMethodSelection";
 
 // 컴포넌트 (Components)
-// import BottomNav from "./components/layout/BottomNav";
+import BottomNav from "./components/layout/BottomNav";
 import "./App.css"; // 스타일 파일이 있다면 유지
 
 import Login from "./pages/Auth/Login";
@@ -60,6 +60,7 @@ function App() {
     }, [])
     
   return (
+    <>      
         <Routes>
           {/* 로그인 X */}
           <Route element = {<PublicOnlyRoute />}> 
@@ -81,6 +82,8 @@ function App() {
           </Route>
 
         </Routes>
+    {showNav && <BottomNav />}
+    </>
   )
 }
 

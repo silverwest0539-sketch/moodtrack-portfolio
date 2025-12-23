@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express')
 const app = express()
 const cors = require('cors')
@@ -50,6 +52,9 @@ app.use('/api/diary', diaryRoutes)
 
 // 통계 분석 라우트
 app.use('/api/emotion-stats', emotionStatsRoutes)
+console.log('KAKAO_REST_KEY:', process.env.KAKAO_REST_KEY);
+console.log('KAKAO_REDIRECT_URI:', process.env.KAKAO_REDIRECT_URI);
+
 
 app.set('port', process.env.PORT || 3000)
 app.listen(app.get('port'),()=>{
