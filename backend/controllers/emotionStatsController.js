@@ -55,6 +55,73 @@ const getDaysInMonth = (year, month) => {
     return new Date(year, month + 1, 0).getDate()
 }
 
+// HomeWeekly용 이번 주 전체 데이터
+exports.getWeekFullData = async (req,res)=>{
+    try {
+        const userId = req.session.user.userId
+
+        const now = new Date()
+        const day = now.getDay()
+
+        const sunday = new Date(now)
+        sunday.setDate(now.getDate() - day)
+        sunday.setHours(0, 0, 0, 0)
+
+        const saturday = new Date(sunday)
+        saturday.setDate(sunday.getDate() + 6)
+        saturday.setHours(23, 59, 59, 999)
+
+        const [rows] = await pool.query(
+            `
+            SELECT DIARY_DATE, EMO_SCORE
+              FROM DIARY
+             WHERE USER_ID = ?
+               AND DIARY_DATE BETWEEN ? AND ?
+            `,
+            [userId, sunday, saturday]
+        )
+
+        const diaryMap = {}
+        rows.forEach((row)=>{
+            const date = new Date(row.DIARY_DATE)
+            const yyyy = date.getFullYear()
+            const mm = String(date.getMonth() + 1).padStart(2, '0')
+            const dd = String(date.getDate()).padStart(2, '0')
+            const dateKey = `${yyyy}-${mm}-${dd}`
+
+            diaryMap[dateKey] = row.EMO_SCORE
+        })
+
+        const diaries = []
+        for (let i = 0; i <7; i++) {
+            const currentDate = new Date(sunday)
+            currentDate.setDate(sunday.getDate() + i)
+
+            const yyyy = currentDate.getFullYear()
+            const mm = String(date.getMonth() + 1).padStart(2, '0')
+            const dd = String(date.getDate()).padStart(2, '0')
+            const dateKey = `${yyyy}-${mm}-${dd}`
+            
+            diaries.push({
+                DIARY_DATE: currentDate.toISOString().split('T')[0],
+                EMO_SCORE: diaryMap[dateKey] || null,
+                DAY_INDEX: i
+            })
+        }
+
+        return res.json({
+            success: true,
+            diaries: diaries
+        })
+    } catch (error) {
+        console.error('주간 전체 데이터 조회 실패:', error)
+        return res.status(500).json({
+            success: false,
+            message: '주간 전체 데이터 조회 실패',
+        })
+    }
+}
+
 exports.getWeeklyEmotionStats = async (req, res) => {
     try {
 

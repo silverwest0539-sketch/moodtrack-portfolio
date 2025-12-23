@@ -20,7 +20,7 @@ const HomeWeekly = () => {
   // --- State 관리 ---
   const [weekDays, setWeekDays] = useState([]); // 백엔드(가상) 데이터 담을 곳
   const [greeting, setGreeting] = useState('');
-  
+
   // 사용자 정보 (추후 백엔드 연동 시 대체)
   const [nickname] = useState('45정');
   const [streak] = useState(2);
@@ -32,53 +32,49 @@ const HomeWeekly = () => {
     setGreeting(GREETINGS[Math.floor(Math.random() * GREETINGS.length)]);
 
     const fetchWeekly = async () => {
-      const res = await fetch(
-        'http://localhost:3000/api/diary/weekly',
-        { credentials: 'include' }
-      );
-      const data = await res.json();
+      try {
+        const res = await fetch(
+          'http://localhost:3000/api/emotion-stats/week-full',
+          { credentials: 'include' }
+        );
+        const data = await res.json();
 
-      const diaryMap = {};
-      data.diaries.forEach(d => {
-        const localDate = new Date(d.DIARY_DATE);
-        const yyyy = localDate.getFullYear();
-        const mm = String(localDate.getMonth() + 1).padStart(2, '0');
-        const dd = String(localDate.getDate()).padStart(2, '0');
-        const dateKey = `${yyyy}-${mm}-${dd}`;
+        if (!data.success) {
+          console.error('주간 데이터 조회 실패');
+          return;
+        }
 
-        diaryMap[dateKey] = d.EMO_SCORE;
-      });
+        const days = data.diaries.map(diary => {
+          const date = new Date(diary.DIARY_DATE);
 
-      const today = new Date();
-      const days = [];
-
-      for (let i = -3; i <= 0; i++) {
-        const d = new Date(today);
-        d.setDate(today.getDate() + i)
-
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        const dateStr = `${yyyy}-${mm}-${dd}`;
-
-        const score = diaryMap[dateStr];
-
-        days.push({
-          dateObj: d,
-          dateStr,
-          dayName: getDayName(d.getDay()),
-          dayNum: d.getDate(),
-          isToday: i === 0,
-          score,
-          emotion: score ? getEmoji(score) : null
+          return {
+            dateObj: date,
+            dateStr: diary.DIARY_DATE,
+            dayName: getDayName(date.getDay()),
+            dayNum: date.getDate(),
+            dayIndex: date.getDay(),
+            isToday: isToday(date),
+            score: diary.EMO_SCORE,
+            emotion: diary.EMO_SCORE ? getEmoji(diary.EMO_SCORE) : null
+          };
         });
-      }
 
-      setWeekDays(days);
+        setWeekDays(days);
+      } catch (error) {
+        console.error('주간 데이터 조회 에러:', error);
+      }
     };
 
     fetchWeekly();
   }, []);
+
+  const isToday = (date) => {
+    const today = new Date()
+    return date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+  }
+
 
   const getEmoji = (score) => {
     if (score >= 70) return '😊'
@@ -134,12 +130,11 @@ const HomeWeekly = () => {
 
         <div className="week-check">
           {DAY_NAMES_KO.map((dayName, index) => {
-            // weekDays 데이터 중에 해당 요일(index)이 있고, 기록(hasRecord)이 있는지 확인
-            const recordExists = weekDays.some(d => d.dayIndex === index && d.hasRecord);
-            
+            const recordExists = weekDays.some(d => d.dayIndex === index && d.score);
+
             return (
               <div key={index} className={`day-circle ${recordExists ? 'checked' : ''}`}>
-                 {/* 기록이 있으면 체크, 없으면 요일 표시 */}
+                {/* 기록이 있으면 체크, 없으면 요일 표시 */}
                 {recordExists ? '✓' : dayName}
               </div>
             );
@@ -154,8 +149,8 @@ const HomeWeekly = () => {
         </p>
 
         <div className="emotion-list vertical">
-          {recentEmotions.length > 0 ? (
-            recentEmotions.map((day) => (
+          {weekDays.length > 0 ? (
+            weekDays.map((day) => (
               <div key={day.dateStr} className="emotion-card vertical">
                 {/* 날짜 */}
                 <span className="emotion-date">
@@ -164,12 +159,12 @@ const HomeWeekly = () => {
 
                 {/* 감정 이모지 */}
                 <span className="emotion-emoji">
-                  {day.emotion}
+                  {day.emotion || ''}
                 </span>
 
                 {/* 점수 */}
                 <span className="emotion-score">
-                  {day.score}점
+                  {day.score ? `${day.score}점` : ''}
                 </span>
               </div>
             ))
