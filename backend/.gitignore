@@ -1,0 +1,17 @@
+
+# Python/Flask
+flask/venv/
+flask/models/
+flask/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node.js
+node_modules/
+
+# 공통
+
+.env
+.env.local
+*.log

@@ -1,7 +1,7 @@
 // 일기 작성
 
 import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import './DiaryEditor.css';
 
 /**
@@ -12,14 +12,21 @@ import './DiaryEditor.css';
 function DiaryEditor({ initialTag = null, onSave }) {
   const navigate = useNavigate();
 
-  // 오늘 날짜 문자열 만들기 (YYYY. MM. DD)
+  // 날짜 문자열 만들기 (YYYY. MM. DD)
+  const [searchParams] = useSearchParams()
+  const dateParam = searchParams.get('date')
+
   const todayLabel = useMemo(() => {
+    if (dateParam) {
+      return dateParam.replace(/-/g, '. ')
+    }
+
     const today = new Date();
     const y = today.getFullYear();
     const m = String(today.getMonth() + 1).padStart(2, '0');
     const d = String(today.getDate()).padStart(2, '0');
     return `${y}. ${m}. ${d}`;
-  }, []);
+  }, [dateParam]);
 
   const [content, setContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -40,8 +47,10 @@ function DiaryEditor({ initialTag = null, onSave }) {
         headers: {
           'Content-Type': 'application/json', // ✅ 수정!
         },
+        credentials: 'include',
         body: JSON.stringify({
-          content: content
+          content: content,
+          diaryDate: todayLabel
         })
       });
 
