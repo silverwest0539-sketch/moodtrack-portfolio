@@ -1,0 +1,204 @@
+/* DiaryViewer.css */
+
+/* 전체 배경 및 레이아웃 */
+.viewer-container {
+  min-height: 100vh;
+  background-color: #f5f7fa; /* 부드러운 회색 배경 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* 1. 헤더 (날짜 및 뒤로가기) */
+.viewer-header {
+  width: 100%;
+  max-width: 480px; /* 모바일 폭 제한 */
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #333;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.viewer-date {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.header-placeholder {
+  width: 40px; /* 뒤로가기 버튼과 균형 맞추기 위함 */
+}
+
+/* 2. 메인 카드 스타일 (그림자 효과 핵심) */
+.viewer-card {
+  width: 100%;
+  max-width: 400px;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 2rem 1.5rem;
+  box-sizing: border-box;
+  
+  /* 부드럽고 세련된 그림자 */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* 태그 칩 */
+.viewer-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-chip {
+  background-color: #e0e7ff;
+  color: #4338ca;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* 내용 텍스트 박스 */
+.content-box {
+  width: 100%;
+  min-height: 200px; /* 최소 높이 확보 */
+}
+
+.viewer-textarea {
+  width: 100%;
+  height: 100%;
+  min-height: 250px; /* 충분한 길이 */
+  border: none;
+  outline: none;
+  resize: none;
+  
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #333;
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: transparent; /* 배경 투명 (카드 배경 사용) */
+  
+  /* 스크롤바 디자인 (크롬/사파리) */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+/* 구분선 */
+.divider-line {
+  width: 100%;
+  height: 1px;
+  background-color: #f1f5f9;
+}
+
+/* 3. 감정 분석 결과 영역 */
+.analysis-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.result-label {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.score-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc;
+  padding: 10px 20px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+.emoji-icon {
+  font-size: 1.8rem;
+}
+
+.score-text {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #6366f1; /* 포인트 컬러 */
+}
+
+
+/* [추가] 수정 모드일 때 텍스트 박스 스타일 */
+.content-box.editing-mode .viewer-textarea {
+  background-color: #f8fafc; /* 아주 연한 회색 배경 */
+  border: 1px solid #cbd5e1; /* 테두리 생김 */
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); /* 안쪽 그림자 */
+}
+
+
+/* [추가] 하단 버튼 영역 */
+.viewer-footer {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 40px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-action {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 16px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.btn-action:active {
+  transform: scale(0.98);
+}
+
+/* 수정하기 버튼 (회색 톤) */
+.btn-action.edit {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+/* 취소 버튼 */
+.btn-action.cancel {
+  background-color: #e2e8f0;
+  color: #64748b;
+  flex: 1; /* 반반 차지 */
+}
+
+/* 저장 버튼 (포인트 컬러) */
+.btn-action.save {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  flex: 2; /* 저장 버튼을 좀 더 넓게 */
+}
