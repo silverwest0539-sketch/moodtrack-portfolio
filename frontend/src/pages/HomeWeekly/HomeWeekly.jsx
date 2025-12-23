@@ -98,6 +98,7 @@ const HomeWeekly = () => {
   // --- 핸들러 ---
   const handleWriteClick = () => {
     // 오늘 날짜로 글쓰기 페이지 이동
+    const todayData = weekDays.find(d => d.isToday)
     const dateStr = todayData ? todayData.dateStr : new Date().toISOString().split('T')[0];
     navigate(`/write-option?date=${dateStr}`);
   };

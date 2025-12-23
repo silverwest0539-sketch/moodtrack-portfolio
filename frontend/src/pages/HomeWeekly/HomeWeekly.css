@@ -1,7 +1,23 @@
+/* ✅ 전체 페이지 스크롤 제거 */
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100vh;
+}
+
+#root {
+  height: 100vh;
+  overflow: hidden;
+}
+
 .home-weekly-container {
-  min-height: calc(100vh - 80px);
+  height: 100vh;
   background: #f2f2f2;
   padding: 20px;
+  padding-bottom: 90px;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* 상단 로고 영역 */
@@ -9,12 +25,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-/* ✅ 가로형 로고에 최적화 */
+/* 가로형 로고에 최적화 */
 .app-logo {
-  max-width: 500px;   /* ⭐ 핵심 */
+  max-width: 420px;
   width: 100%;
   height: auto;
   object-fit: contain;
@@ -24,8 +40,8 @@
 .card {
   background: white;
   border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
@@ -35,31 +51,33 @@
 }
 
 .profile-nickname {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 800;
+  margin: 0;
 }
 
 .profile-greeting {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: #666;
-  margin: 6px 0;
+  margin: 5px 0;
 }
 
 .profile-streak {
   color: #5b7cff;
   font-weight: 600;
+  margin: 5px 0;
 }
 
 .profile-points {
-  margin-top: 6px;
+  margin-top: 5px;
   font-weight: 700;
 }
 
 /* 섹션 타이틀 */
 .section-title {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #666;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 /* 출석 */
@@ -69,13 +87,14 @@
 }
 
 .day-circle {
-  width: 36px;
-  height: 36px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   background: #ddd;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.85rem;
 }
 
 .day-circle.checked {
@@ -85,7 +104,7 @@
 /* 최근 감정 리스트 */
 .emotion-list.vertical {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
 /* 세로형 감정 카드 */
@@ -93,30 +112,30 @@
   flex: 1;
   background: #f7f7f7;
   border-radius: 16px;
-  padding: 14px 8px;
+  padding: 12px 6px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
 
-  height: 200px; /* ⭐ 세로 길이 핵심 */
+  height: 150px;
 }
 
 /* 날짜 */
 .emotion-date {
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #777;
 }
 
 /* 감정 이모지 */
 .emotion-emoji {
-  font-size: 2.2rem;
+  font-size: 2rem;
 }
 
 /* 점수 */
 .emotion-score {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: #333;
 }
