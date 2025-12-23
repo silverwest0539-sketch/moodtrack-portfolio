@@ -17,15 +17,10 @@ CORS(app, resources={
 })
 
 # 서버 시작할 때 모델 로드
-print("=" * 50)
 print("Flask 서버 시작 중...")
-print("=" * 50)
-
 analyzer = EmotionAnalyzer()
-
-print("=" * 50)
 print("서버 준비 완료!")
-print("=" * 50)
+
 
 
 # ============= API 엔드포인트 =============
@@ -40,6 +35,7 @@ def home():
         'message': '감정 분석 API 서버가 실행 중입니다.'
     })
 
+# 일기 감정 분석 API
 @app.route('/analyze', methods=['POST'])
 def analyze_diary():
     try:
@@ -47,10 +43,13 @@ def analyze_diary():
         data = request.get_json()
 
         # 2. 일기 내용 추출
-        diary_content = data.get('content', '') # 'content'의 키값 가져오기
+        diary_content = data.get('content', '') 
+        # 'content'라는 키가 존재하면 그 키값의 value 반환, 존재하지 않으면 기본값('') 반환
+    
 
         # 3. 유효성 검사(빈 문자열 체크)
         if not diary_content or diary_content.strip() == '':
+            # 위 data.get('content','')에서 content라는 키값이 존재하지 않은 경우
             return jsonify({
                 'success': False,
                 'error': '일기 내용이 비어있습니다.'
