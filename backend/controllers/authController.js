@@ -373,7 +373,6 @@ exports.kakaoCallback = async (req, res) => {
     const kakaoAccount = meRes.data.kakao_account || {};
     const profile = kakaoAccount.profile || {};
 
-    const email = kakaoAccount?.email || null;
     const nickname = profile.nickname || null;
 
     // 회원 조회
@@ -401,7 +400,6 @@ exports.kakaoCallback = async (req, res) => {
     req.session.socialSignup = {
       provider: 'kakao',
       providerUserId: kakaoId,
-      email,
       nickname
     };
 
@@ -425,17 +423,8 @@ exports.kakaoComplete = async (req, res) => {
       });
     }
 
-    const { email, nickname } = req.body
+    const { nickname } = req.body
     const { providerUserId } = social;
-    
-    // 이메일 중복 방지: 이미 사용 중인 EMAIL이면 막기
-    const [dup] = await pool.query(
-      `SELECT USER_ID FROM USERS WHERE EMAIL = ? LIMIT 1`,
-      [email]
-    );
-    if (dup.length > 0) {
-      return res.status(409).json({ success: false, message: '이미 사용 중인 이메일입니다.' });
-    }
 
       // (1) 혹시 사이에 누가 가입했을 수도 있으니 한번 더 방어 조회
     const [exists] = await pool.query(
@@ -467,13 +456,13 @@ exports.kakaoComplete = async (req, res) => {
         PROVIDER_USER_ID
       ) VALUES (
         NULL,
-        ?,
+        NULL,
         NULL,
         ?,
         'kakao',
         ?
       )`,
-      [email, nickname, providerUserId]
+      [nickname, providerUserId]
     );
 
     const userId = result.insertId;

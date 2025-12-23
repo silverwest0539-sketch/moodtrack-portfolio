@@ -95,11 +95,6 @@ const Signup = () => {
             alert('닉네임을 입력해주세요');
             return
             }
-        
-          if (!isEmailVerified) {
-            alert('이메일 인증을 완료해주세요');
-            return;
-        }
 
         try {
         const res = await axios.post(
@@ -204,9 +199,6 @@ const Signup = () => {
                     </div>
 
 
-                        </>
-                        )}
-
                     <div className="input-group email-group">
                         <input type="email"
                             placeholder="이메일"
@@ -241,6 +233,9 @@ const Signup = () => {
                             </button>
                         </div>
                         )}
+                                    
+                                                            </>
+                                                            )}
                     
 
                     <button type="submit" className="btn-auth-submit">회원가입 완료</button>
