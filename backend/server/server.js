@@ -1,5 +1,8 @@
-const path = require('path');
 const dotenv = require('dotenv');
+const path = require('path');
+require('dotenv').config({
+  path: path.resolve(__dirname, '../.env') // server 폴더 기준 한 칸 위 = backend/.env
+});
 
 const envPath = path.resolve(process.cwd(), '.env'); // cwd 기준
 const result = dotenv.config({ path: envPath });
