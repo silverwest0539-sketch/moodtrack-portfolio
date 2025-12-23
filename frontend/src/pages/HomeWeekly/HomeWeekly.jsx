@@ -45,7 +45,9 @@ const HomeWeekly = () => {
         }
 
         const days = data.diaries.map(diary => {
-          const date = new Date(diary.DIARY_DATE);
+          const dateStr = diary.DIARY_DATE;
+          const [year, month, day] = dateStr.split('-');
+          const date = new Date(year, month - 1, day);
 
           return {
             dateObj: date,
@@ -152,15 +154,16 @@ const HomeWeekly = () => {
         <div className="emotion-list vertical">
           {weekDays.length > 0 ? (
             (() => {
-              // 오늘의 인덱스 찾기
               const todayIndex = weekDays.findIndex(d => d.isToday);
-
-              // 오늘이 있으면 오늘부터 이전 3일 (총 4일)
               const startIndex = todayIndex >= 3 ? todayIndex - 3 : 0;
               const recentDays = weekDays.slice(startIndex, todayIndex + 1);
 
               return recentDays.map((day) => (
-                <div key={day.dateStr} className="emotion-card vertical">
+                <div
+                  key={day.dateStr}
+                  className="emotion-card vertical"
+                  onClick={() => handleCardClick(day)}
+                  style={{ cursor: 'pointer' }}>
                   {/* 날짜 */}
                   <span className="emotion-date">
                     {day.dayName} {day.dayNum}

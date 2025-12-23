@@ -83,7 +83,7 @@
 
 /* 차트 카드 (Glassmorphism) */
 .chart-container {
-  width: 100%;
+  width: 280px;
   max-width: 380px;
   background: var(--glass-bg);
   backdrop-filter: blur(10px);

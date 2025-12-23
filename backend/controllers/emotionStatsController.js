@@ -81,16 +81,16 @@ exports.getWeekFullData = async (req,res)=>{
             [userId, sunday, saturday]
         )
 
-        const diaryMap = {}
-        rows.forEach((row)=>{
-            const date = new Date(row.DIARY_DATE)
-            const yyyy = date.getFullYear()
-            const mm = String(date.getMonth() + 1).padStart(2, '0')
-            const dd = String(date.getDate()).padStart(2, '0')
-            const dateKey = `${yyyy}-${mm}-${dd}`
-
-            diaryMap[dateKey] = row.EMO_SCORE
-        })
+        const diaryMap = {};
+        rows.forEach((row) => {
+            const date = new Date(row.DIARY_DATE);
+            const yyyy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const dd = String(date.getDate()).padStart(2, '0');
+            const dateKey = `${yyyy}-${mm}-${dd}`;
+            
+            diaryMap[dateKey] = row.EMO_SCORE;
+        });
 
         const diaries = []
         for (let i = 0; i <7; i++) {
@@ -103,7 +103,7 @@ exports.getWeekFullData = async (req,res)=>{
             const dateKey = `${yyyy}-${mm}-${dd}`
             
             diaries.push({
-                DIARY_DATE: currentDate.toISOString().split('T')[0],
+                DIARY_DATE: dateKey,
                 EMO_SCORE: diaryMap[dateKey] || null,
                 DAY_INDEX: i
             })
