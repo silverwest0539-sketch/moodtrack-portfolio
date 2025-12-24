@@ -8,7 +8,7 @@ const recentByUser = new Map();
 // 일기 감정 분석
 exports.analyzeDiary = async (req, res) => {
     try {
-        const { userId } = req.session.user;
+        const userId = req.session.user.userId;
         const { content, diaryDate } = req.body;
 
         // 유효성 검사
@@ -16,6 +16,13 @@ exports.analyzeDiary = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: '일기 내용을 입력해주세요.'
+            })
+        }
+
+        if (!content || content.trim().length < 50) {
+            return res.status(400).json({
+                success: false,
+                message: '일기는 최소 50자 이상이어야 합니다.'
             })
         }
 
@@ -161,8 +168,8 @@ exports.analyzeDiary = async (req, res) => {
         }
         lastCommentByUser.set(userId, comment);
 
-        // DB 저장
-        const [result] = await pool.query(
+        // 기존 일기 존재 여부 확인
+        const [existing] = await pool.query(
             `
             INSERT INTO DIARY (USER_ID, DIARY_DATE, CONTENT, EMO_SCORE, COMMENT_TEXT)
             VALUES (?, ?, ?, ?, ?)
@@ -204,16 +211,8 @@ exports.analyzeDiary = async (req, res) => {
 
 exports.getWeeklyDiary = async (req, res) => {
     try {
-        const user = req.session.user;
+        const userId = req.session.user.userId
 
-        if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: '로그인이 필요합니다.'
-            });
-        }
-
-        const userId = user.userId;
         const [rows] = await pool.query(
             `
             SELECT DIARY_DATE, EMO_SCORE
@@ -233,6 +232,96 @@ exports.getWeeklyDiary = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: '주간 일기 조회 실패'
+        })
+    }
+}
+
+// 일기 조회
+exports.getDiaryByDate = async (req, res) => {
+    try {
+        const { date } = req.query
+        const userId = req.session.user.userId
+
+        if (!date) {
+            return res.status(400).json({
+                success: false,
+                message: 'date 파라미터 없음'
+            })
+        }
+
+        const [rows] = await pool.query(
+            `
+        SELECT CONTENT, EMO_SCORE
+        FROM DIARY
+        WHERE USER_ID = ? AND DIARY_DATE = ?
+        `,
+            [userId, date]
+        )
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: '일기 없음'
+            })
+        }
+
+        const score = rows[0].EMO_SCORE
+
+        return res.json({
+            success: true,
+            diary: {
+                content: rows[0].CONTENT,
+                score,
+                emotionEmoji:
+                    score >= 70 ? '😊'
+                        : score >= 40 ? '😐'
+                            : '☁️'
+            }
+        })
+    } catch (error) {
+        console.error('일기 조회 실패:', error)
+        return res.status(500).json({
+            success: false,
+            message: '일기 조회 실패'
+        })
+    }
+}
+
+// 일기 수정
+exports.updateDiary = async (req, res) => {
+    try {
+        const userId = req.session.user.userId
+        const { date, content } = req.body
+
+        if (!date || !content || content.trim() === '') {
+            return res.status(400).json({
+                success: false,
+                message: '내용이 비어있습니다.'
+            })
+        }
+
+        const emotionResult = await emotionController.getEmotionScore(content)
+
+        await pool.query(
+            `
+            UPDATE DIARY
+               SET CONTENT = ?, EMO_SCORE = ?
+             WHERE USER_ID = ? AND DIARY_DATE = ?
+            `,
+            [content, emotionResult.finalScore, userId, date]
+        )
+
+        return res.json({
+            success: true,
+            finalScore: emotionResult.finalScore,
+            emotionScores: emotionResult.emotionScores
+        })
+
+    } catch (err) {
+        console.error('일기 수정 실패:', err)
+        return res.status(500).json({
+            success: false,
+            message: '일기 수정 실패'
         })
     }
 }

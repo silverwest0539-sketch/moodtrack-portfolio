@@ -8,4 +8,10 @@ router.post('/analyze', diaryController.analyzeDiary)
 // 주간 일기 조회
 router.get('/weekly', diaryController.getWeeklyDiary)
 
+// 날짜 선택 시 일기 조회
+router.get('/', diaryController.getDiaryByDate)
+
+// 일기 수정
+router.put('/', diaryController.updateDiary)
+
 module.exports = router;

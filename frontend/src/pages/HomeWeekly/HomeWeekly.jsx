@@ -91,10 +91,20 @@ const HomeWeekly = () => {
 
   // handleCardClick 함수 내부 수정
   const handleCardClick = (day) => {
-    if (day.isFuture) { /* ... */ return; }
+    if (day.isFuture) return
 
-    // [변경] prompt -> write-option
-    navigate(`/write-option?date=${day.dateStr}`);
+    if (day.score) {
+      navigate(`/diary-view?date=${day.dateStr}`, {
+        state: {
+          date: day.dateStr.replace(/-/g, '.'),
+          score: day.score,
+          emotion: day.emotion,
+        }
+      })
+    } else {
+      navigate(`/write-option?date=${day.dateStr}`)
+    }
+
   }
 
   // --- 핸들러 ---
