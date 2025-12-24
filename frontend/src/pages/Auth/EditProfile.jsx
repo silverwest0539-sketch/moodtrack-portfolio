@@ -169,21 +169,19 @@ const EditProfile = () => {
             <button
               type="button"
               className="btn-auth-submit btn-danger"
-              onClick={handleWithdraw}
+              onClick={() => navigate('/my')}
             >
               취소
             </button>
+
             <button type="submit" className="btn-auth-submit">
               수정저장
             </button>
           </div>
+          
         </form>
 
-        {/* 수정 페이지에서는 로그인 유도 footer 제거(원하면 "MY로 돌아가기"로 대체 가능) */}
-        <div className="auth-footer">
-          <span className="link-text" onClick={() => navigate('/my')}>MY로 돌아가기</span>
         </div>
-      </div>
     </div>
   );
 };

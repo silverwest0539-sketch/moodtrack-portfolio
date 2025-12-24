@@ -6,7 +6,6 @@ import "./MyPage.css";
 function MyPage() {
   const navigate = useNavigate();
 
-  // 데모용: 추후 백엔드/전역상태(AuthContext 등)로 교체
   const [nickname] = useState("45정");
   const [streak] = useState(2);
   const [points] = useState(120);
@@ -15,25 +14,27 @@ function MyPage() {
   const [email] = useState("user@example.com");
 
   const handleEditProfile = () => {
-    // 추후 회원정보 수정 페이지 연결
     navigate("/my/edit");
-    
   };
 
-  const showNav = ""
-
   const handleLogout = () => {
-    // 추후: 서버 로그아웃 API 호출 + 토큰/쿠키 제거 + 상태 초기화
-    // await axios.post("/api/auth/logout", ...)
-
     alert("로그아웃 되었습니다. (데모)");
     navigate("/login");
   };
 
-  console.log("pathname:", location.pathname, "showNav:", showNav);
+  // ✅ 회원탈퇴 (데모)
+  const handleWithdraw = () => {
+    const ok = window.confirm("정말 회원탈퇴 하시겠어요? 이 작업은 되돌릴 수 없습니다.");
+    if (!ok) return;
+
+    // TODO: 백엔드 연동 시 탈퇴 API 호출 + 세션/토큰 정리
+    alert("회원탈퇴가 완료되었습니다. (데모)");
+    navigate("/landing");
+  };
+
   return (
     <div className="my-container">
-      {/* 1) 프로필 카드 (랜덤 인사말 제외) */}
+      {/* 1) 프로필 카드 */}
       <section className="my-card my-profile-card">
         <p className="my-nickname">{nickname} 님,</p>
 
@@ -69,10 +70,15 @@ function MyPage() {
         </div>
       </section>
 
-      {/* 3) 로그아웃 */}
+      {/* 3) 로그아웃 + 회원탈퇴하기 */}
       <section className="my-card my-logout-card">
         <button type="button" className="my-logout-btn" onClick={handleLogout}>
           로그아웃
+        </button>
+
+        {/* ✅ 로그아웃 아래 작은 링크 */}
+        <button type="button" className="my-withdraw-link" onClick={handleWithdraw}>
+          회원탈퇴하기
         </button>
       </section>
     </div>
