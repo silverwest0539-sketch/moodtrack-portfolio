@@ -20,6 +20,8 @@ function MyPage() {
     
   };
 
+  const showNav = ""
+
   const handleLogout = () => {
     // 추후: 서버 로그아웃 API 호출 + 토큰/쿠키 제거 + 상태 초기화
     // await axios.post("/api/auth/logout", ...)

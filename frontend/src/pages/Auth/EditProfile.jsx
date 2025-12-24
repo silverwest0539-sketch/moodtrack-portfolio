@@ -171,7 +171,7 @@ const EditProfile = () => {
               className="btn-auth-submit btn-danger"
               onClick={handleWithdraw}
             >
-              회원탈퇴
+              취소
             </button>
             <button type="submit" className="btn-auth-submit">
               수정저장
