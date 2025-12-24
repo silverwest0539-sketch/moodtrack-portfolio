@@ -55,19 +55,19 @@ const DiaryViewer = () => {
       })
 
       // 감정 분석 재요청
-      const analyzeRes = await fetch('http://localhost:3000/api/diary/analyze', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          diaryDate: dateParam.replace(/-/g, '. '),
-          content: editContent,
-        })
-      })
+      // const analyzeRes = await fetch('http://localhost:3000/api/diary/analyze', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   },
+      //   credentials: 'include',
+      //   body: JSON.stringify({
+      //     diaryDate: dateParam.replace(/-/g, '. '),
+      //     content: editContent,
+      //   })
+      // })
 
-      const data = await analyzeRes.json()
+      const data = await updateRes.json()
 
       navigate('/emotionResult', {
         state: {
@@ -75,6 +75,7 @@ const DiaryViewer = () => {
           content: editContent,
           finalScore: data.finalScore,
           emotionScores: data.emotionScores,
+          comment: data.comment
         }
       })
 

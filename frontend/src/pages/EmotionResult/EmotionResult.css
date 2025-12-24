@@ -121,7 +121,7 @@
 
 /* 말풍선 꼬리 / 라벨 (유지) */
 .ai-comment-box::before {
-  content: '🤖 AI Diary';
+  content: '🤖 AI Comment';
   position: absolute;
   top: -12px;
   left: 20px;

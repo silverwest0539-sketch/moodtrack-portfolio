@@ -8,21 +8,15 @@ import { useEffect } from "react";
 
 import {
   Chart as ChartJS,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
+  ArcElement,
   Tooltip,
   Legend,
 } from 'chart.js'
 
-import { Radar } from 'react-chartjs-2'
+import { Doughnut } from 'react-chartjs-2'
 
 ChartJS.register(
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
+  ArcElement,
   Tooltip,
   Legend
 )
@@ -45,49 +39,40 @@ function EmotionResult({
     ? emotionOrder.map((emotion) => emotionScores[emotion])
     : []
 
-  const radarData = {
+  const doughnutData = {
     labels: emotionOrder,
     datasets: [
       {
-        label: '감정 분포',
         data: emotionValues,
-        backgroundColor: 'rgba(255, 182, 193, 0.35)',
-        borderColor: '#ffb6c1',
-        borderWidth: 2,
-        pointBackgroundColor: '#fff',
-        pointBorderColor: '#ffb6c1',
+        backgroundColor: [
+          '#fbbf24', // 기쁨 (노랑)
+          '#60a5fa', // 슬픔 (파랑)
+          '#f87171', // 화남 (빨강)
+          '#a3a3a3', // 중립 (회색)
+        ],
+        borderWidth: 0,
       },
     ],
   }
 
-  const radarOptions = {
+  const doughnutOptions = {
     responsive: true,
-    scales: {
-      r: {
-        min: 0,
-        max: 100,
-        ticks: {
-          stepSize: 20,
-          display: false,
-        },
-        grid: {
-          color: 'rgba(255,255,255,0.2)',
-        },
-        angleLines: {
-          color: 'rgba(255,255,255,0.2)',
-        },
-        pointLabels: {
+    cutout: '65%', // 도넛 두께
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
           color: '#fff',
           font: {
-            size: 14,
+            size: 12,
             weight: 'bold',
           },
         },
       },
-    },
-    plugins: {
-      legend: {
-        display: false,
+      tooltip: {
+        callbacks: {
+          label: (context) => `${context.label}: ${context.parsed}%`,
+        },
       },
     },
   }
@@ -143,7 +128,7 @@ function EmotionResult({
 
       {/* 2. 차트 공간 (비어있음) */}
       <section className="chart-container">
-        <Radar data={radarData} options={radarOptions} />
+        <Doughnut data={doughnutData} options={doughnutOptions} />
       </section>
 
       <section className="ai-comment-box">
