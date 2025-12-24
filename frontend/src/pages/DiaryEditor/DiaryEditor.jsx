@@ -94,7 +94,8 @@ function DiaryEditor({ initialTag = null, onSave }) {
             tag: initialTag,
             content: content,
             finalScore: data.finalScore,
-            emotionScores: data.emotionScores
+            emotionScores: data.emotionScores,
+            comment: data.comment,
           }
         });
 

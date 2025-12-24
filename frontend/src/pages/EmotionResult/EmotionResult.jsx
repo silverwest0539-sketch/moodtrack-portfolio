@@ -33,7 +33,7 @@ function EmotionResult({
   const location = useLocation()
 
   //DiaryEditor에서 전달받은 데이터
-  const { date, tag, content, finalScore, emotionScores } = location.state || {}
+  const { date, content, finalScore, emotionScores, comment } = location.state || {}
 
   // 점수 애니메이션용
   const [displayScore, setDisplayScore] = useState(0)
@@ -131,14 +131,6 @@ function EmotionResult({
     )
   }
 
-  const handleViewStats = () => {
-    if (onViewStats) {
-      onViewStats({ finalScore, emotionScores, date, tag, content })
-    } else {
-      alert('📊 상세 통계 페이지로 이동')
-    }
-  }
-
   return (
     <div id="analysis-result-page">
       {/* 1. 점수만 표시 */}
@@ -155,20 +147,11 @@ function EmotionResult({
       </section>
 
       <section className="ai-comment-box">
-        <p id="ai-message">코멘트 공간</p>
+        <p id="ai-message">{comment || '코멘트를 불러오는 중이에요...'}</p>
       </section>
-      {/* 3. 버튼들 */}
-      <div className="result-actions">
-        <button
-          id="btn-view-stats"
-          className="btn-text"
-          type="button"
-          onClick={handleViewStats}
-        >
-      {/* 3. AI 코멘트 */}
 
-        </button>
-      </div>
+      {/* 3. 버튼들 */}
+
     </div>
   )
 }
