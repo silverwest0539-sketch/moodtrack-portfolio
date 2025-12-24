@@ -54,8 +54,8 @@ const BottomNav = () => {
       </button>
 
       <button 
-        className={`nav-item ${location.pathname === '/mypage' ? 'active' : ''}`}
-        onClick={() => navigate('/mypage')}
+        className={`nav-item ${location.pathname === '/my' ? 'active' : ''}`}
+        onClick={() => navigate('/my')}
       >
         <span>👤</span>
         <span className="label">MY</span>
