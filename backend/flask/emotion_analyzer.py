@@ -8,7 +8,7 @@ class EmotionAnalyzer:
         self.tokenizer = AutoTokenizer.from_pretrained(model_path) # 토크나이저 로드
         self.model = AutoModelForSequenceClassification.from_pretrained(model_path) # 모델 로드
 
-        self.device = torch.device('cuba' if torch.cuda.is_available() else 'cpu') # 실행 장치 설정
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') # 실행 장치 설정
         self.model.to(self.device) # 모델을 선택한 장치로 이동
         self.model.eval() # 평가 모드로 전환
 
