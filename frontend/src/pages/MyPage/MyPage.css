@@ -130,3 +130,21 @@
 .my-logout-btn:active {
   transform: scale(0.98);
 }
+
+/* 로그아웃 카드 안의 회원탈퇴 링크 */
+.my-withdraw-link {
+  margin-top: 12px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 6px 0;
+
+  font-size: 0.85rem;
+  color: #999;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.my-withdraw-link:active {
+  transform: scale(0.98);
+}
