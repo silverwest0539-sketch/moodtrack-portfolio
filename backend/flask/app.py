@@ -2,15 +2,7 @@
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
-# 감정 점수 생성
 from emotion_analyzer import EmotionAnalyzer
-
-# 코멘트 생성
-from comment_generator import generate_comment
-
-# 최근 문장 중복 방지용 메모리 저장소 (DB로 교체 예정)
-USER_RECENT = {}
 
 # Flask 앱 생성
 app = Flask(__name__)
@@ -51,10 +43,9 @@ def analyze_diary():
         data = request.get_json()
 
         # 2. 일기 내용 추출
-        # 'content'라는 키가 존재하면 그 키값의 value 반환, 존재하지 않으면 기본값('') 반환
         diary_content = data.get('content', '') 
-        # 사용자 구분 (없으면 'guest')
-        user_id = data.get('user_id') or data.get('userId') or 'guest'
+        # 'content'라는 키가 존재하면 그 키값의 value 반환, 존재하지 않으면 기본값('') 반환
+    
 
         # 3. 유효성 검사(빈 문자열 체크)
         if not diary_content or diary_content.strip() == '':
@@ -71,19 +62,11 @@ def analyze_diary():
 
         print('분석 완료')
 
-        final_score = result['final_score']
-        emotion_scores = result['emotion_scores']
-
-        recent_texts = USER_RECENT.get(user_id, [])
-        comment, new_recent = generate_comment(final_score, emotion_scores, recent_texts)
-        USER_RECENT[user_id] = new_recent
-
         # 5. 성공 응답 반환
         return jsonify ({
             'success': True,
             'emotion_scores': result['emotion_scores'],
-            'final_score': result['final_score'],
-            'comment': comment
+            'final_score': result['final_score']
         }), 200
     
     # 6. 에러 발생 시
