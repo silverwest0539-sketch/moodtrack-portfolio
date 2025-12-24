@@ -196,3 +196,17 @@ button {
     transform: translateY(0);
   }
 }
+
+.donut-wrapper {
+  position: relative;
+}
+
+.donut-center-text {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+}
