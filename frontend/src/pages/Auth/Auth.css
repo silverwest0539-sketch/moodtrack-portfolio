@@ -200,3 +200,21 @@
     text-decoration: none;
 }
 .link-text:hover { text-decoration: underline; }
+
+/* 두 버튼 나란히 배치 */
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.btn-row .btn-auth-submit {
+  width: 100%;
+}
+
+/* 회원탈퇴 버튼(위험 버튼 톤) */
+.btn-danger {
+  background: #f3f3f3;
+  color: #111;
+  border: 1px solid rgba(0,0,0,0.08);
+}

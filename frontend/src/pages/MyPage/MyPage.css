@@ -1,0 +1,150 @@
+/* src/pages/MyPage/MyPage.css */
+
+.my-container {
+  min-height: calc(100vh - 80px); /* 하단 네비바 높이 고려 */
+  background: #f2f2f2;            /* HomeWeekly와 동일 톤 권장 */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.my-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  /* 은은한 그림자(세련된 카드 느낌) */
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* 프로필 카드 */
+.my-profile-card {
+  text-align: left;
+}
+
+.my-nickname {
+  margin: 0 0 10px 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #222;
+}
+
+.my-streak {
+  margin: 0 0 8px 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #5b7cff;
+}
+
+.my-streak strong {
+  color: #3f57ff;
+  font-weight: 900;
+}
+
+.my-points {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.my-point-icon {
+  font-size: 1.1rem;
+}
+
+/* 회원정보 카드 */
+.my-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.my-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #333;
+}
+
+.my-edit-btn {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #f7f7f7;
+  color: #444;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.my-edit-btn:active {
+  transform: scale(0.98);
+}
+
+.my-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.my-info-label {
+  font-size: 0.95rem;
+  color: #777;
+  font-weight: 700;
+}
+
+.my-info-value {
+  font-size: 0.95rem;
+  color: #222;
+  font-weight: 700;
+  word-break: break-word;
+  text-align: right;
+}
+
+.my-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.06);
+  margin: 12px 0;
+}
+
+/* 로그아웃 카드 */
+.my-logout-card {
+  padding: 14px;
+}
+
+.my-logout-btn {
+  width: 100%;
+  padding: 14px 12px;
+  border: none;
+  border-radius: 16px;
+  background: #111;
+  color: white;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.my-logout-btn:active {
+  transform: scale(0.98);
+}
+
+/* 로그아웃 카드 안의 회원탈퇴 링크 */
+.my-withdraw-link {
+  margin-top: 12px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 6px 0;
+
+  font-size: 0.85rem;
+  color: #999;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.my-withdraw-link:active {
+  transform: scale(0.98);
+}
