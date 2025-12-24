@@ -81,12 +81,16 @@
 .content-box {
   width: 100%;
   min-height: 200px; /* 최소 높이 확보 */
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 .viewer-textarea {
   width: 100%;
-  height: 100%;
   min-height: 250px; /* 충분한 길이 */
+  flex: 1;
+
   border: none;
   outline: none;
   resize: none;
@@ -201,4 +205,25 @@
   color: white;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
   flex: 2; /* 저장 버튼을 좀 더 넓게 */
+}
+
+.btn-action.save:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.char-counter {
+  position: absolute;
+  bottom: 1.2rem;
+  right: 1.8rem;
+
+  font-size: 0.85rem;
+  color: var(--text-gray);
+  pointer-events: none;
+}
+
+.char-counter.valid {
+  color: #42c446;
+  font-weight: bold;
 }

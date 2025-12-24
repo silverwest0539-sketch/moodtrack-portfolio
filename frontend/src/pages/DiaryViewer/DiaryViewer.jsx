@@ -4,6 +4,7 @@ import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import './DiaryViewer.css';
 
 const DiaryViewer = () => {
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -20,26 +21,66 @@ const DiaryViewer = () => {
 
   /* ------------------ ✅ 수정 기능 상태 관리 ------------------ */
   const [isEditing, setIsEditing] = useState(false);         // 현재 수정 모드인지?
-  const [content, setContent] = useState(diaryData.content); // 보여줄 내용 (수정되면 바뀜)
   const [editContent, setEditContent] = useState(diaryData.content); // 수정 중인 임시 내용
+
+  const MIN_LENGTH = 50
+  const currentLength = editContent.length
+  const isSaveEnabled = currentLength >= MIN_LENGTH
 
   // '수정하기' 버튼 클릭 시
   const toggleEdit = () => {
-    setEditContent(content); // 현재 내용을 에디터에 세팅
+    setEditContent(diaryData.content); // 현재 내용을 에디터에 세팅
     setIsEditing(true);      // 수정 모드 ON
   };
 
   // '저장 완료' 버튼 클릭 시
-  const handleSaveEdit = () => {
-    if (window.confirm('수정한 내용을 저장하시겠습니까?')) {
-      // 1. 여기서 백엔드에 수정 요청 (axios.put / axios.post 등)
-      // await axios.put('/api/diary/update', { ... })
-      
-      console.log('수정된 내용 저장:', editContent);
-      
-      // 2. 성공 시 상태 업데이트
-      setContent(editContent); // 화면 내용 갱신
-      setIsEditing(false);     // 수정 모드 OFF
+  const handleSaveEdit = async () => {
+    if (editContent.trim().length < MIN_LENGTH) {
+      alert(`최소 ${MIN_LENGTH}자 이상 작성해주세요!`)
+      return
+    }
+    if (!window.confirm('수정한 내용을 저장하시겠습니까?')) return
+
+    try {
+      const updateRes = await fetch('http://localhost:3000/api/diary', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          date: dateParam,
+          content: editContent,
+        })
+      })
+
+      // 감정 분석 재요청
+      const analyzeRes = await fetch('http://localhost:3000/api/diary/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          diaryDate: dateParam.replace(/-/g, '. '),
+          content: editContent,
+        })
+      })
+
+      const data = await analyzeRes.json()
+
+      navigate('/emotionResult', {
+        state: {
+          date: dateParam,
+          content: editContent,
+          finalScore: data.finalScore,
+          emotionScores: data.emotionScores,
+        }
+      })
+
+    } catch (err) {
+      console.error('수정 저장 실패:', err)
+      alert('서버 오류')
     }
   };
 
@@ -47,13 +88,18 @@ const DiaryViewer = () => {
   const handleCancel = () => {
     setIsEditing(false);
   };
+  useEffect(() => {
+    if (diaryData.content) {
+      setEditContent(diaryData.content)
+    }
+  }, [diaryData.content])
 
-  useEffect(()=>{
+  useEffect(() => {
     if (location.state?.content) return
 
     if (!dateParam) return
-    
-    const fetchDiary = async ()=>{
+
+    const fetchDiary = async () => {
       try {
         const res = await fetch(
           `http://localhost:3000/api/diary?date=${dateParam}`,
@@ -80,19 +126,19 @@ const DiaryViewer = () => {
 
   return (
     <div className="viewer-container">
-      
+
       {/* 헤더 */}
       <header className="viewer-header">
         <button className="btn-back" onClick={() => navigate(-1)}>
           ←
         </button>
         <h2 className="viewer-date">{diaryData.date}</h2>
-        <div className="header-placeholder"></div> 
+        <div className="header-placeholder"></div>
       </header>
 
       {/* 메인 카드 */}
       <main className="viewer-card">
-        
+
         {/* 태그 영역 (보기 모드일 때만 표시하거나 유지 가능)
         {!isEditing && initialData.tags && (
           <div className="viewer-tags">
@@ -111,9 +157,14 @@ const DiaryViewer = () => {
           <textarea
             className="viewer-textarea"
             value={isEditing ? editContent : diaryData.content}
-            readOnly={!isEditing} 
+            readOnly={!isEditing}
             onChange={(e) => setEditContent(e.target.value)}
           />
+          {isEditing && (
+            <div className={`char-counter ${isSaveEnabled ? 'valid' : ''}`}>
+              {currentLength} 글자
+            </div>
+          )}
         </div>
 
         <div className="divider-line"></div>
@@ -134,14 +185,16 @@ const DiaryViewer = () => {
         {isEditing ? (
           <div className="btn-group">
             <button className="btn-action cancel" onClick={handleCancel}>취소</button>
-            <button className="btn-action save" onClick={handleSaveEdit}>저장 완료</button>
+            <button className="btn-action save"
+              onClick={handleSaveEdit}
+              disabled={!isSaveEnabled}>저장 완료</button>
           </div>
         ) : (
           <button className="btn-action edit" onClick={toggleEdit}>
             내용 수정하기 ✏️
           </button>
         )}
-      </footer> 
+      </footer>
 
     </div>
   );
