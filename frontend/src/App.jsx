@@ -23,6 +23,9 @@ import "./App.css"; // 스타일 파일이 있다면 유지
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 
+// ✅ [추가 1] DiaryViewer 컴포넌트 import
+import DiaryViewer from "./pages/DiaryViewer/DiaryViewer";
+
 function App() {
   const location = useLocation();
 
@@ -78,6 +81,9 @@ function App() {
             <Route path='/emotionStats' element = {<EmotionStats/>}/>
             {/* [추가] 글쓰기 방식 선택 페이지 */}
             <Route path="/write-option" element={<WriteMethodSelection />} />
+
+            {/* ✅ [추가 2] 일기 조회 페이지 라우트 추가 */}
+            <Route path="/diary-view" element={<DiaryViewer />} />            
 
           </Route>
 

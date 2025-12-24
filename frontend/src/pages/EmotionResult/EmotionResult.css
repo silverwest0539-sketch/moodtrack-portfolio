@@ -101,18 +101,25 @@
 /* AI 코멘트 박스 */
 .ai-comment-box {
   width: 100%;
-  max-width: 380px;
+  /* [수정 1] 너비를 차트 박스와 비슷하게 줄임 (380px -> 320px) */
+  /* 만약 차트보다 너무 좁다면 330px ~ 340px 사이로 조절해보세요 */
+  max-width: 280px; 
+  
   background: rgba(255, 255, 255, 0.9);
   color: var(--text-dark);
   border-radius: 20px;
   padding: 1.5rem;
-  margin-bottom: 2rem;
+  
+  /* [수정 2] 가운데 정렬을 위해 좌우 마진 auto 추가 */
+  /* 상단 0, 좌우 auto, 하단 2rem */
+  margin: 0 auto 2rem auto; 
+  
   box-shadow: var(--shadow-soft);
   box-sizing: border-box;
   position: relative;
 }
 
-/* 말풍선 꼬리 / 라벨 */
+/* 말풍선 꼬리 / 라벨 (유지) */
 .ai-comment-box::before {
   content: '🤖 AI Diary';
   position: absolute;

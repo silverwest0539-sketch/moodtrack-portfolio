@@ -61,15 +61,13 @@ exports.getWeekFullData = async (req,res)=>{
         const userId = req.session.user.userId
 
         const now = new Date()
-        const day = now.getDay()
 
-        const sunday = new Date(now)
-        sunday.setDate(now.getDate() - day)
-        sunday.setHours(0, 0, 0, 0)
+        const weekAgo = new Date(now);
+        weekAgo.setDate(now.getDate() - 6);
+        weekAgo.setHours(0, 0, 0, 0);
 
-        const saturday = new Date(sunday)
-        saturday.setDate(sunday.getDate() + 6)
-        saturday.setHours(23, 59, 59, 999)
+        const today = new Date(now);
+        today.setHours(23, 59, 59, 999);
 
         const [rows] = await pool.query(
             `
@@ -78,7 +76,7 @@ exports.getWeekFullData = async (req,res)=>{
              WHERE USER_ID = ?
                AND DIARY_DATE BETWEEN ? AND ?
             `,
-            [userId, sunday, saturday]
+            [userId, weekAgo, today]
         )
 
         const diaryMap = {};
@@ -93,9 +91,9 @@ exports.getWeekFullData = async (req,res)=>{
         });
 
         const diaries = []
-        for (let i = 0; i <7; i++) {
-            const currentDate = new Date(sunday)
-            currentDate.setDate(sunday.getDate() + i)
+        for (let i = 6; i >= 0; i--) {
+            const currentDate = new Date(now)
+            currentDate.setDate(now.getDate() - i)
 
             const yyyy = currentDate.getFullYear()
             const mm = String(currentDate.getMonth() + 1).padStart(2, '0')
@@ -105,7 +103,7 @@ exports.getWeekFullData = async (req,res)=>{
             diaries.push({
                 DIARY_DATE: dateKey,
                 EMO_SCORE: diaryMap[dateKey] || null,
-                DAY_INDEX: i
+                DAY_INDEX: currentDate.getDay()
             })
         }
 

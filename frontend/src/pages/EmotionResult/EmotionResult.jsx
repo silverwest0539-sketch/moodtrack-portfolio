@@ -154,6 +154,9 @@ function EmotionResult({
         <Radar data={radarData} options={radarOptions} />
       </section>
 
+      <section className="ai-comment-box">
+        <p id="ai-message">코멘트 공간</p>
+      </section>
       {/* 3. 버튼들 */}
       <div className="result-actions">
         <button
@@ -162,7 +165,8 @@ function EmotionResult({
           type="button"
           onClick={handleViewStats}
         >
-          상세 통계 보기
+      {/* 3. AI 코멘트 */}
+
         </button>
       </div>
     </div>
