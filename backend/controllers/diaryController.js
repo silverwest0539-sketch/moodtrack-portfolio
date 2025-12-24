@@ -7,7 +7,7 @@ const pool = require('../server/config/database')
 // 일기 감정 분석
 exports.analyzeDiary = async (req, res) => {
     try {
-        const { userId } = req.session.user;
+        const userId = req.session.user.userId;
         const { content, diaryDate } = req.body;
 
         // 유효성 검사
@@ -47,14 +47,6 @@ exports.analyzeDiary = async (req, res) => {
             finalScore: emotionResult.finalScore,
             emotionScores: emotionResult.emotionScores
         })
-
-        // 점수 응답
-        return res.status(200).json({
-            success: true,
-            finalScore: emotionResult.finalScore,
-            emotionScores: emotionResult.emotionScores
-        })
-
     } catch (error) {
         console.error('감성분석 실패:', error)
 
@@ -74,16 +66,8 @@ exports.analyzeDiary = async (req, res) => {
 
 exports.getWeeklyDiary = async (req, res) => {
     try {
-        const user = req.session.user;
+        const userId = req.session.user.userId
 
-        if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: '로그인이 필요합니다.'
-            });
-        }
-
-        const userId = user.userId;
         const [rows] = await pool.query(
             `
             SELECT DIARY_DATE, EMO_SCORE
@@ -103,6 +87,57 @@ exports.getWeeklyDiary = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: '주간 일기 조회 실패'
+        })
+    }
+}
+
+// 일기 조회 및 수정
+exports.getDiaryByDate = async (req, res) => {
+    try {
+        const { date } = req.query
+        const userId = req.session.user.userId
+
+        if (!date) {
+            return res.status(400).json({
+                success: false,
+                message: 'date 파라미터 없음'
+            })
+        }
+
+        const [rows] = await pool.query(
+            `
+        SELECT CONTENT, EMO_SCORE
+        FROM DIARY
+        WHERE USER_ID = ? AND DIARY_DATE = ?
+        `,
+            [userId, date]
+        )
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: '일기 없음'
+            })
+        }
+
+        const score = rows[0].EMO_SCORE
+
+        return res.json({
+            success: true,
+            diary: {
+                content: rows[0].CONTENT,
+                score,
+                emotionEmoji:
+                    score >= 70 ? '😊'
+                        : score >= 40 ? '😐'
+                            : '☁️'
+            }
+        })
+    } catch (error) {
+        console.error('일기 조회 실패:', error)
+        return res.status(500).json({
+            success: false,
+            message: '일기 조회 실패'
         })
     }
 }
