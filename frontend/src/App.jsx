@@ -25,6 +25,8 @@ import Signup from "./pages/Auth/Signup";
 
 // ✅ [추가 1] DiaryViewer 컴포넌트 import
 import DiaryViewer from "./pages/DiaryViewer/DiaryViewer";
+import MyPage from "./pages/MyPage/MyPage";
+import EditProfile from "./pages/Auth/EditProfile";
 
 function App() {
   const location = useLocation();
@@ -32,7 +34,7 @@ function App() {
   // 하단 네비게이션 바를 숨길 경로들을 여기에 적어줍니다.
   // 예: 랜딩페이지(/landing), 로그인 등에서는 네비게이션 바가 안 보이게 설정
   // AppContent 내부의 hideNavRoutes 에도 추가 (로그인 화면엔 하단바 숨김)
-  const hideNavRoutes = ["/landing", "/login", "/signup", "/write-option", "/prompt"];
+  const hideNavRoutes = ["/landing", "/login", "/signup", "/write-option", "/prompt", "/my"];
   
   // 현재 경로가 숨길 경로에 포함되지 않으면 Nav바를 보여줍니다.
   const showNav = !hideNavRoutes.includes(location.pathname);
@@ -70,6 +72,8 @@ function App() {
             <Route path='/login' element = {<Login/>} />
             <Route path='/landing' element = {<LandingPage/>}/>
             <Route path='/signup' element = {<Signup/>} />
+
+            <Route path='/my/edit' element={<EditProfile/>} />
           </Route>
 
           <Route element = {<ProtectedRoute/>}>
@@ -83,7 +87,8 @@ function App() {
             <Route path="/write-option" element={<WriteMethodSelection />} />
 
             {/* ✅ [추가 2] 일기 조회 페이지 라우트 추가 */}
-            <Route path="/diary-view" element={<DiaryViewer />} />            
+            <Route path="/diary-view" element={<DiaryViewer />} />
+            <Route path='/my' element={<MyPage />} />            
 
           </Route>
 
