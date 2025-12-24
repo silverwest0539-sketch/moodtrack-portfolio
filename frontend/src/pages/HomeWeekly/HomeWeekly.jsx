@@ -77,11 +77,12 @@ const HomeWeekly = () => {
       date.getFullYear() === today.getFullYear()
   }
 
-
   const getEmoji = (score) => {
-    if (score >= 70) return '😊'
-    if (score >= 40) return '😐'
-    return '☁️';
+    if (score <= 19) return '😢'
+    if (score <= 39) return '☁️'
+    if (score <= 59) return '😐'
+    if (score <= 79) return '🙂'
+    return '😊';
   }
 
   const getDayName = (dayIndex) => {
@@ -109,10 +110,28 @@ const HomeWeekly = () => {
 
   // --- 핸들러 ---
   const handleWriteClick = () => {
-    // 오늘 날짜로 글쓰기 페이지 이동
+    
     const todayData = weekDays.find(d => d.isToday)
-    const dateStr = todayData ? todayData.dateStr : new Date().toISOString().split('T')[0];
-    navigate(`/write-option?date=${dateStr}`);
+    
+    if (!todayData) {
+      const today = new Date()
+      const dateStr = today.toISOString().split('T')[0]
+      navigate(`/write-option?date=${dateStr}`)
+      return
+    }
+
+    if (todayData.score) {
+      alert('오늘은 이미 기록을 남기셨어요!')
+      navigate(`/diary-view?date=${todayData.dateStr}`, {
+        state: {
+          date: todayData.dateStr.replace(/-/g, '.'),
+          score: todayData.score,
+          emotion: todayData.emotion,
+        }
+      })
+    } else {
+      navigate(`/write-option?date=${todayData.dateStr}`)
+    }
   };
 
   return (
