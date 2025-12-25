@@ -134,6 +134,73 @@ const generateComment = (finalScore, userId) => {
     return comment;
 };
 
+// STREAK 업데이트 함수
+async function updateUserStreak(userId, diaryDate) {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const writtenDate = new Date(diaryDate);
+        writtenDate.setHours(0, 0, 0, 0);
+
+        // 당일 일기가 아니면 streak 업데이트 안 함
+        if (writtenDate.getTime() !== today.getTime()) {
+            return;
+        }
+
+        // 현재 사용자 정보 조회
+        const [userRows] = await pool.query(
+            `SELECT LAST_DIARY_DATE, STREAK_DAYS FROM USERS WHERE USER_ID = ?`,
+            [userId]
+        );
+
+        if (userRows.length === 0) return;
+
+        const lastDiaryDate = userRows[0].LAST_DIARY_DATE
+            ? new Date(userRows[0].LAST_DIARY_DATE)
+            : null;
+
+        if (lastDiaryDate) {
+            lastDiaryDate.setHours(0, 0, 0, 0);
+        }
+
+        let currentStreak = userRows[0].STREAK_DAYS || 0;
+
+        // 오늘 이미 업데이트했으면 패스
+        if (lastDiaryDate && lastDiaryDate.getTime() === today.getTime()) {
+            return;
+        }
+
+        // Streak 계산
+        if (!lastDiaryDate) {
+            // 첫 일기 작성
+            currentStreak = 1;
+        } else {
+            const diffDays = Math.floor((today - lastDiaryDate) / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 1) {
+                // 어제 작성했으면 연속 증가
+                currentStreak += 1;
+            } else if (diffDays > 1) {
+                // 하루 이상 건너뛰었으면 초기화
+                currentStreak = 1;
+            }
+        }
+
+        // USERS 테이블 업데이트
+        await pool.query(
+            `UPDATE USERS 
+             SET LAST_DIARY_DATE = ?, STREAK_DAYS = ? 
+             WHERE USER_ID = ?`,
+            [today.toISOString().split('T')[0], currentStreak, userId]
+        );
+
+        console.log(`✅ Streak 업데이트: User ${userId} - ${currentStreak}일`);
+
+    } catch (error) {
+        console.error('Streak 업데이트 에러:', error);
+    }
+}
 
 // 일기 감정 분석
 exports.analyzeDiary = async (req, res) => {
@@ -178,11 +245,14 @@ exports.analyzeDiary = async (req, res) => {
             [userId, parseDate, content, finalScore, comment]
         )
 
+        // 당일 일기 작성 시 streak 업데이트
+        await updateUserStreak(userId, parseDate);
+
         return res.status(200).json({
-        success: true,
-        finalScore,
-        emotionScores: emotionResult.emotionScores,
-        comment
+            success: true,
+            finalScore,
+            emotionScores: emotionResult.emotionScores,
+            comment
         });
 
     } catch (error) {
@@ -336,7 +406,7 @@ exports.updateDiary = async (req, res) => {
 }
 
 // 어제 일기 조회
-exports.getYesterdayDiary = async (req, res)=>{
+exports.getYesterdayDiary = async (req, res) => {
     try {
         const { date } = req.query
         const userId = req.session.user.userId
@@ -370,7 +440,7 @@ exports.getYesterdayDiary = async (req, res)=>{
         }
 
         const emotionResult = await require('./emotionController').getEmotionScore(rows[0].CONTENT)
-        
+
         return res.json({
             success: true,
             diary: {
