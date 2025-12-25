@@ -334,3 +334,56 @@ exports.updateDiary = async (req, res) => {
         })
     }
 }
+
+// 어제 일기 조회
+exports.getYesterdayDiary = async (req, res)=>{
+    try {
+        const { date } = req.query
+        const userId = req.session.user.userId
+
+        if (!date) {
+            return res.status(400).json({
+                success: false,
+                message: 'date 파라미터 없음'
+            })
+        }
+
+        const today = new Date(date)
+        const yesterday = new Date(today)
+        yesterday.setDate(today.getDate() - 1)
+        const yesterdayStr = yesterday.toISOString().split('T')[0]
+
+        const [rows] = await pool.query(
+            `
+            SELECT CONTENT, EMO_SCORE
+              FROM DIARY
+             WHERE USER_ID = ? AND DIARY_DATE = ?
+            `,
+            [userId, yesterdayStr]
+        )
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: '어제 일기 없음'
+            })
+        }
+
+        const emotionResult = await require('./emotionController').getEmotionScore(rows[0].CONTENT)
+        
+        return res.json({
+            success: true,
+            diary: {
+                content: rows[0].CONTENT,
+                score: rows[0].EMO_SCORE,
+                emotionScores: emotionResult.emotionScores
+            }
+        })
+    } catch (error) {
+        console.error('어제 일기 조회 실패:', error)
+        return res.status(500).json({
+            success: false,
+            message: '어제 일기 조회 실패'
+        })
+    }
+}
