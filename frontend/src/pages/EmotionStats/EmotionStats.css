@@ -1,159 +1,251 @@
-/* 전체 래퍼: 파란 배경 + 가운데 카드 */
-.stats-wrapper {
-  font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-  background-color: #bde5f7;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-}
+/* src/pages/EmotionStats/EmotionStats.css */
 
-/* 메인 카드 */
-#stats-page {
+/* 전체 페이지 레이아웃 */
+.stats-page-container {
   width: 100%;
-  max-width: 480px;
-  background-color: #ffffff;
-  min-height: 100vh;
+  height: 100vh;
+  background-color: #f5f5f5; /* 전체 배경색 (연한 회색) */
   display: flex;
   flex-direction: column;
-  position: relative;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* 전체 스크롤 방지 (내부 스크롤 사용) */
 }
 
-/* 로딩 오버레이 */
-.stats-loading-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(2px);
+/* 탭 메뉴 */
+.tab-menu-container {
+  padding: 15px 20px;
+  background-color: #fff; /* 탭 배경 흰색 */
   z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  font-size: 0.95rem;
-  color: #555555;
 }
 
-.stats-spinner {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 3px solid rgba(148, 163, 184, 0.4);
-  border-top-color: #4facfe;
-  animation: stats-spin 0.8s linear infinite;
-}
-
-@keyframes stats-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* 1. 기간 선택 탭 */
 .tab-menu {
   display: flex;
-  padding: 15px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #eeeeee;
+  justify-content: space-between;
+  background-color: #eee;
+  border-radius: 25px;
+  padding: 4px;
 }
 
 .tab {
   flex: 1;
-  padding: 10px;
+  padding: 8px 0;
   border: none;
-  background: none;
-  font-size: 16px;
-  font-weight: 600;
-  color: #eed7d7;
-  cursor: pointer;
+  background: transparent;
   border-radius: 20px;
-  transition: all 0.3s;
+  font-size: 14px;
+  font-weight: 600;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .tab.active {
-  background-color: #bde5f7;
-  color: #1976d2;
+  background-color: #fff;
+  color: #333;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* 2. 추이 그래프 영역 */
-.graph-section {
-  padding: 20px;
-  height: 300px;
-  background: #eed7d7;
-  margin-bottom: 10px;
+/* 컨텐츠 영역 (스크롤 가능) */
+.stats-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px;
+  /* 스크롤바 숨기기 (선택사항) */
+  scrollbar-width: none; 
+}
+.stats-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- WeeklyStats 컴포넌트 스타일 --- */
+
+.weekly-stats-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 10px;
+}
+
+/* 1. 그래프 카드 */
+.chart-card {
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.chart-wrapper {
+  height: 220px; /* 차트 높이 고정 */
+  width: 100%;
+  background-color: #fcebeb; /* 차트 배경 (연한 핑크) - 이미지 참고 */
+  border-radius: 15px;
+  padding: 10px;
   box-sizing: border-box;
 }
 
-.graph-section canvas {
-  width: 100% !important;
-  height: 100% !important;
+/* 2. 설명 텍스트 */
+.section-description {
+  text-align: center;
+  margin: 5px 0;
 }
 
-/* 3. 인사이트 요약 카드 */
-.insight-cards {
-  padding: 20px;
-  display: flex;
-  gap: 15px;
+.main-desc {
+  font-size: 15px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 4px;
 }
 
-.card-mini {
-  flex: 1;
-  background: #fafafa;
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+.sub-desc {
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* 3. 리스트 영역 수정 */
+
+/* 스크롤 영역을 잡아주는 컨테이너 (배경색 제거) */
+.list-card-container {
+  /* 배경색과 그림자 제거 (투명하게) */
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0; 
+  
+  /* 높이 제한 및 스크롤 설정 */
+  /* 카드 높이(약 70px) * 5개 + 간격 고려 = 약 380px */
+  max-height: 380px; 
+  min-height: 200px;
+  overflow-y: auto; /* 내부 스크롤 */
+  
+  /* 스크롤바 숨김 (깔끔한 디자인을 위해) */
+  scrollbar-width: none; 
+}
+.list-card-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* 리스트 아이템들을 감싸는 flex 박스 */
+.record-list {
   display: flex;
   flex-direction: column;
+  gap: 12px; /* 카드 사이의 간격 */
+  padding: 5px; /* 그림자 잘림 방지 여백 */
+}
+
+/* 개별 카드 디자인 (여기가 핵심 변경) */
+.record-item {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  
+  background-color: #fff; /* 각 카드 흰색 배경 */
+  border-radius: 16px;    /* 카드 모서리 둥글게 */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* 개별 그림자 */
+  
+  padding: 15px 25px;     /* 카드 내부 여백 */
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  
+  /* 기존 border-bottom 제거 */
+  border-bottom: none;
+}
+
+/* 호버 효과: 살짝 떠오르는 느낌 */
+.record-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* 날짜 텍스트 스타일 */
+.record-date {
+  display: flex;
+  align-items: baseline;
+  gap: 8px; /* 요일과 숫자 사이 간격 */
+  width: 90px;
+}
+
+.day-name {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.date-num {
+  font-size: 18px; /* 날짜 숫자 강조 */
+  color: #000;
+  font-weight: 700;
+}
+
+.record-icon {
+  font-size: 28px; /* 이모지 크기 */
+  flex: 1;
   text-align: center;
 }
 
-.card-mini h4 {
-  margin: 0 0 15px 0;
-  font-size: 14px;
-  color: #666666;
+.record-score {
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+  width: 50px;
+  text-align: right;
 }
 
-/* 워드 클라우드 */
-#word-cloud-area {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
+/* 기록 없을 때 */
+.empty-list {
+  background-color: #fff; /* 빈 화면일 때는 하나의 박스로 보여줌 */
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  color: #999;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* 하단 네비게이션 공간 확보 */
+.bottom-nav-spacer {
+  height: 100px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* src/pages/EmotionStats/EmotionStats.css 에 추가 */
+
+/* --- 날짜 선택 및 헤더 영역 (월간/연간용) --- */
+.stats-header-area {
+  margin: 10px 0;
+  padding: 0 10px;
+}
+
+.stats-title {
+  font-size: 16px; /* 주간과 비슷하게 맞춤 */
+  font-weight: 600;
+  color: #555;     /* 주간(#555)과 색상 통일감을 위해 조정 (선택사항) */
+  margin-bottom: 12px;
+  
+  /* [수정] 왼쪽 정렬 -> 가운데 정렬 */
+  text-align: center; 
   width: 100%;
 }
 
-.cloud-word {
-  color: #555555;
-  line-height: 1;
-}
-
-/* 최고의 날 */
-#best-day-date {
-  font-size: 24px;
-  font-weight: bold;
-  color: #ff6b6b;
-}
-
-.best-day-sub {
-  font-size: 12px;
-  color: #aaaaaa;
-  margin-top: 5px;
-}
-
-/* 하단 네비게이션 */
-.bottom-nav {
-  margin-top: auto;
-  height: 60px;
-  background: #ffffff;
-  border-top: 1px solid #eeeeee;
+/* 드롭다운 컨테이너 (우측 정렬) */
+.date-selector-container {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #cccccc;
-  font-size: 0.9rem;
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  gap: 8px;
+  margin-bottom: 10px; /* 리스트와의 간격 확보 */
+}
+
+/* 드롭다운 스타일 */
+.custom-select {
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  font-size: 13px;
+  color: #555;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.custom-select:hover {
+  border-color: #4facfe;
 }
