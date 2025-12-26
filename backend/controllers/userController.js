@@ -7,7 +7,7 @@ exports.getUserProfile = async (req, res) => {
 
         const [userRows] = await pool.query(
             `
-            SELECT NICKNAME, STREAK_DAYS
+            SELECT NICKNAME, STREAK_DAYS, LOGIN_ID, EMAIL
               FROM USERS
              WHERE USER_ID = ?
             `,
@@ -24,7 +24,9 @@ exports.getUserProfile = async (req, res) => {
         res.json({
             success: true,
             nickname: userRows[0].NICKNAME,
-            streak: userRows[0].STREAK_DAYS || 0
+            streak: userRows[0].STREAK_DAYS || 0,
+            loginid: userRows[0].LOGIN_ID,
+            email: userRows[0].EMAIL
         })
 
     } catch (error) {

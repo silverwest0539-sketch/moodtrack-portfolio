@@ -21,20 +21,20 @@ const getThisWeekRange = () => {
 }
 
 // 이번 달 1일~말일 구하기
-const getThisMonthRange = ()=>{
+const getThisMonthRange = () => {
     const now = new Date()
 
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
     firstDay.setHours(0, 0, 0, 0)
 
-    const lastDay = new Date(now.getFullYear(), now.getMonth() +1, 0)
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
     lastDay.setHours(23, 59, 9, 999)
 
     return { firstDay, lastDay }
 }
 
 // 올해 1월 1일~12월31일 구하기
-const getThisYearRange = ()=>{
+const getThisYearRange = () => {
     const now = new Date()
     const year = now.getFullYear()
 
@@ -56,8 +56,16 @@ const getDaysInMonth = (year, month) => {
 }
 
 // HomeWeekly용 이번 주 전체 데이터
-exports.getWeekFullData = async (req,res)=>{
+exports.getWeekFullData = async (req, res) => {
     try {
+
+        if (!req.session || !req.session.user || !req.session.user.userId) {
+            return res.status(401).json({
+                success: false,
+                message: '세션이 준비되지 않았습니다.'
+            });
+        }
+
         const userId = req.session.user.userId
 
         const now = new Date()
@@ -86,7 +94,7 @@ exports.getWeekFullData = async (req,res)=>{
             const mm = String(date.getMonth() + 1).padStart(2, '0');
             const dd = String(date.getDate()).padStart(2, '0');
             const dateKey = `${yyyy}-${mm}-${dd}`;
-            
+
             diaryMap[dateKey] = row.EMO_SCORE;
         });
 
@@ -99,7 +107,7 @@ exports.getWeekFullData = async (req,res)=>{
             const mm = String(currentDate.getMonth() + 1).padStart(2, '0')
             const dd = String(currentDate.getDate()).padStart(2, '0')
             const dateKey = `${yyyy}-${mm}-${dd}`
-            
+
             diaries.push({
                 DIARY_DATE: dateKey,
                 EMO_SCORE: diaryMap[dateKey] || null,
@@ -160,21 +168,20 @@ exports.getWeeklyEmotionStats = async (req, res) => {
     }
 }
 
-exports.getMonthlyEmotionStats = async (req, res)=>{
+exports.getMonthlyEmotionStats = async (req, res) => {
     try {
         const userId = req.session.user.userId
 
-        const { firstDay, lastDay } = getThisMonthRange()
-        const year = firstDay.getFullYear()
-        const month = firstDay.getMonth()
+        const { year, month } = req.query
 
-        const daysInMonth = getDaysInMonth(year, month)
+        const targetYear = year ? parseInt(year) : new Date().getFullYear()
+        const targetMonth = month ? parseInt(month) - 1 : new Date().getMonth()
 
-        const labels = Array.from(
-            { length: daysInMonth },
-            (_, i) => `${i + 1}일`
-        )
-        const scores = Array(daysInMonth).fill(0)
+        const firstDay = new Date(targetYear, targetMonth, 1)
+        firstDay.setHours(0, 0, 0, 0)
+
+        const lastDay = new Date(targetYear, targetMonth + 1, 0)
+        lastDay.setHours(23, 59, 59, 999)
 
         const [rows] = await pool.query(
             `
@@ -182,21 +189,45 @@ exports.getMonthlyEmotionStats = async (req, res)=>{
               FROM DIARY
              WHERE USER_ID = ?
                AND DIARY_DATE BETWEEN ? AND ?
+             ORDER BY DIARY_DATE
             `,
             [userId, firstDay, lastDay]
         )
 
-        rows.forEach((row)=>{
+        const weeklyScores = []
+        const weeklyData = {}
+
+        rows.forEach((row) => {
             const date = new Date(row.DIARY_DATE)
-            const day = date.getDate()
-            scores[day - 1] = row.EMO_SCORE
+            const weekNum = Math.ceil(date.getDate() / 7)
+
+            if (!weeklyData[weekNum]) {
+                weeklyData[weekNum] = []
+            }
+            weeklyData[weekNum].push(row.EMO_SCORE)
         })
+
+        const maxWeeks = 5; // 기본 5주차
+        const weeks = Math.max(Object.keys(weeklyData).length, maxWeeks);
+        
+        for (let i = 1; i <= maxWeeks; i++) {  // ✅ maxWeeks(5)까지 반복
+            if (weeklyData[i]) {
+                const avg = weeklyData[i].reduce((a, b) => a + b, 0) / weeklyData[i].length;
+                weeklyScores.push(Math.round(avg));
+            } else {
+                weeklyScores.push(0);
+            }
+        }
+
+        const labels = weeklyScores.map((_, i) => `${i + 1}주차`)
 
         return res.json({
             success: true,
             monthly: {
+                year: targetYear,
+                month: targetMonth + 1,
                 labels,
-                scores,
+                scores: weeklyScores
             },
         })
     } catch (error) {
@@ -208,11 +239,18 @@ exports.getMonthlyEmotionStats = async (req, res)=>{
     }
 }
 
-exports.getYearlyEmotionStats = async (req, res)=>{
+exports.getYearlyEmotionStats = async (req, res) => {
     try {
         const userId = req.session.user.userId
 
-        const { year, firstDay, lastDay } = getThisYearRange()
+        const { year } = req.query
+        const targetYear = year ? parseInt(year) : new Date().getFullYear()
+
+        const firstDay = new Date(targetYear, 0, 1)
+        firstDay.setHours(0, 0, 0, 0)
+
+        const lastDay = new Date(targetYear, 11, 31)
+        lastDay.setHours(23, 59, 59, 999)
 
         const labels = Array.from(
             { length: 12 },
@@ -233,8 +271,8 @@ exports.getYearlyEmotionStats = async (req, res)=>{
             [userId, firstDay, lastDay]
         )
 
-        rows.forEach(row=>{
-            const monthIndex = row.month -1
+        rows.forEach(row => {
+            const monthIndex = row.month - 1
             scores[monthIndex] = Math.round(row.avg_score)
         })
 

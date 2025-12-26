@@ -103,7 +103,7 @@ const DiaryViewer = () => {
     const fetchDiary = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/api/diary?date=${dateParam}`,
+          `http://localhost:3000/api/diary/date?date=${dateParam}`,
           { credentials: 'include' }
         )
 

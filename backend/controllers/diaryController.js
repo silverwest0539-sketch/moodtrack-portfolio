@@ -299,7 +299,7 @@ exports.getWeeklyDiary = async (req, res) => {
     }
 }
 
-// 일기 조회
+// 일기 조회(DiaryViewer)
 exports.getDiaryByDate = async (req, res) => {
     try {
         const { date } = req.query
@@ -331,11 +331,11 @@ exports.getDiaryByDate = async (req, res) => {
         const score = rows[0].EMO_SCORE
 
         let emotionEmoji = '😐' // 기본값 (mid)
-        if (score <= 19) emotionEmoji = '😢'        // low
-        else if (score <= 39) emotionEmoji = '☁️'   // midLow
-        else if (score <= 59) emotionEmoji = '😐'   // mid
-        else if (score <= 79) emotionEmoji = '🙂'   // midHigh
-        else emotionEmoji = '😊'                     // high
+        if (score <= 20) emotionEmoji = '😭'        // low
+        else if (score <= 40) emotionEmoji = '😥'   // midLow
+        else if (score <= 60) emotionEmoji = '😐'   // mid
+        else if (score <= 80) emotionEmoji = '🙂'   // midHigh
+        else emotionEmoji = '🥰'                     // high
 
         return res.json({
             success: true,
@@ -347,6 +347,56 @@ exports.getDiaryByDate = async (req, res) => {
         })
     } catch (error) {
         console.error('일기 조회 실패:', error)
+        return res.status(500).json({
+            success: false,
+            message: '일기 조회 실패'
+        })
+    }
+}
+
+// 일기 조회(WeeklyStats)
+exports.getDiaryForResult = async (req, res) => {
+    try {
+        const { date } = req.query
+        const userId = req.session.user.userId
+
+        if (!date) {
+            return res.status(400).json({
+                success: false,
+                message: 'date 파라미터 없음'
+            })
+        }
+
+        const [rows] = await pool.query(
+            `
+            SELECT CONTENT, EMO_SCORE, COMMENT_TEXT
+            FROM DIARY
+            WHERE USER_ID = ? AND DIARY_DATE = ?
+            `,
+            [userId, date]
+        )
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: '일기 없음'
+            })
+        }
+
+        // emotionScores 재생성
+        const emotionResult = await require('./emotionController').getEmotionScore(rows[0].CONTENT)
+
+        return res.json({
+            success: true,
+            diary: {
+                content: rows[0].CONTENT,
+                emoScore: rows[0].EMO_SCORE,
+                emotionScores: emotionResult.emotionScores,
+                comment: rows[0].COMMENT_TEXT
+            }
+        })
+    } catch (error) {
+        console.error('일기 상세 조회 실패:', error)
         return res.status(500).json({
             success: false,
             message: '일기 조회 실패'

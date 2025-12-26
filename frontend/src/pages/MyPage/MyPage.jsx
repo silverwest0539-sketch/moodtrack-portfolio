@@ -1,17 +1,17 @@
 // src/pages/MyPage/MyPage.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./MyPage.css";
 
 function MyPage() {
   const navigate = useNavigate();
 
-  const [nickname] = useState("45정");
-  const [streak] = useState(2);
-  const [points] = useState(120);
+  const [nickname, setNickname] = useState('')
+  const [streak, setStreak] = useState(0)
+  const [loginid, setLoginid] = useState('')
+  const [email, setEmail] = useState('')
+  const [points] = useState(120)
 
-  const [userId] = useState("moodtrack_4510");
-  const [email] = useState("user@example.com");
 
   const handleEditProfile = () => {
     navigate("/my/edit");
@@ -32,11 +32,45 @@ function MyPage() {
     navigate("/landing");
   };
 
+  useEffect(() => {
+
+    // 사용자 프로필 조회
+    const fetchUserProfile = async () => {
+      try {
+        const res = await fetch('http://localhost:3000/api/user/profile',
+          { credentials: 'include' }
+        )
+        const data = await res.json()
+
+        if (data.success) {
+          setNickname(data.nickname)
+          setStreak(data.streak)
+          setLoginid(data.loginid)
+          setEmail(data.email)
+        } else {
+          console.error('프로필 조회 실패:', data.message)
+          setNickname(data.nickname)
+          setStreak(0)
+          setLoginid(data.loginid)
+          setEmail(data.email)
+        }
+      } catch (error) {
+        console.error('프로필 조회 에러:', error)
+        setNickname('사용자')
+        setStreak(0)
+        setLoginid(data.loginid)
+        setEmail(data.email)
+      }
+    }
+
+    fetchUserProfile();
+  }, [])
+
   return (
     <div className="my-container">
       {/* 1) 프로필 카드 */}
       <section className="my-card my-profile-card">
-        <p className="my-nickname">{nickname} 님,</p>
+        <p className="my-nickname">{nickname ? `${nickname}님,` : '로딩 중...'}</p>
 
         <p className="my-streak">
           <strong>{streak}</strong>일째 연속 출석 중!
@@ -59,7 +93,7 @@ function MyPage() {
 
         <div className="my-info-row">
           <span className="my-info-label">아이디</span>
-          <span className="my-info-value">{userId}</span>
+          <span className="my-info-value">{loginid}</span>
         </div>
 
         <div className="my-divider" />

@@ -10,72 +10,94 @@ const getEmotionIcon = (score) => {
   return '😭';
 };
 
-function MonthlyStats() {
+function MonthlyStats({
+  serverData,
+  selectedYear,
+  selectedMonth,
+  onYearChange,
+  onMonthChange
+}) {
   const chartCanvasRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
-  // 날짜 선택 상태
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const defaultLabels = ['1주차', '2주차', '3주차', '4주차', '5주차']
+  const labels = serverData?.labels?.length > 0 ? serverData.labels : defaultLabels;
+  const defaultScores = [0, 0, 0, 0, 0];
+  const scores = serverData?.scores?.length > 0 ? serverData.scores : defaultScores;
 
-  // 차트 및 리스트 데이터 상태
-  const [chartData, setChartData] = useState({ labels: [], scores: [] });
-  const [recordList, setRecordList] = useState([]);
-
-  // 데이터 로드 (Mock Data)
-  useEffect(() => {
-    // 실제 API 호출 대신 더미 데이터 생성
-    // (선택한 월에 따라 데이터가 바뀌는 척 시뮬레이션)
-    const weeks = ['1주차', '2주차', '3주차', '4주차', '5주차'];
-    const dummyScores = [85, 92, 60, 75, 40]; // 임의 점수
-
-    setChartData({ labels: weeks, scores: dummyScores });
-
-    const listData = weeks.map((week, idx) => ({
-      label: `WEEK ${idx + 1}`,
-      score: dummyScores[idx],
-      icon: getEmotionIcon(dummyScores[idx]),
-    }));
-    setRecordList(listData);
-
-  }, [selectedYear, selectedMonth]);
+  const getWeekDateRange = (weekNum) => {
+    const startDate = (weekNum - 1) * 7 + 1
+    const endDate = Math.min(weekNum * 7, new Date(selectedYear, selectedMonth, 0).getDate())
+    return `(${startDate}일 ~ ${endDate}일)`
+  }
+  const weekList = scores
+    .map((score, index) => ({
+      week: index + 1,
+      weekLabel: labels[index],
+      dateRange: getWeekDateRange(index + 1),
+      score: score,
+      icon: getEmotionIcon(score)
+    }))
+    .filter(item => item.score > 0)
 
   // 차트 렌더링 (Bar Chart)
   useEffect(() => {
     if (!chartCanvasRef.current) return;
     const ctx = chartCanvasRef.current.getContext('2d');
 
-    if (chartInstanceRef.current) chartInstanceRef.current.destroy();
+    if (chartInstanceRef.current) { chartInstanceRef.current.destroy() }
 
     chartInstanceRef.current = new ChartJS(ctx, {
-      type: 'bar', // 월간은 막대 그래프가 보기 좋음
-      data: {
-        labels: chartData.labels,
-        datasets: [{
-          label: '평균 점수',
-          data: chartData.scores,
-          backgroundColor: 'rgba(79, 172, 254, 0.6)',
-          borderRadius: 6, // 막대 둥글게
-          barThickness: 20, // 막대 두께
-        }],
+  type: 'bar',
+  data: {
+    labels: labels,
+    datasets: [
+      {
+        type: 'bar',
+        label: '평균 점수',
+        data: scores,
+        backgroundColor: 'rgba(255, 182, 193, 0.6)',
+        borderColor: '#ffa3d4ff',
+        borderWidth: 2,
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: { beginAtZero: true, max: 100, grid: { color: 'rgba(0,0,0,0.05)' } },
-          x: { grid: { display: false } }
-        },
-        plugins: { legend: { display: false } }
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 120,
+        grid: { color: 'rgba(0,0,0,0.05)' },
+        ticks: {
+          display: true,
+          callback: function (value) {
+            return value === 120 ? '' : value;
+          }
+        }
       },
-    });
+      x: {
+        grid: { display: false }
+      }
+    },
+    plugins: {
+      legend: { display: false }, // 범례 숨김
+      tooltip: {
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        padding: 10,
+        cornerRadius: 8,
+      }
+    }
+  },
+});
 
     return () => chartInstanceRef.current?.destroy();
-  }, [chartData]);
+  }, [labels, scores]);
 
   return (
     <div className="weekly-stats-container"> {/* CSS 재사용 */}
-      
+
       {/* 1. 그래프 영역 */}
       <section className="chart-card">
         <div className="chart-wrapper">
@@ -84,29 +106,27 @@ function MonthlyStats() {
       </section>
 
       {/* 2. 설명 및 선택 영역 */}
-      <div className="stats-header-area">
-        <p className="stats-title">
-          {selectedMonth}월의 주별 평균 점수예요
-        </p>
+      <div className="section-description">
+        <p className="main-desc">{selectedYear}년 {selectedMonth}월의 주별 평균 점수예요</p>
+
         <div className="date-selector-container">
-          {/* 연도 선택 */}
-          <select 
-            className="custom-select" 
-            value={selectedYear} 
-            onChange={(e) => setSelectedYear(Number(e.target.value))}
+          <select
+            className='custom-select'
+            value={selectedYear}
+            onChange={(e) => onYearChange(Number(e.target.value))}
           >
-            <option value="2024">2024년</option>
-            <option value="2025">2025년</option>
+            <option value={2024}>2024년</option>
+            <option value={2025}>2025년</option>
+            <option value={2026}>2026년</option>
           </select>
-          
-          {/* 월 선택 */}
-          <select 
-            className="custom-select" 
-            value={selectedMonth} 
-            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+
+          <select
+            className='custom-select'
+            value={selectedMonth}
+            onChange={(e) => onMonthChange(Number(e.target.value))}
           >
-            {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-              <option key={m} value={m}>{m}월</option>
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i + 1} value={i + 1}>{i + 1}월</option>
             ))}
           </select>
         </div>
@@ -114,17 +134,24 @@ function MonthlyStats() {
 
       {/* 3. 리스트 영역 */}
       <section className="list-card-container">
-        <div className="record-list">
-          {recordList.map((item, idx) => (
-            <div className="record-item" key={idx}>
-              <div className="record-date">
-                <span className="date-num" style={{ fontSize: '16px' }}>{item.label}</span>
+        {weekList.length > 0 ? (
+          <div className="record-list">
+            {weekList.map((item, idx) => (
+              <div className="record-item" key={idx}>
+                <div className="week-info">
+                  <div className="week-label">WEEK {item.week}</div>
+                  <div className="date-range">{item.dateRange}</div>
+                </div>
+                <div className="record-icon">{item.icon}</div>
+                <div className="record-score">{item.score}점</div>
               </div>
-              <div className="record-icon">{item.icon}</div>
-              <div className="record-score">{item.score}점</div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-list">
+            <p>선택한 달의 기록이 없어요 😅</p>
+          </div>
+        )}
       </section>
 
       <div className="bottom-nav-spacer"></div>
