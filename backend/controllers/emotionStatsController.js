@@ -171,7 +171,7 @@ exports.getWeeklyEmotionStats = async (req, res) => {
 exports.getWeekDetailStats = async (req, res) => {
     try {
         const userId = req.session.user.userId
-        const { year, month, weekNum} = req.query
+        const { year, month, weekNum } = req.query
 
         if (!year || !month || !weekNum) {
             return res.status(400).json({
@@ -186,7 +186,7 @@ exports.getWeekDetailStats = async (req, res) => {
 
         const weekStartDate = (week - 1) * 7 + 1
         const weekEndDate = Math.min(week * 7, new Date(targetYear, targetMonth + 1, 0).getDate())
-        
+
         const thisWeekStart = new Date(targetYear, targetMonth, weekStartDate)
         thisWeekStart.setHours(0, 0, 0, 0)
 
@@ -222,16 +222,16 @@ exports.getWeekDetailStats = async (req, res) => {
                 const rowDate = new Date(row.DIARY_DATE)
                 return rowDate.getDate() === d
             })
-            
+
             if (thisDay) {
                 thisWeekScores.push(thisDay.EMO_SCORE)
 
                 if (thisDay.EMOTION_DETAIL) {
                     try {
-                        const emotionData = typeof thisDay.EMOTION_DETAIL === 'string' 
-                            ? JSON.parse(thisDay.EMOTION_DETAIL) 
+                        const emotionData = typeof thisDay.EMOTION_DETAIL === 'string'
+                            ? JSON.parse(thisDay.EMOTION_DETAIL)
                             : thisDay.EMOTION_DETAIL
-                        
+
                         emotions.joy.push(emotionData['기쁨'] || 0)
                         emotions.sadness.push(emotionData['슬픔'] || 0)
                         emotions.anger.push(emotionData['화남'] || 0)
@@ -257,7 +257,7 @@ exports.getWeekDetailStats = async (req, res) => {
                 emotions.neutral.push(0)
             }
         }
-        
+
         return res.json({
             success: true,
             weekDetail: {
@@ -319,7 +319,7 @@ exports.getMonthlyEmotionStats = async (req, res) => {
 
         const maxWeeks = 5; // 기본 5주차
         const weeks = Math.max(Object.keys(weeklyData).length, maxWeeks);
-        
+
         for (let i = 1; i <= maxWeeks; i++) {  // ✅ maxWeeks(5)까지 반복
             if (weeklyData[i]) {
                 const avg = weeklyData[i].reduce((a, b) => a + b, 0) / weeklyData[i].length;
@@ -349,6 +349,109 @@ exports.getMonthlyEmotionStats = async (req, res) => {
     }
 }
 
+exports.getMonthDetailStats = async (req, res) => {
+    try {
+        const userId = req.session.user.userId
+        const { year, month } = req.query
+
+        if (!year || !month) {
+            return res.status(400).json({
+                success: false,
+                message: '필수 파라미터가 없습니다.'
+            })
+        }
+
+        const targetYear = parseInt(year)
+        const targetMonth = parseInt(month) - 1
+
+        const firstDay = new Date(targetYear, targetMonth, 1)
+        firstDay.setHours(0, 0, 0, 0)
+
+        const lastDay = new Date(targetYear, targetMonth + 1, 0)
+        lastDay.setHours(23, 59, 59, 999)
+
+        const [rows] = await pool.query(
+            `
+            SELECT DIARY_DATE, EMO_SCORE, EMOTION_DETAIL
+              FROM DIARY
+             WHERE USER_ID = ?
+               AND DIARY_DATE BETWEEN ? AND ?
+             ORDER BY DIARY_DATE
+            `,
+            [userId, firstDay, lastDay]
+        )
+
+        const daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate()
+        const scores = []
+        const labels = []
+        const emotions = {
+            joy: [],
+            sadness: [],
+            anger: [],
+            neutral: []
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            labels.push(`${d}일`)
+
+            const dayData = rows.find(row => {
+                const rowDate = new Date(row.DIARY_DATE)
+                return rowDate.getDate() === d
+            })
+
+            if (dayData) {
+                scores.push(dayData.EMO_SCORE)
+
+                // 감정 데이터 파싱
+                if (dayData.EMOTION_DETAIL) {
+                    try {
+                        const emotionData = typeof dayData.EMOTION_DETAIL === 'string'
+                            ? JSON.parse(dayData.EMOTION_DETAIL)
+                            : dayData.EMOTION_DETAIL
+
+                        emotions.joy.push(emotionData['기쁨'] || 0)
+                        emotions.sadness.push(emotionData['슬픔'] || 0)
+                        emotions.anger.push(emotionData['화남'] || 0)
+                        emotions.neutral.push(emotionData['중립'] || 0)
+                    } catch (e) {
+                        emotions.joy.push(0)
+                        emotions.sadness.push(0)
+                        emotions.anger.push(0)
+                        emotions.neutral.push(0)
+                    }
+                } else {
+                    emotions.joy.push(0)
+                    emotions.sadness.push(0)
+                    emotions.anger.push(0)
+                    emotions.neutral.push(0)
+                }
+            } else {
+                scores.push(0)
+                emotions.joy.push(0)
+                emotions.sadness.push(0)
+                emotions.anger.push(0)
+                emotions.neutral.push(0)
+            }
+        }
+
+        return res.json({
+            success: true,
+            monthDetail: {
+                year: targetYear,
+                month: parseInt(month),
+                labels,
+                scores,
+                emotions
+            }
+        })
+    } catch (error) {
+        console.error('월 상세 조회 실패:', error)
+        return res.status(500).json({
+            success: false,
+            message: '월 상세 조회 실패'
+        })
+    }
+}
 exports.getYearlyEmotionStats = async (req, res) => {
     try {
         const userId = req.session.user.userId
@@ -371,27 +474,99 @@ exports.getYearlyEmotionStats = async (req, res) => {
         const [rows] = await pool.query(
             `
             SELECT 
-              MONTH(DIARY_DATE) AS month,
-              AVG(EMO_SCORE) AS avg_score
+              DIARY_DATE,
+              EMO_SCORE,
+              EMOTION_DETAIL
               FROM DIARY
              WHERE USER_ID = ?
                AND DIARY_DATE BETWEEN ? AND ?
-             GROUP BY MONTH(DIARY_DATE)
             `,
             [userId, firstDay, lastDay]
         )
 
+        const emotionsByMonth = {}
+        for (let i = 0; i < 12; i++) {
+            emotionsByMonth[i] = {
+                scores: [],
+                joy: [],
+                sadness: [],
+                anger: [],
+                neutral: []
+            }
+        }
+
         rows.forEach(row => {
-            const monthIndex = row.month - 1
-            scores[monthIndex] = Math.round(row.avg_score)
+            const date = new Date(row.DIARY_DATE)
+            const monthIndex = date.getMonth()
+
+            emotionsByMonth[monthIndex].scores.push(row.EMO_SCORE)
+            
+            if (row.EMOTION_DETAIL) {
+                try {
+                    const emotionData = typeof row.EMOTION_DETAIL === 'string'
+                        ? JSON.parse(row.EMOTION_DETAIL)
+                        : row.EMOTION_DETAIL
+
+                    emotionsByMonth[monthIndex].joy.push(emotionData['기쁨'] || 0)
+                    emotionsByMonth[monthIndex].sadness.push(emotionData['슬픔'] || 0)
+                    emotionsByMonth[monthIndex].anger.push(emotionData['화남'] || 0)
+                    emotionsByMonth[monthIndex].neutral.push(emotionData['중립'] || 0)
+                } catch (e) {
+                    console.error('감정 데이터 파싱 에러:', e)
+                }
+            }
         })
+
+        // 월별 평균 점수 계산
+        for (let i = 0; i < 12; i++) {
+            const monthScores = emotionsByMonth[i].scores
+            if (monthScores.length > 0) {
+                const avg = monthScores.reduce((a, b) => a + b, 0) / monthScores.length
+                scores[i] = Math.round(avg)
+            }
+        }
+        
+        // 감정별 월평균 계산
+        const emotions = {
+            joy: [],
+            sadness: [],
+            anger: [],
+            neutral: []
+        }
+
+        for (let i = 0; i < 12; i++) {
+            const monthData = emotionsByMonth[i]
+
+            // 각 감정의 평균 계산
+            emotions.joy.push(
+                monthData.joy.length > 0
+                    ? Math.round(monthData.joy.reduce((a, b) => a + b, 0) / monthData.joy.length)
+                    : 0
+            )
+            emotions.sadness.push(
+                monthData.sadness.length > 0
+                    ? Math.round(monthData.sadness.reduce((a, b) => a + b, 0) / monthData.sadness.length)
+                    : 0
+            )
+            emotions.anger.push(
+                monthData.anger.length > 0
+                    ? Math.round(monthData.anger.reduce((a, b) => a + b, 0) / monthData.anger.length)
+                    : 0
+            )
+            emotions.neutral.push(
+                monthData.neutral.length > 0
+                    ? Math.round(monthData.neutral.reduce((a, b) => a + b, 0) / monthData.neutral.length)
+                    : 0
+            )
+        }
 
         return res.json({
             success: true,
             yearly: {
-                year,
+                year: targetYear,
                 labels,
                 scores,
+                emotions
             }
         })
     } catch (error) {

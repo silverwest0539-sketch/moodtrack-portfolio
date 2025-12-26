@@ -61,7 +61,8 @@ function WeeklyStats({ serverData, loading }) {
               content: data.diary.content,
               finalScore: data.diary.emoScore,
               emotionScores: data.diary.emotionScores,
-              comment: data.diary.comment
+              comment: data.diary.comment,
+              from: 'weekly-stats'
             }
           })
         } else {

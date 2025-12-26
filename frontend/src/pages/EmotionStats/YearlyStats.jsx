@@ -1,6 +1,7 @@
 // src/pages/EmotionStats/YearlyStats.jsx
 import React, { useEffect, useState, useRef } from 'react';
 import { Chart as ChartJS } from 'chart.js/auto';
+import { useNavigate } from 'react-router-dom';
 
 const getEmotionIcon = (score) => {
   if (score >= 80) return '🥰';
@@ -16,6 +17,7 @@ function YearlyStats({
   selectedYear,
   onYearChange
 }) {
+  const navigate = useNavigate();
   const chartCanvasRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
@@ -23,6 +25,15 @@ function YearlyStats({
   const labels = serverData?.labels?.length > 0 ? serverData.labels : defaultLabels;
   const defaultScores = Array(12).fill(0);
   const scores = serverData?.scores?.length > 0 ? serverData.scores : defaultScores;
+
+  const handleMonthClick = (monthIndex) => {
+    navigate('/emotion-stats/month-detail', {
+      state: {
+        year: selectedYear,
+        month: monthIndex + 1
+      }
+    })
+  }
 
   const monthList = scores
     .map((score, index) => ({
@@ -130,7 +141,12 @@ function YearlyStats({
         {monthList.length > 0 ? (
           <div className="record-list">
             {monthList.map((item, idx) => (
-              <div className="record-item" key={idx}>
+              <div 
+              className="record-item clickable" 
+              key={idx}
+              onClick={()=>handleMonthClick(item.month -1)}
+              style={{ cursor: 'pointer' }}
+              >
                 <div className="month-label">{item.month}월</div>
                 <div className="record-icon">{item.icon}</div>
                 <div className="record-score">{item.score}점</div>

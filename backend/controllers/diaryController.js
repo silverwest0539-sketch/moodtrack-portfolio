@@ -499,14 +499,22 @@ exports.getYesterdayDiary = async (req, res) => {
             })
         }
 
-        const emotionResult = await require('./emotionController').getEmotionScore(rows[0].CONTENT)
+        let emotionScoresData;
+        if (rows[0].EMOTION_DETAIL) {
+            emotionScoresData = typeof rows[0].EMOTION_DETAIL === 'string'
+                ? JSON.parse(rows[0].EMOTION_DETAIL)
+                : rows[0].EMOTION_DETAIL;
+        } else {
+            const emotionResult = await require('./emotionController').getEmotionScore(rows[0].CONTENT)
+            emotionScoresData = emotionResult.emotionScores;
+        }
 
         return res.json({
             success: true,
             diary: {
                 content: rows[0].CONTENT,
                 score: rows[0].EMO_SCORE,
-                emotionScores: emotionScores
+                emotionScores: emotionScoresData
             }
         })
     } catch (error) {

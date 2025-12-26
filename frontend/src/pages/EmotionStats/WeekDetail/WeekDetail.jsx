@@ -1,8 +1,7 @@
 // src/pages/EmotionStats/WeekDetail/WeekDetail.jsx
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import '../EmotionResult/EmotionResult.css'
-import './WeekDetail.css'
+import './WeekDetail.css';
 import { Line, Bar } from 'react-chartjs-2';
 import {
     Chart as ChartJS,

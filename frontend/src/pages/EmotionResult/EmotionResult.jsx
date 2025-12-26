@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import './EmotionResult.css'
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -25,7 +25,8 @@ ChartJS.register(
 
 function EmotionResult({ onViewStats }) {
   const location = useLocation()
-  const { date, content, finalScore, emotionScores, comment } = location.state || {}
+  const navigate = useNavigate()
+  const { date, content, finalScore, emotionScores, comment, from } = location.state || {}
 
   const [displayScore, setDisplayScore] = useState(0)
   const [isComparisonOpen, setIsComparisonOpen] = useState(false)
@@ -226,7 +227,7 @@ function EmotionResult({ onViewStats }) {
       <section className="score-section">
         <h3>오늘의 감정 지수</h3>
         <h1 id="emotion-score" className="big-score">
-          {displayScore.toFixed(0)}<span style={{fontSize:'2rem', fontWeight:400}}>/100</span>
+          {displayScore.toFixed(0)}<span style={{ fontSize: '2rem', fontWeight: 400 }}>/100</span>
         </h1>
       </section>
 
@@ -247,7 +248,7 @@ function EmotionResult({ onViewStats }) {
           {isLoadingYesterday ? (
             <p style={{ textAlign: 'center', color: '#fff' }}>로딩 중...</p>
           ) : !yesterdayData ? (
-            <p style={{ textAlign: 'center', color: '#fff', opacity:0.8 }}>어제 기록이 없어요.</p>
+            <p style={{ textAlign: 'center', color: '#fff', opacity: 0.8 }}>어제 기록이 없어요.</p>
           ) : (
             <div className="comparison-content">
               <div className="comparison-chart-container">
@@ -263,6 +264,19 @@ function EmotionResult({ onViewStats }) {
           )}
         </section>
       )}
+
+      {/* 조건부 "통계로 돌아가기" 버튼 */}
+      {from === 'weekly-stats' && (
+        <p
+          className="back-link"
+          onClick={() => navigate('/emotion-stats', {
+            state: { activeTab: 'weekly' }
+          })}
+        >
+          ← 통계로 돌아가기
+        </p>
+      )}
+
     </div>
   )
 }

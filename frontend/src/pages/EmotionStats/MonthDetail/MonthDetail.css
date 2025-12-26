@@ -1,0 +1,89 @@
+/* src/pages/EmotionStats/MonthDetail/MonthDetail.css */
+
+/* 페이지 배경 */
+#analysis-result-page.month-detail-page {
+  height: 100vh;
+  box-sizing: border-box;
+  padding: 3rem 1.5rem 5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  color: #ffffff;
+}
+
+/* 타이틀 섹션 */
+.month-detail-title {
+  text-align: center;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.month-detail-title h2 {
+  font-size: 1.3rem;
+  margin: 0;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 차트 컨테이너 (유리 효과) */
+.month-detail-chart-container {
+  width: 90%; /* ✅ 화면의 90% 사용 */
+  max-width: none; /* ✅ 최대 너비 제한 제거 */
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+  border-radius: 30px;
+  padding: 2rem;
+  padding-bottom: 3rem;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+}
+
+/* 차트 높이 */
+.month-detail-bar-chart {
+  height: 250px;
+  width: 100%; /* ✅ 컨테이너 너비에 맞춤 */
+}
+
+.month-detail-line-chart {
+  height: 250px;
+  width: 100%; /* ✅ 컨테이너 너비에 맞춤 */
+}
+
+/* 차트 라벨 */
+.month-detail-chart-label {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.9;
+  font-weight: 500;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* 뒤로가기 링크 */
+.back-link {
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: underline;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.back-link:hover {
+  opacity: 1;
+}

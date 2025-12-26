@@ -204,7 +204,7 @@
   width: 100%;
   max-width: 360px;
   animation: slideDown 0.5s ease;
-  padding-bottom: 2rem;
+  padding-bottom: 0.2rem;
 }
 
 .comparison-chart-container {
