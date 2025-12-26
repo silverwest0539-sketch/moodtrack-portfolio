@@ -1,358 +1,253 @@
-/* 색 변수 */
-:root {
-  /* 청량한 블루 그라데이션 팔레트 */
-  /* --bg-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); */
-  /* 보라-핑크 */
-  /* --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
-  /* 민트-핑크 */
-  /* --bg-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); */
-  /* 피치 */
-  /* --bg-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); */
-  /* 핑크 */
-  /* --bg-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); */
-  /* 피치 크림 */
-  --bg-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-  /* 망고 선샤인 */
-  /* --bg-gradient: linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%); */
-  /* 코랄 웜 */
-  /* --bg-gradient: linear-gradient(135deg, #ff9a56 0%, #ffeaa7 100%); */
-  /* 허니 글로우 */
-  /* --bg-gradient: linear-gradient(135deg, #fddb92 0%, #d1fdff 100%); */
-  --glass-bg: rgba(255, 255, 255, 0.25);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.3);
-  --text-white: #ffffff;
-  --text-dark: #1e293b;
-  --shadow-soft: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-}
+/* EmotionResult.css */
 
-/* 페이지 루트 컨테이너 */
+/* 페이지 기본 레이아웃 */
 #analysis-result-page {
   min-height: 100vh;
-  height: 100vh;
   box-sizing: border-box;
-  background: var(--bg-gradient);
-  color: var(--text-white);
-  padding: 2rem 1.5rem 5rem 1.5rem;
+  padding: 3rem 1.5rem 5rem 1.5rem; /* 상단 여백 조금 더 확보 */
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* 배경 적용 및 부드러운 전환 */
+  background: var(--bg-gradient);
+  transition: background 1s ease;
+  
+  /* 기본 텍스트 색상: 흰색 (그림자 효과로 가독성 확보) */
+  color: #ffffff;
 }
 
-/* 로딩 오버레이 */
-#loading-spinner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-  backdrop-filter: blur(5px);
-  flex-direction: column;
-  gap: 1rem;
-  font-size: 1.1rem;
+/* =========================================================
+   [5단계 감정 점수 테마] - 전체적으로 밝고 화사한(Light & Pastel) 톤
+   ========================================================= */
+
+/* Level 1 (0-20점): 차분한 흐린 날 (Muted Cloud)
+   - 어둡지 않고, 회색빛이 도는 차분한 하늘색 */
+.level-1 {
+  /* 기존 네이비 -> 밝은 회청색 그라데이션으로 변경 */
+  --bg-gradient: linear-gradient(135deg, #9facd4 0%, #b8c6db 100%);
+  
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.4);
+  --ai-bg: rgba(245, 247, 250, 0.95);
+  --ai-text: #546e7a; /* 차분한 블루그레이 텍스트 */
+  --toggle-bg: rgba(0, 0, 0, 0.1);
 }
 
-.spinner-icon {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid #fff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+/* Level 2 (21-40점): 맑은 하늘 (Soft Sky)
+   - 깨끗하고 시원한 하늘색 */
+.level-2 {
+  --bg-gradient: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+  
+  --glass-bg: rgba(255, 255, 255, 0.3);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+  --ai-bg: rgba(255, 255, 255, 0.95);
+  --ai-text: #4a90e2; /* 밝은 블루 텍스트 */
+  --toggle-bg: rgba(255, 255, 255, 0.2);
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+.level-3 {
+  /* 수정된 그라데이션: 연한 페일 블루/라벤더 -> 연한 핑크빛 화이트 */
+  --bg-gradient: linear-gradient(135deg, #d6d9fe 0%, #f4e7e9 100%);
+  
+  --glass-bg: rgba(255, 255, 255, 0.4);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+  --ai-bg: rgba(255, 250, 252, 0.95);
+  
+  /* 텍스트는 너무 쨍한 보라색 대신, 차분한 그레이시 퍼플로 변경 */
+  --ai-text: #6d5c7d; 
+  --toggle-bg: rgba(255, 255, 255, 0.3);
 }
 
-/* 점수 섹션 */
+/* Level 4 (61-80점): 따스한 햇살 (Warm Peach)
+   - 기분 좋은 살구색과 크림색 */
+.level-4 {
+  --bg-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  
+  --glass-bg: rgba(255, 255, 255, 0.35);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+  --ai-bg: rgba(255, 252, 240, 0.95);
+  --ai-text: #ff8a65; /* 웜톤 오렌지 텍스트 */
+  --toggle-bg: rgba(255, 255, 255, 0.3);
+}
+
+/* Level 5 (81-100점): 화사한 핑크 (Blooming Rose)
+   - 가장 밝고 에너지가 넘치는 핑크 */
+.level-5 {
+  --bg-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  
+  --glass-bg: rgba(255, 255, 255, 0.4);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.7);
+  --ai-bg: rgba(255, 245, 248, 0.95);
+  --ai-text: #e91e63; /* 핫핑크 포인트 텍스트 */
+  --toggle-bg: rgba(255, 255, 255, 0.35);
+}
+
+/* =========================================================
+   [UI 컴포넌트 스타일]
+   ========================================================= */
+
+/* 1. 점수 섹션 (요청하신 흰색 글씨 + 그림자 효과) */
 .score-section {
   text-align: center;
-  margin-bottom: 1.5rem;
-  animation: fadeInDown 0.8s ease;
+  margin-bottom: 2rem;
   width: 100%;
+  animation: fadeUp 0.8s ease;
+  
+  /* 중요: 배경이 밝으므로 글씨가 묻히지 않게 진한 그림자 적용 */
+  color: #ffffff;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), 
+               0 2px 4px rgba(0, 0, 0, 0.25);
 }
 
 .score-section h3 {
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin: 0 0 0.8rem 0;
-  opacity: 0.95;
-  letter-spacing: 0.3px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  opacity: 1; /* 투명도 제거하여 선명하게 */
+  letter-spacing: 0.5px;
 }
 
 .big-score {
-  font-size: 4rem;
+  font-size: 4.5rem; /* 크기 조금 더 키움 */
   font-weight: 800;
   margin: 0;
-  line-height: 1;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  line-height: 1.1;
+  font-family: 'Poppins', sans-serif; /* 숫자 폰트가 둥글면 더 예쁨 */
 }
 
-#emotion-weather {
-  font-size: 1.4rem;
-  font-weight: 500;
-  margin-top: 0.5rem;
-  display: block;
-  opacity: 0.9;
-}
-
-/* 차트 카드 (Glassmorphism) */
+/* 2. 차트 컨테이너 (유리 효과) */
 .chart-container {
-  width: 340px;
-  max-width: 420px;
+  width: 100%;
+  max-width: 360px;
+  
   background: var(--glass-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 24px;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   border: var(--glass-border);
-  box-shadow: var(--shadow-soft);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+  
+  border-radius: 30px; /* 더 둥글게 */
+  padding: 2rem;
+  margin-bottom: 2rem;
   box-sizing: border-box;
-  position: relative;
-  aspect-ratio: 1 / 0.9;
-  margin-left: auto;
-  margin-right: auto;
+  
   display: flex;
   justify-content: center;
   align-items: center;
+  aspect-ratio: 1 / 0.9; /* 정사각형에 가깝게 */
 }
 
-/* AI 코멘트 박스 */
+/* 3. AI 코멘트 박스 */
 .ai-comment-box {
   width: 100%;
-  max-width: 340px;
-  background: rgba(255, 255, 245, 0.95);
-  color: #8b5a00;
+  max-width: 360px;
+  background: var(--ai-bg);
+  color: var(--ai-text);
   border-radius: 20px;
-  padding: 1.5rem;
+  padding: 1.8rem 1.5rem;
   margin: 0 auto 1.5rem auto;
-  box-shadow: var(--shadow-soft);
-  box-sizing: border-box;
+  
+  /* 깔끔한 카드 스타일 그림자 */
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
   position: relative;
+  line-height: 1.6;
+  font-size: 1.05rem;
+  font-weight: 500;
+  text-align: left;
+  word-break: keep-all;
 }
 
-/* 말풍선 꼬리 / 라벨 (유지) */
+/* AI 라벨 */
 .ai-comment-box::before {
-  content: '🤖 AI Comment';
+  content: '✨ AI Analysis';
   position: absolute;
   top: -12px;
   left: 20px;
-  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-  color: white;
+  background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+  color: #fff;
   font-size: 0.75rem;
   font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 12px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  padding: 5px 12px;
+  border-radius: 20px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
 }
 
-#ai-message {
-  margin: 0;
-  font-size: 1.05rem; 
-  line-height: 1.6;
-}
-
-/* 토글 버튼 */
+/* 4. 비교 토글 버튼 */
 .comparison-toggle {
-  width: 100%;
-  max-width: 340px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 16px;
-  padding: 1rem;
+  background: var(--toggle-bg);
+  border: 1px solid rgba(255,255,255,0.6);
   color: #fff;
+  padding: 0.9rem 2rem;
+  border-radius: 50px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-bottom: 1rem;
+  
+  /* 버튼 텍스트도 그림자 살짝 */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  margin-bottom: 1.5rem;
 }
 
 .comparison-toggle:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
+  background: rgba(255,255,255,0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-/* 버튼 영역 */
-.result-actions {
+/* 5. 비교 섹션 */
+.comparison-section {
   width: 100%;
-  max-width: 380px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  max-width: 360px;
+  animation: slideDown 0.5s ease;
   padding-bottom: 2rem;
 }
 
-button {
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  transition: transform 0.2s ease;
-}
-
-/* 메인 버튼 */
-.btn-gradient {
-  background: #ffffff;
-  color: #2563eb;
-  font-size: 1.1rem;
-  font-weight: 700;
-  padding: 1.1rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-}
-
-.btn-gradient:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-}
-
-/* 서브 버튼 (텍스트) */
-.btn-text {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1rem;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-
-.btn-text:hover {
-  color: #ffffff;
-}
-
-/* 애니메이션 */
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.donut-wrapper {
-  position: relative;
-}
-
-.donut-center-text {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: #fff;
-}
-
-/* 전날 비교 섹션 */
-.comparison-section {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto 2rem auto;
-  margin-bottom: 5rem;
-  animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.comparison-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
-}
-
-/* 전날 도넛차트 컨테이너 */
 .comparison-chart-container {
-  width: 340px;
-  max-width: 420px;
   background: var(--glass-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 24px;
   border: var(--glass-border);
-  box-shadow: var(--shadow-soft);
-  margin-top: 0.5rem;
+  border-radius: 24px;
   padding: 1.5rem;
-  box-sizing: border-box;
-  aspect-ratio: 1 / 0.9;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
+  margin-bottom: 1rem;
+  backdrop-filter: blur(10px);
 }
 
 .comparison-chart {
+  height: 200px;
   width: 100%;
-  height: 250px;
-  margin: 0 auto;
-  position: relative;
 }
 
 .chart-label {
   text-align: center;
-  margin-top: 0.5rem;
   font-size: 0.9rem;
-  font-weight: 600;
+  margin-top: 1rem;
   opacity: 0.9;
+  font-weight: 500;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .comparison-comment-box {
-  width: 100%;
-  max-width: 340px;
-  background: rgba(255, 255, 245, 0.95);
-  color: #8b5a00;
-  border-radius: 20px;
-  padding: 1.5rem;
-  box-shadow: var(--shadow-soft);
-  position: relative;
+  background: var(--ai-bg);
+  color: var(--ai-text);
+  padding: 1.2rem;
+  border-radius: 18px;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  line-height: 1.5;
 }
 
-/* .comparison-comment-box::before {
-  content: '📊 비교 분석';
-  position: absolute;
-  top: -12px;
-  left: 20px;
-  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); 
-  color: white;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 4px 10px; 
-  border-radius: 12px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-} */
+/* 애니메이션 */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-.comparison-comment {
-  margin: 0;
-  font-size: 1.05rem;
-  line-height: 1.6;
-  text-align: left;
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
