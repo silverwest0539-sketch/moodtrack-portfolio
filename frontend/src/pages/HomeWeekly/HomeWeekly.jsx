@@ -118,11 +118,12 @@ const HomeWeekly = () => {
   }
 
   const getEmoji = (score) => {
-    if (score <= 19) return '😢'
-    if (score <= 39) return '☁️'
-    if (score <= 59) return '😐'
-    if (score <= 79) return '🙂'
-    return '😊';
+    if (score == null) return '';
+    if (score >= 80) return '😄';
+    if (score >= 60) return '🙂';
+    if (score >= 40) return '😐';
+    if (score >= 20) return '😞';
+    return '😢';
   }
 
   const getDayName = (dayIndex) => {

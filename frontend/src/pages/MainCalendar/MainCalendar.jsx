@@ -5,6 +5,15 @@ import './MainCalendar.css';
 
 const KOR_WEEK = ['일', '월', '화', '수', '목', '금', '토'];
 
+function getEmoji(score) {
+  if (score == null) return '';
+  if (score >= 80) return '😄';
+  if (score >= 60) return '🙂';
+  if (score >= 40) return '😐';
+  if (score >= 20) return '😞';
+  return '😢';
+}
+
 function buildCalendar(year, month) {
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
@@ -74,8 +83,10 @@ function MainCalendar() {
   const [selectedDate, setSelectedDate] = useState(today);
 
   // 나중에 일기 데이터 표시용 (지금은 비어 있음)
-  const [entries] = useState({
-    // '2025-12-04': { hasDiary: true },
+  const [entries, setEntries] = useState({
+    '2025-12-04': { score: 82.3 }, // 자동으로 😄로 매핑됨
+    '2025-12-05': { score: 41.2 }, // 😐
+    '2025-12-06': { score: 15.9 }, // 😢
   });
 
   const weeks = useMemo(
@@ -178,7 +189,9 @@ function MainCalendar() {
               const isToday = isSameDate(date, today);
               const isSelected = isSameDate(date, selectedDate);
               const key = isEmpty ? `empty-${wi}-${di}` : formatDateKey(date);
-              const hasEntry = !isEmpty && entries[formatDateKey(date)];
+              const dateKey = isEmpty ? null : formatDateKey(date);
+              const entry = dateKey ? entries[dateKey] : null;
+              const hasEntry = !!entry;
 
               const classes = ['day-cell'];
               if (isEmpty) classes.push('empty');
@@ -197,7 +210,16 @@ function MainCalendar() {
                   <span className="day-number">
                     {date ? date.getDate() : ''}
                   </span>
-                  {hasEntry && <span className="day-dot" />}
+                  {hasEntry && (
+                    <div className="emotion-center">
+                      <span className="emotion-emoji">
+                        {entry.emoji ?? getEmoji(entry.score)}
+                      </span>
+                      <span className="emotion-score">
+                        {Math.round(Number(entry.score))}
+                      </span>
+                    </div>
+                  )}
                 </button>
               );
             })}
