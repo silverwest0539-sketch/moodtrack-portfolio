@@ -457,3 +457,45 @@ exports.getYesterdayDiary = async (req, res) => {
         })
     }
 }
+
+exports.getDiaryMonth = async (req, res) => {
+  try {
+    const userId = req.session.user.userId
+
+    const year = Number(req.query.year);
+    const month = Number(req.query.month); // 1~12
+
+    if (!year || !month || month < 1 || month > 12) {
+      return res.status(400).json({ success: false, message: 'year/month가 올바르지 않습니다.' });
+    }
+
+    const start = `${year}-${String(month).padStart(2, '0')}-01`;
+    const nextMonth = month === 12 ? 1 : month + 1;
+    const nextYear = month === 12 ? year + 1 : year;
+    const end = `${nextYear}-${String(nextMonth).padStart(2, '0')}-01`;
+
+    const sql = `
+      SELECT
+        DATE_FORMAT(DIARY_DATE, '%Y-%m-%d') AS dateKey,
+        EMO_SCORE AS score
+      FROM DIARY
+      WHERE USER_ID = ?
+        AND DIARY_DATE >= ?
+        AND DIARY_DATE < ?
+      ORDER BY DIARY_DATE ASC
+    `;
+
+    const [rows] = await pool.query(sql, [userId, start, end]);
+
+    return res.json({
+      success: true,
+      entries: rows.map(r => ({
+        dateKey: r.dateKey,
+        score: Number(r.score),
+      })),
+    });
+  } catch (err) {
+    console.error('월별 감정 조회 실패:', err);
+    return res.status(500).json({ success: false, message: '서버 오류' });
+  }
+};

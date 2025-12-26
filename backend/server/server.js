@@ -49,8 +49,6 @@ app.use(session({
 // JSON 바디 파싱
 app.use(express.json())
 
-// 기본 라우트
-app.use('/', indexRouter)
 
 // auth 라우트
 app.use('/api/auth', authRoutes)
@@ -63,6 +61,9 @@ app.use('/api/diary', diaryRoutes)
 
 // 통계 분석 라우트
 app.use('/api/emotion-stats', emotionStatsRoutes)
+
+// 기본 라우트
+app.use('/', indexRouter)
 
 console.log('KAKAO_REST_KEY:', process.env.KAKAO_REST_KEY);
 console.log('KAKAO_REDIRECT_URI:', process.env.KAKAO_REDIRECT_URI);
