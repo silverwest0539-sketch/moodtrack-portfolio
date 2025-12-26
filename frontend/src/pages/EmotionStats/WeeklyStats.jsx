@@ -1,80 +1,81 @@
 // src/pages/EmotionStats/WeeklyStats.jsx
-import React, { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
+import React, { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Chart as ChartJS } from 'chart.js/auto';
 
-// 감정 아이콘 매핑 헬퍼 함수 (점수에 따라 아이콘 변경 예시)
 const getEmotionIcon = (score) => {
-  if (score >= 80) return '🥰'; // 아주 좋음
-  if (score >= 60) return '🙂'; // 좋음
-  if (score >= 40) return '😐'; // 보통
-  if (score >= 20) return '😥'; // 나쁨
-  return '😭'; // 아주 나쁨
+  if (score >= 80) return '🥰';
+  if (score >= 60) return '🙂';
+  if (score >= 40) return '😐';
+  if (score >= 20) return '😥';
+  return '😭';
 };
 
-// 요일 매핑
 const DAY_LABELS = ['월', '화', '수', '목', '금', '토', '일'];
+const DAY_LABELS_EN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-function WeeklyStats() {
-  const [loading, setLoading] = useState(false);
-  const [chartData, setChartData] = useState({ labels: DAY_LABELS, scores: Array(7).fill(0) });
-  // 리스트 표시용 데이터 (실제 날짜 등을 포함한 상세 데이터 구조가 필요함)
-  const [recordList, setRecordList] = useState([]);
-
+function WeeklyStats({ serverData, loading }) {
+  const navigate = useNavigate();
   const chartCanvasRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
-  useEffect(() => {
-    const fetchWeeklyStats = async () => {
+  // serverData가 없으면 기본값 사용
+  const labels = serverData?.labels || DAY_LABELS;
+  const scores = serverData?.scores || Array(7).fill(0);
+
+  // 리스트용 데이터 생성
+  const today = new Date();
+  const currentDay = today.getDay() === 0 ? 7 : today.getDay();
+  const mondayOffset = 1 - currentDay;
+
+  const recordList = scores
+    .map((score, index) => {
+      const date = new Date(today);
+      date.setDate(today.getDate() + mondayOffset + index);
+      
+      return {
+        dayName: labels[index],
+        dayNameEn: DAY_LABELS_EN[index],
+        dateNum: date.getDate(),
+        score: score,
+        icon: getEmotionIcon(score),
+        date: date,
+        dateString: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+      };
+    })
+    .filter(item => item.score > 0);
+
+    // 날짜 클릭 핸들러
+    const handleDateClick = async (dateString) => {
       try {
-        setLoading(true);
-        // API 호출 (실제로는 여기서 날짜 정보도 같이 받아와야 리스트를 예쁘게 그릴 수 있습니다)
-        // const res = await axios.get('http://localhost:3000/api/emotion-stats/weekly', { withCredentials: true });
-        
-        // ** UI 테스트를 위한 더미 데이터 **
-        // 실제 연동 시 res.data를 파싱해서 사용하세요.
-        const dummyScores = [95, 0, 0, 0, 45, 80, 0]; 
-        
-        // 차트용 데이터 세팅
-        setChartData({
-          labels: DAY_LABELS,
-          scores: dummyScores
-        });
+        const res = await fetch(
+          `http://localhost:3000/api/diary/result?date=${dateString}`,
+          { credentials: 'include' }
+        )
+        const data = await res.json()
 
-        // 리스트용 데이터 가공 (점수가 0보다 큰 날만 필터링)
-        // 실제로는 백엔드에서 날짜(일자)도 받아야 함. 여기선 임의로 계산.
-        const today = new Date();
-        const currentDay = today.getDay() === 0 ? 7 : today.getDay(); // 일요일 보정
-        const mondayOffset = 1 - currentDay; // 월요일 기준 오프셋
-        
-        const listData = dummyScores.map((score, index) => {
-          // 날짜 계산 (이번주 월요일 기준)
-          const date = new Date(today);
-          date.setDate(today.getDate() + mondayOffset + index);
-          
-          return {
-            dayName: DAY_LABELS[index],     // 월, 화...
-            dateNum: date.getDate(),        // 16, 17...
-            score: score,
-            icon: getEmotionIcon(score)
-          };
-        }).filter(item => item.score > 0); // 기록이 있는 날만 필터
-
-        setRecordList(listData);
-
-      } catch (err) {
-        console.error('주간 통계 로드 실패', err);
-      } finally {
-        setLoading(false);
+        if (data.success && data.diary) {
+          navigate('/emotionResult', {
+            state: {
+              date: dateString,
+              content: data.diary.content,
+              finalScore: data.diary.emoScore,
+              emotionScores: data.diary.emotionScores,
+              comment: data.diary.comment
+            }
+          })
+        } else {
+          alert('일기 데이터를 불러올 수 없습니다.')
+        }
+      } catch (error) {
+        console.error('일기 조회 실패:', error)
+        alert('일기를 불러오는 데 실패했습니다.')
       }
-    };
-
-    fetchWeeklyStats();
-  }, []);
+    }
 
   // 차트 렌더링
   useEffect(() => {
-    if (!chartCanvasRef.current) return;
+    if (!chartCanvasRef.current || !serverData) return;
     
     const ctx = chartCanvasRef.current.getContext('2d');
 
@@ -82,7 +83,6 @@ function WeeklyStats() {
       chartInstanceRef.current.destroy();
     }
 
-    // 그라데이션 효과 (옵션)
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, 'rgba(79, 172, 254, 0.4)');
     gradient.addColorStop(1, 'rgba(79, 172, 254, 0.0)');
@@ -90,10 +90,10 @@ function WeeklyStats() {
     chartInstanceRef.current = new ChartJS(ctx, {
       type: 'line',
       data: {
-        labels: chartData.labels,
+        labels: labels,
         datasets: [{
           label: '감정 점수',
-          data: chartData.scores,
+          data: scores,
           borderColor: '#4facfe',
           backgroundColor: gradient,
           borderWidth: 2,
@@ -111,9 +111,13 @@ function WeeklyStats() {
         scales: {
           y: {
             beginAtZero: true,
-            max: 100,
+            max: 110,
             grid: { color: 'rgba(0,0,0,0.05)' },
-            ticks: { display: true }
+            ticks: { display: true,
+              callback: function(value) {
+                return value === 110 ? '' : value
+              }
+             }
           },
           x: {
             grid: { display: false }
@@ -131,38 +135,34 @@ function WeeklyStats() {
     });
 
     return () => chartInstanceRef.current?.destroy();
-  }, [chartData]);
+  }, [serverData]);
 
   return (
     <div className="weekly-stats-container">
       {loading && <div className="loading-msg">로딩 중...</div>}
       
-      {/* 1. 그래프 영역 (카드 형태) */}
       <section className="chart-card">
         <div className="chart-wrapper">
           <canvas ref={chartCanvasRef} />
         </div>
       </section>
 
-      {/* 2. 설명 텍스트 */}
       <div className="section-description">
         <p className="main-desc">이번 주에는 이런 기록들을 남겼어요</p>
         <p className="sub-desc">클릭하면 더 자세한 분석을 볼 수 있어요</p>
       </div>
 
-      {/* 3. 리스트 영역 (기록이 있는 날만) */}
       <section className="list-card-container">
         {recordList.length > 0 ? (
           <div className="record-list">
             {recordList.map((item, idx) => (
-              <div className="record-item" key={idx}>
+              <div 
+              className="record-item" 
+              key={idx}
+              onClick={()=>handleDateClick(item.dateString)}
+              style={{ cursor: 'pointer' }}>
                 <div className="record-date">
-                  <span className="day-name">{item.dayName === '월' ? 'Mon' : 
-                                              item.dayName === '화' ? 'Tue' : 
-                                              item.dayName === '수' ? 'Wed' : 
-                                              item.dayName === '목' ? 'Thu' : 
-                                              item.dayName === '금' ? 'Fri' : 
-                                              item.dayName === '토' ? 'Sat' : 'Sun'}</span>
+                  <span className="day-name">{item.dayNameEn}</span>
                   <span className="date-num">{item.dateNum}</span>
                 </div>
                 <div className="record-icon">{item.icon}</div>
@@ -177,7 +177,6 @@ function WeeklyStats() {
         )}
       </section>
       
-      {/* 네비게이션 바 공간 확보용 투명 박스 */}
       <div className="bottom-nav-spacer"></div>
     </div>
   );

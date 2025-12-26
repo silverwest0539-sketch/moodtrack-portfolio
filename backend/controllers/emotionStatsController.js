@@ -21,20 +21,20 @@ const getThisWeekRange = () => {
 }
 
 // 이번 달 1일~말일 구하기
-const getThisMonthRange = ()=>{
+const getThisMonthRange = () => {
     const now = new Date()
 
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
     firstDay.setHours(0, 0, 0, 0)
 
-    const lastDay = new Date(now.getFullYear(), now.getMonth() +1, 0)
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
     lastDay.setHours(23, 59, 9, 999)
 
     return { firstDay, lastDay }
 }
 
 // 올해 1월 1일~12월31일 구하기
-const getThisYearRange = ()=>{
+const getThisYearRange = () => {
     const now = new Date()
     const year = now.getFullYear()
 
@@ -56,8 +56,16 @@ const getDaysInMonth = (year, month) => {
 }
 
 // HomeWeekly용 이번 주 전체 데이터
-exports.getWeekFullData = async (req,res)=>{
+exports.getWeekFullData = async (req, res) => {
     try {
+        
+        if (!req.session || !req.session.user || !req.session.user.userId) {
+            return res.status(401).json({
+                success: false,
+                message: '세션이 준비되지 않았습니다.'
+            });
+        }
+
         const userId = req.session.user.userId
 
         const now = new Date()
@@ -86,7 +94,7 @@ exports.getWeekFullData = async (req,res)=>{
             const mm = String(date.getMonth() + 1).padStart(2, '0');
             const dd = String(date.getDate()).padStart(2, '0');
             const dateKey = `${yyyy}-${mm}-${dd}`;
-            
+
             diaryMap[dateKey] = row.EMO_SCORE;
         });
 
@@ -99,7 +107,7 @@ exports.getWeekFullData = async (req,res)=>{
             const mm = String(currentDate.getMonth() + 1).padStart(2, '0')
             const dd = String(currentDate.getDate()).padStart(2, '0')
             const dateKey = `${yyyy}-${mm}-${dd}`
-            
+
             diaries.push({
                 DIARY_DATE: dateKey,
                 EMO_SCORE: diaryMap[dateKey] || null,
@@ -160,7 +168,7 @@ exports.getWeeklyEmotionStats = async (req, res) => {
     }
 }
 
-exports.getMonthlyEmotionStats = async (req, res)=>{
+exports.getMonthlyEmotionStats = async (req, res) => {
     try {
         const userId = req.session.user.userId
 
@@ -186,7 +194,7 @@ exports.getMonthlyEmotionStats = async (req, res)=>{
             [userId, firstDay, lastDay]
         )
 
-        rows.forEach((row)=>{
+        rows.forEach((row) => {
             const date = new Date(row.DIARY_DATE)
             const day = date.getDate()
             scores[day - 1] = row.EMO_SCORE
@@ -208,7 +216,7 @@ exports.getMonthlyEmotionStats = async (req, res)=>{
     }
 }
 
-exports.getYearlyEmotionStats = async (req, res)=>{
+exports.getYearlyEmotionStats = async (req, res) => {
     try {
         const userId = req.session.user.userId
 
@@ -233,8 +241,8 @@ exports.getYearlyEmotionStats = async (req, res)=>{
             [userId, firstDay, lastDay]
         )
 
-        rows.forEach(row=>{
-            const monthIndex = row.month -1
+        rows.forEach(row => {
+            const monthIndex = row.month - 1
             scores[monthIndex] = Math.round(row.avg_score)
         })
 
