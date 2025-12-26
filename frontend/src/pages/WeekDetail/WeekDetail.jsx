@@ -1,7 +1,7 @@
 // src/pages/EmotionStats/WeekDetail/WeekDetail.jsx
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-// import '../EmotionResult/EmotionResult.css'
+import '../EmotionResult/EmotionResult.css'
 import './WeekDetail.css'
 import { Line, Bar } from 'react-chartjs-2';
 import {
@@ -119,11 +119,11 @@ function WeekDetail() {
         scales: {
             y: {
                 beginAtZero: true,
-                max: 110,
+                max: 120,
                 ticks: {
                     color: '#fff',
                     stepSize: 20,
-                    callback: (value) => value < 105 ? `${value}점` : '',
+                    callback: (value) => value < 110 ? `${value}점` : '',
                 },
                 grid: { color: 'rgba(255, 255, 255, 0.1)' },
             },
@@ -213,27 +213,29 @@ function WeekDetail() {
     };
 
     return (
-        <div id="analysis-result-page">
+        <div id="analysis-result-page" className="week-detail-page">
             {/* 타이틀 */}
-            <section className="score-section week-detail-title">
+            <section className="week-detail-title">
                 <h2>{year}년 {month}월 {weekData.thisWeek.label}</h2>
             </section>
 
-            {/* 1️⃣ 일별 점수 차트 */}
-            <div className="comparison-chart-container week-detail-chart">
-                <div className="comparison-chart">
+            {/* 일별 점수 차트 */}
+            <div className="week-detail-chart-container">
+                <div className="week-detail-bar-chart">
                     <Bar data={barChartData} options={barChartOptions} />
+                    <p className="week-detail-chart-label">일별 감정 점수</p>
                 </div>
-                <p className="chart-label">일별 감정 점수</p>
             </div>
 
-            {/* 2️⃣ 감정별 변화 차트 */}
-            <div className="comparison-chart-container week-detail-chart">
-                <div className="comparison-chart">
+
+            {/* 감정별 변화 차트 */}
+            <div className="week-detail-chart-container">
+                <div style={{ height: '250px' }}>
                     <Line data={emotionChartData} options={emotionChartOptions} />
+                    <p className="week-detail-chart-label">감정별 변화 추이</p>
                 </div>
-                <p className="chart-label">감정별 변화 추이</p>
             </div>
+
 
             {/* 뒤로가기 텍스트 */}
             <p

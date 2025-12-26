@@ -241,7 +241,7 @@ exports.analyzeDiary = async (req, res) => {
         await pool.query(
             `
             INSERT INTO DIARY (USER_ID, DIARY_DATE, CONTENT, EMO_SCORE, COMMENT_TEXT, EMOTION_DETAIL)
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?)
             `,
             [userId, parseDate, content, finalScore, comment, emotionDetail]
         )
@@ -370,7 +370,7 @@ exports.getDiaryForResult = async (req, res) => {
 
         const [rows] = await pool.query(
             `
-            SELECT CONTENT, EMO_SCORE, COMMENT_TEXT
+            SELECT CONTENT, EMO_SCORE, COMMENT_TEXT, EMOTION_DETAIL
             FROM DIARY
             WHERE USER_ID = ? AND DIARY_DATE = ?
             `,
@@ -385,14 +385,22 @@ exports.getDiaryForResult = async (req, res) => {
         }
 
         // emotionScores 재생성
-        const emotionResult = await require('./emotionController').getEmotionScore(rows[0].CONTENT)
+        let emotionScores;
+        if (rows[0].EMOTION_DETAIL) {
+            emotionScores = typeof rows[0].EMOTION_DETAIL === 'string'
+                ? JSON.parse(rows[0].EMOTION_DETAIL)
+                : rows[0].EMOTION_DETAIL;
+        } else {
+            const emotionResult = await require('./emotionController').getEmotionScore(rows[0].CONTENT)
+            emotionScores = emotionResult.emotionScores;
+        }
 
         return res.json({
             success: true,
             diary: {
                 content: rows[0].CONTENT,
                 emoScore: rows[0].EMO_SCORE,
-                emotionScores: emotionResult.emotionScores,
+                emotionScores: emotionScores,
                 comment: rows[0].COMMENT_TEXT
             }
         })
@@ -477,7 +485,7 @@ exports.getYesterdayDiary = async (req, res) => {
 
         const [rows] = await pool.query(
             `
-            SELECT CONTENT, EMO_SCORE
+            SELECT CONTENT, EMO_SCORE, EMOTION_DETAIL
               FROM DIARY
              WHERE USER_ID = ? AND DIARY_DATE = ?
             `,
@@ -498,7 +506,7 @@ exports.getYesterdayDiary = async (req, res) => {
             diary: {
                 content: rows[0].CONTENT,
                 score: rows[0].EMO_SCORE,
-                emotionScores: emotionResult.emotionScores
+                emotionScores: emotionScores
             }
         })
     } catch (error) {
