@@ -22,4 +22,7 @@ router.put('/', diaryController.updateDiary)
 
 
 
+// 월별 조회
+router.get('/month', diaryController.getDiaryMonth);
+
 module.exports = router;

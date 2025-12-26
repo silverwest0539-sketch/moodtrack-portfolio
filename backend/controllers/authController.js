@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const pool = require('../server/config/database');
 const transporter = require('../server/config/emailConfig')
 const kakaoConfig = require('../server/config/kakaoConfig')
+const axios = require('axios')
 
 
 
@@ -301,6 +302,56 @@ exports.logout = (req, res) => {
   })
 }
 
+// 회원탈퇴
+exports.withdraw = async (req, res) => {
+  let conn;
+  const userId = req.session.user.userId;
+  const kakaoToken = req.session.kakaoAccessToken;
+
+  try {
+
+  conn = await pool.getConnection();
+
+  // 트랜잭션으로 묶기
+  await conn.beginTransaction();
+
+  if (kakaoToken) {
+    await axios.post(
+      'https://kapi.kakao.com/v1/user/unlink',
+      {},
+      {
+        headers: {
+           Authorization: `Bearer ${kakaoToken}`,
+        },
+      }
+    );
+  }
+
+  const [result] = await conn.query(
+    `DELETE FROM USERS WHERE USER_ID = ?`,
+  [userId]
+  );
+
+  if (result.affectedRows === 0){
+    await conn.rollback() // 잘못되면 되돌리기
+    return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+  }
+
+  await conn.commit();
+
+  req.session.destroy(() => { // 세션에서 지우기
+    return res.json({ success: true, message: '회원탈퇴 완료' });
+  });
+
+  } catch (err) {
+    if (conn) await conn.rollback();
+    console.error(err);
+    return res.status(500).json({ success: false, message: '회원탈퇴 실패' });
+  } finally {
+    if (conn) conn.release();
+  }
+}
+
 // 카카오 로그인
 exports.kakaoAuth = (req, res) => {
   try {
@@ -352,6 +403,8 @@ exports.kakaoCallback = async (req, res) => {
     console.log('[KAKAO TOKEN RES]', tokenRes.data);
 
     const accessToken = tokenRes.data.access_token;
+    req.session.kakaoAccessToken = accessToken;
+
 
     console.log('[KAKAO ACCESS TOKEN]', accessToken ? accessToken.slice(0, 10) + '...' : accessToken);
 
@@ -509,3 +562,4 @@ exports.getSocialPending = (req, res) => {
     nickname: social.nickname || ''
   });
 };
+

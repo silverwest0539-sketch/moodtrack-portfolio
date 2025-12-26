@@ -20,6 +20,9 @@ router.get('/me', authController.me)
 // 로그아웃
 router.post('/logout', authController.logout)
 
+// 회원탈퇴
+router.delete('/withdraw', authController.withdraw)
+
 // 카카오 로그인
 router.get('/kakao', authController.kakaoAuth);
 router.get('/kakao/callback', authController.kakaoCallback);

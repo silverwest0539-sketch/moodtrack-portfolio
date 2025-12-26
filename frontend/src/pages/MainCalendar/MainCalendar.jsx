@@ -1,17 +1,18 @@
 // 메인 캘린더 페이지
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import axios from 'axios';
 import './MainCalendar.css';
 
 const KOR_WEEK = ['일', '월', '화', '수', '목', '금', '토'];
 
 function getEmoji(score) {
   if (score == null) return '';
-  if (score >= 80) return '😄';
+  if (score >= 80) return '🥰';
   if (score >= 60) return '🙂';
   if (score >= 40) return '😐';
-  if (score >= 20) return '😞';
-  return '😢';
+  if (score >= 20) return '😥';
+  return '😭';
 }
 
 function buildCalendar(year, month) {
@@ -83,11 +84,48 @@ function MainCalendar() {
   const [selectedDate, setSelectedDate] = useState(today);
 
   // 나중에 일기 데이터 표시용 (지금은 비어 있음)
-  const [entries, setEntries] = useState({
-    '2025-12-04': { score: 82.3 }, // 자동으로 😄로 매핑됨
-    '2025-12-05': { score: 41.2 }, // 😐
-    '2025-12-06': { score: 15.9 }, // 😢
-  });
+  const [entries, setEntries] = useState();
+
+ useEffect(() => {
+  const fetchMonthEntries = async () => {
+    try {
+      const year = currentYear;
+      const month = currentMonth + 1;
+
+      const res = await axios.get(
+        'http://localhost:3000/api/diary/month',
+        {
+          params: { year, month },
+          withCredentials: true, // ✅ 세션 쿠키
+        }
+      );
+
+      const data = res.data;
+
+      if (!data?.success) {
+        setEntries({});
+        return;
+      }
+
+      const map = {};
+      for (const e of data.entries || []) {
+        const dateKey = e.dateKey ?? e.diaryDate;
+        const score = Number(e.score ?? e.finalScore);
+
+        if (!dateKey) continue;
+        map[dateKey] = { score };
+      }
+
+      setEntries(map);
+    } catch (err) {
+      console.error('월별 조회 실패:', err);
+      setEntries({});
+    }
+  };
+
+  fetchMonthEntries();
+}, [currentYear, currentMonth]);
+
 
   const weeks = useMemo(
     () => buildCalendar(currentYear, currentMonth),
@@ -190,7 +228,7 @@ function MainCalendar() {
               const isSelected = isSameDate(date, selectedDate);
               const key = isEmpty ? `empty-${wi}-${di}` : formatDateKey(date);
               const dateKey = isEmpty ? null : formatDateKey(date);
-              const entry = dateKey ? entries[dateKey] : null;
+              const entry = dateKey ? (entries?.[dateKey] ?? null) : null;
               const hasEntry = !!entry;
 
               const classes = ['day-cell'];
@@ -216,7 +254,7 @@ function MainCalendar() {
                         {entry.emoji ?? getEmoji(entry.score)}
                       </span>
                       <span className="emotion-score">
-                        {Math.round(Number(entry.score))}
+                        {Math.round(Number(entry.score))}점
                       </span>
                     </div>
                   )}
