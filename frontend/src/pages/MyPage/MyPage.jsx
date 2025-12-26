@@ -1,6 +1,7 @@
 // src/pages/MyPage/MyPage.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"
 import "./MyPage.css";
 
 function MyPage() {
@@ -17,19 +18,41 @@ function MyPage() {
     navigate("/my/edit");
   };
 
-  const handleLogout = () => {
-    alert("로그아웃 되었습니다. (데모)");
-    navigate("/login");
+  const handleLogout = async () => {
+  try {
+    await axios.post(
+      "http://localhost:3000/api/auth/logout",
+      {},
+      { withCredentials: true }
+    );
+
+    alert("로그아웃이 완료되었습니다.");
+    window.location.href = "/";
+  } catch (err) {
+    console.error(err);
+    alert("로그아웃 중 오류가 발생했습니다.");
+  }
   };
 
   // ✅ 회원탈퇴 (데모)
-  const handleWithdraw = () => {
-    const ok = window.confirm("정말 회원탈퇴 하시겠어요? 이 작업은 되돌릴 수 없습니다.");
-    if (!ok) return;
+  const handleWithdraw = async () => {
+      const ok = window.confirm(
+    "정말 회원탈퇴 하시겠어요?\n모든 일기가 영구적으로 삭제됩니다."
+  );
+  if (!ok) return;
 
-    // TODO: 백엔드 연동 시 탈퇴 API 호출 + 세션/토큰 정리
-    alert("회원탈퇴가 완료되었습니다. (데모)");
-    navigate("/landing");
+  try {
+    await axios.delete(
+      "http://localhost:3000/api/auth/withdraw",
+      { withCredentials: true }
+    );
+
+    alert("회원탈퇴가 완료되었습니다.");
+    window.location.href = "/"
+  } catch (err) {
+    console.error(err);
+    alert("회원탈퇴 중 오류가 발생했습니다.");
+  }
   };
 
   useEffect(() => {
