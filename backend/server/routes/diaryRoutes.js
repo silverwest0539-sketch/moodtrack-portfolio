@@ -14,4 +14,7 @@ router.get('/', diaryController.getDiaryByDate)
 // 일기 수정
 router.put('/', diaryController.updateDiary)
 
+// 어제 일기 조회
+router.get('/yesterday', diaryController.getYesterdayDiary)
+
 module.exports = router;

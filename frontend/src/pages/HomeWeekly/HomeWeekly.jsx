@@ -4,11 +4,26 @@ import { useNavigate } from 'react-router-dom';
 import './HomeWeekly.css';
 import logo from '../../assets/images/logos/4logo.PNG'; // 로고 경로는 실제 프로젝트에 맞게 확인 필요
 
-const GREETINGS = [
-  "곧 크리스마스예요, 계획 있으신가요?",
+const GREETINGS = [,
   "오늘도 기록하러 와줘서 고마워요",
-  "오늘 하루는 어떤 마음이었나요?",
   "지금의 감정도 충분히 소중해요",
+  "오늘도 찾아와주셨네요!",
+  "좋은 하루 보내고 계신가요?",
+  "오늘도 당신을 기다리고 있었어요",
+  "이 공간은 언제나 당신의 편이에요",
+  "여기서는 편하게 쉬어가도 괜찮아요",
+  "당신의 하루를 나눠줘서 고마워요",
+  "오늘도 무사히 하루를 보내셨군요",
+  "이곳은 당신만의 공간이에요",
+  "당신의 마음을 응원하고 있어요",
+  "힘든 하루였다면, 여기서 내려놓아요",
+  "오늘도 잘 버텨내셨어요",
+  "당신의 이야기는 언제나 환영이에요",
+  "당신을 위한 공간이 여기 있어요",
+  "오늘 하루를 마무리할 시간이에요",
+  "여기선 어떤 감정이든 괜찮아요",
+  "오늘도 당신 곁에 있을게요",
+  "편안한 하루였길 바라요"
 ];
 
 const DAY_NAMES = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
@@ -22,15 +37,39 @@ const HomeWeekly = () => {
   const [greeting, setGreeting] = useState('');
 
   // 사용자 정보 (추후 백엔드 연동 시 대체)
-  const [nickname] = useState('45정');
-  const [streak] = useState(2);
+  const [nickname, setNickname] = useState('');
+  const [streak, setStreak] = useState(0);
   const [points] = useState(120);
 
   // --- 초기 데이터 로드 (백엔드 통신 시뮬레이션) ---
   useEffect(() => {
-    // 1. 인사말 랜덤 설정
+    // 인사말 랜덤 설정
     setGreeting(GREETINGS[Math.floor(Math.random() * GREETINGS.length)]);
 
+    // 사용자 프로필 조회
+    const fetchUserProfile = async () => {
+      try {
+        const res = await fetch('http://localhost:3000/api/user/profile',
+          { credentials: 'include' }
+        )
+        const data = await res.json()
+
+        if (data.success) {
+          setNickname(data.nickname)
+          setStreak(data.streak)
+        } else {
+          console.error('프로필 조회 실패:', data.message)
+          setNickname(data.nickname)
+          setStreak(0)
+        }
+      } catch (error) {
+        console.error('프로필 조회 에러:', error)
+        setNickname('사용자')
+        setStreak(0)
+      }
+    }
+
+    // 주간 감정 데이터 조회
     const fetchWeekly = async () => {
       try {
         const res = await fetch(
@@ -67,6 +106,7 @@ const HomeWeekly = () => {
       }
     };
 
+    fetchUserProfile();
     fetchWeekly();
   }, []);
 
@@ -76,7 +116,6 @@ const HomeWeekly = () => {
       date.getMonth() === today.getMonth() &&
       date.getFullYear() === today.getFullYear()
   }
-
 
   const getEmoji = (score) => {
     if (score == null) return '';
@@ -112,10 +151,28 @@ const HomeWeekly = () => {
 
   // --- 핸들러 ---
   const handleWriteClick = () => {
-    // 오늘 날짜로 글쓰기 페이지 이동
+
     const todayData = weekDays.find(d => d.isToday)
-    const dateStr = todayData ? todayData.dateStr : new Date().toISOString().split('T')[0];
-    navigate(`/write-option?date=${dateStr}`);
+
+    if (!todayData) {
+      const today = new Date()
+      const dateStr = today.toISOString().split('T')[0]
+      navigate(`/write-option?date=${dateStr}`)
+      return
+    }
+
+    if (todayData.score) {
+      alert('오늘은 이미 기록을 남기셨어요!')
+      navigate(`/diary-view?date=${todayData.dateStr}`, {
+        state: {
+          date: todayData.dateStr.replace(/-/g, '.'),
+          score: todayData.score,
+          emotion: todayData.emotion,
+        }
+      })
+    } else {
+      navigate(`/write-option?date=${todayData.dateStr}`)
+    }
   };
 
   return (
@@ -128,7 +185,9 @@ const HomeWeekly = () => {
 
       {/* 1️⃣ 프로필 카드 */}
       <section className="card profile-card">
-        <p className="profile-nickname">{nickname} 님,</p>
+        <p className="profile-nickname">
+          {nickname ? `${nickname}님,` : '로딩 중...'}
+        </p>
         <p className="profile-greeting">{greeting}</p>
         <p className="profile-streak">
           <strong>{streak}</strong>일째 연속 출석 중!
