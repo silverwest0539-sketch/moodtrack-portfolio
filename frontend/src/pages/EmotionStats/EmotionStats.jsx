@@ -1,5 +1,6 @@
 // src/pages/EmotionStats/EmotionStats.jsx
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom'
 import axios from 'axios';
 import WeeklyStats from './WeeklyStats';
 import MonthlyStats from './MonthlyStats';
@@ -14,8 +15,10 @@ const PERIOD_LABELS = {
 };
 
 function EmotionStats() {
+  const location = useLocation()
   // --- State 관리 ---
-  const [activePeriod, setActivePeriod] = useState('weekly');
+  const [activePeriod, setActivePeriod] = useState(
+    location.state?.activeTab || 'weekly');
   const [loading, setLoading] = useState(false);
 
   // 서버에서 받아온 데이터 저장

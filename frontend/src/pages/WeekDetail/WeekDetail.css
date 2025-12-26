@@ -1,0 +1,31 @@
+.week-detail-title {
+  margin-bottom: 1rem;
+}
+
+.week-detail-title h2 {
+  font-size: 1.3rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+/* 차트 컨테이너 여백 축소 */
+.week-detail-chart {
+  margin-bottom: 1rem;
+}
+
+/* 뒤로가기 링크 */
+.back-link {
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: underline;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.back-link:hover {
+  opacity: 1;
+}

@@ -1,5 +1,6 @@
 // src/pages/EmotionStats/MonthlyStats.jsx
 import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom'
 import { Chart as ChartJS } from 'chart.js/auto';
 
 const getEmotionIcon = (score) => {
@@ -17,6 +18,7 @@ function MonthlyStats({
   onYearChange,
   onMonthChange
 }) {
+  const navigate = useNavigate();
   const chartCanvasRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
@@ -30,6 +32,17 @@ function MonthlyStats({
     const endDate = Math.min(weekNum * 7, new Date(selectedYear, selectedMonth, 0).getDate())
     return `(${startDate}일 ~ ${endDate}일)`
   }
+
+  const handleWeekClick = (weekNum) => {
+    navigate('/emotion-stats/week-detail', {
+      state: {
+        year: selectedYear,
+        month: selectedMonth,
+        weekNum: weekNum
+      }
+    })
+  }
+
   const weekList = scores
     .map((score, index) => ({
       week: index + 1,
@@ -137,7 +150,12 @@ function MonthlyStats({
         {weekList.length > 0 ? (
           <div className="record-list">
             {weekList.map((item, idx) => (
-              <div className="record-item" key={idx}>
+              <div 
+              className="record-item clickable" 
+              key={idx}
+              onClick={()=> handleWeekClick(item.week)}
+              style={{ cursor: 'pointer' }}
+              >
                 <div className="week-info">
                   <div className="week-label">WEEK {item.week}</div>
                   <div className="date-range">{item.dateRange}</div>

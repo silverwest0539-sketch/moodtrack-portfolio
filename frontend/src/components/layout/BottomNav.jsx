@@ -114,9 +114,9 @@ const BottomNav = () => {
 
 
       <button
-        className={`nav-item ${location.pathname === '/emotionstats' ? 'active' : ''}`}
+        className={`nav-item ${location.pathname === '/emotion-stats' ? 'active' : ''}`}
         // 기존 MainCalendar(전체달력)를 '/stats' 라우트에 연결하거나 별도 Stats 페이지 연결
-        onClick={() => navigate('/emotionstats')}
+        onClick={() => navigate('/emotion-stats')}
       >
         <span>📊</span>
         <span className="label">통계</span>

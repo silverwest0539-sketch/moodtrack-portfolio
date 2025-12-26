@@ -8,6 +8,7 @@ import DiaryPromptModal from "./pages/DiaryPromptModal/DiaryPromptModal"
 import DiaryEditor from "./pages/DiaryEditor/DiaryEditor"
 import EmotionResult from "./pages/EmotionResult/EmotionResult"
 import EmotionStats from "./pages/EmotionStats/EmotionStats"
+import WeekDetail from "./pages/WeekDetail/WeekDetail"
 import { useEffect } from 'react';
 import axios from 'axios';
 import { useState } from "react"
@@ -81,7 +82,9 @@ function App() {
             <Route path='/diary' element = {<DiaryPromptModal/>}/>
             <Route path='/diaryEdit' element = {<DiaryEditor/>}/>
             <Route path='/emotionResult' element = {<EmotionResult/>}/>
-            <Route path='/emotionStats' element = {<EmotionStats/>}/>
+            <Route path='/emotion-stats' element = {<EmotionStats/>}/>
+            <Route path='/emotion-stats/week-detail' element={<WeekDetail />}/>
+
             {/* [추가] 글쓰기 방식 선택 페이지 */}
             <Route path="/write-option" element={<WriteMethodSelection />} />
 
@@ -89,6 +92,8 @@ function App() {
             <Route path="/diary-view" element={<DiaryViewer />} />
             <Route path='/my' element={<MyPage />} />            
             <Route path='/my/edit' element={<EditProfile/>} />
+
+            <Route path='/emotion-stats/week-detail' element={<WeekDetail />}/>
 
           </Route>
 

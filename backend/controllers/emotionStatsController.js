@@ -168,6 +168,116 @@ exports.getWeeklyEmotionStats = async (req, res) => {
     }
 }
 
+exports.getWeekDetailStats = async (req, res) => {
+    try {
+        const userId = req.session.user.userId
+        const { year, month, weekNum} = req.query
+
+        if (!year || !month || !weekNum) {
+            return res.status(400).json({
+                success: false,
+                message: '필수 파라미터가 없습니다.'
+            })
+        }
+
+        const targetYear = parseInt(year)
+        const targetMonth = parseInt(month) - 1
+        const week = parseInt(weekNum)
+
+        const weekStartDate = (week - 1) * 7 + 1
+        const weekEndDate = Math.min(week * 7, new Date(targetYear, targetMonth + 1, 0).getDate())
+        
+        const thisWeekStart = new Date(targetYear, targetMonth, weekStartDate)
+        thisWeekStart.setHours(0, 0, 0, 0)
+
+        const thisWeekEnd = new Date(targetYear, targetMonth, weekEndDate)
+        thisWeekEnd.setHours(23, 59, 59, 999)
+
+        const [thisWeekRows] = await pool.query(
+            `
+            SELECT DIARY_DATE, EMO_SCORE, EMOTION_DETAIL
+              FROM DIARY
+             WHERE USER_ID = ?
+               AND DIARY_DATE BETWEEN ? AND ?
+             ORDER BY DIARY_DATE
+            `,
+            [userId, thisWeekStart, thisWeekEnd]
+        )
+
+        const thisWeekScores = []
+        const labels = []
+
+        const emotions = {
+            joy: [],
+            sadness: [],
+            anger: [],
+            neutral: []
+        }
+
+        for (let d = weekStartDate; d <= weekEndDate; d++) {
+            const date = new Date(targetYear, targetMonth, d)
+            labels.push(`${d}일`)
+
+            const thisDay = thisWeekRows.find(row => {
+                const rowDate = new Date(row.DIARY_DATE)
+                return rowDate.getDate() === d
+            })
+            
+            if (thisDay) {
+                thisWeekScores.push(thisDay.EMO_SCORE)
+
+                if (thisDay.EMOTION_DETAIL) {
+                    try {
+                        const emotionData = typeof thisDay.EMOTION_DETAIL === 'string' 
+                            ? JSON.parse(thisDay.EMOTION_DETAIL) 
+                            : thisDay.EMOTION_DETAIL
+                        
+                        emotions.joy.push(emotionData['기쁨'] || 0)
+                        emotions.sadness.push(emotionData['슬픔'] || 0)
+                        emotions.anger.push(emotionData['화남'] || 0)
+                        emotions.neutral.push(emotionData['중립'] || 0)
+                    } catch (e) {
+                        console.error('감정 데이터 파싱 에러:', e)
+                        emotions.joy.push(0)
+                        emotions.sadness.push(0)
+                        emotions.anger.push(0)
+                        emotions.neutral.push(0)
+                    }
+                } else {
+                    emotions.joy.push(0)
+                    emotions.sadness.push(0)
+                    emotions.anger.push(0)
+                    emotions.neutral.push(0)
+                }
+            } else {
+                thisWeekScores.push(0)
+                emotions.joy.push(0)
+                emotions.sadness.push(0)
+                emotions.anger.push(0)
+                emotions.neutral.push(0)
+            }
+        }
+        
+        return res.json({
+            success: true,
+            weekDetail: {
+                thisWeek: {
+                    label: `${week}주차 (${weekStartDate}일~${weekEndDate}일)`,
+                    scores: thisWeekScores
+                },
+                labels,
+                emotions  // ✅ 감정 데이터 추가
+            }
+        })
+    } catch (error) {
+        console.error('주차 상세 조회 실패:', error)
+        return res.status(500).json({
+            success: false,
+            message: '주차 상세 조회 실패'
+        })
+    }
+}
+
 exports.getMonthlyEmotionStats = async (req, res) => {
     try {
         const userId = req.session.user.userId

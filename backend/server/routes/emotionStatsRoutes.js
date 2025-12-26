@@ -6,6 +6,7 @@ const {
     getMonthlyEmotionStats,
     getYearlyEmotionStats,
     getWeekFullData,
+    getWeekDetailStats,
 } = require('../../controllers/emotionStatsController')
 
 // 주간 감정 통계
@@ -13,6 +14,9 @@ router.get('/weekly', getWeeklyEmotionStats)
 
 // 월간 감정 통계
 router.get('/monthly', getMonthlyEmotionStats)
+
+// 주차별 상세 통계
+router.get('/week-detail', getWeekDetailStats)
 
 // 연간 감정 통계
 router.get('/yearly', getYearlyEmotionStats)

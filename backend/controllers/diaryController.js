@@ -231,6 +231,7 @@ exports.analyzeDiary = async (req, res) => {
         // 감정 분석 실행
         const emotionResult = await emotionController.getEmotionScore(content)
         const finalScore = Number(emotionResult.finalScore) || 0;
+        const emotionDetail = JSON.stringify(emotionResult.emotionScores)
 
         console.log(`감정 점수: ${finalScore}점`)
 
@@ -239,10 +240,10 @@ exports.analyzeDiary = async (req, res) => {
 
         await pool.query(
             `
-            INSERT INTO DIARY (USER_ID, DIARY_DATE, CONTENT, EMO_SCORE, COMMENT_TEXT)
+            INSERT INTO DIARY (USER_ID, DIARY_DATE, CONTENT, EMO_SCORE, COMMENT_TEXT, EMOTION_DETAIL)
             VALUES (?, ?, ?, ?, ?)
             `,
-            [userId, parseDate, content, finalScore, comment]
+            [userId, parseDate, content, finalScore, comment, emotionDetail]
         )
 
         // 당일 일기 작성 시 streak 업데이트
@@ -426,6 +427,7 @@ exports.updateDiary = async (req, res) => {
 
         const emotionResult = await emotionController.getEmotionScore(content)
         const finalScore = Number(emotionResult.finalScore) || 0
+        const emotionDetail = JSON.stringify(emotionResult.emotionScores)
 
         // 코멘트 생성 함수
         const comment = generateComment(finalScore, userId)
@@ -433,10 +435,10 @@ exports.updateDiary = async (req, res) => {
         await pool.query(
             `
             UPDATE DIARY
-               SET CONTENT = ?, EMO_SCORE = ?, COMMENT_TEXT = ?
+               SET CONTENT = ?, EMO_SCORE = ?, COMMENT_TEXT = ?, EMOTION_DETAIL = ?
              WHERE USER_ID = ? AND DIARY_DATE = ?
             `,
-            [content, finalScore, comment, userId, date]
+            [content, finalScore, comment, emotionDetail, userId, date]
         )
 
         return res.json({
