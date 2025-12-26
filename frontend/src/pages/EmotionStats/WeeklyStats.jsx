@@ -111,11 +111,11 @@ function WeeklyStats({ serverData, loading }) {
         scales: {
           y: {
             beginAtZero: true,
-            max: 110,
+            max: 120,
             grid: { color: 'rgba(0,0,0,0.05)' },
             ticks: { display: true,
               callback: function(value) {
-                return value === 110 ? '' : value
+                return value === 120 ? '' : value
               }
              }
           },

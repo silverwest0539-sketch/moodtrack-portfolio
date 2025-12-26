@@ -243,7 +243,14 @@ exports.getYearlyEmotionStats = async (req, res) => {
     try {
         const userId = req.session.user.userId
 
-        const { year, firstDay, lastDay } = getThisYearRange()
+        const { year } = req.query
+        const targetYear = year ? parseInt(year) : new Date().getFullYear()
+
+        const firstDay = new Date(targetYear, 0, 1)
+        firstDay.setHours(0, 0, 0, 0)
+
+        const lastDay = new Date(targetYear, 11, 31)
+        lastDay.setHours(23, 59, 59, 999)
 
         const labels = Array.from(
             { length: 12 },

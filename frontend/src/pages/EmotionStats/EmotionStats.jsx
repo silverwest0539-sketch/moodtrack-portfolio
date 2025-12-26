@@ -27,6 +27,8 @@ function EmotionStats() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1)
 
+  // Yearly 선택 상태
+  const [selectedYearForYearly, setSelectedYearForYearly] = useState(new Date().getFullYear())
   // --- API 호출 (Source A의 로직 유지) ---
 
   /* 1. 주간 통계 API 호출 */
@@ -79,7 +81,7 @@ function EmotionStats() {
       try {
         setLoading(true);
         const res = await axios.get(
-          'http://localhost:3000/api/emotion-stats/yearly',
+          `http://localhost:3000/api/emotion-stats/yearly?year=${selectedYearForYearly}`,
           { withCredentials: true }
         );
         if (res.data?.success) {
@@ -92,7 +94,7 @@ function EmotionStats() {
       }
     };
     fetchYearlyStats();
-  }, []);
+  }, [selectedYearForYearly]);
 
   return (
     <div className="stats-page-container">
@@ -133,7 +135,11 @@ function EmotionStats() {
         )}
 
         {activePeriod === 'yearly' && (
-          <YearlyStats serverData={yearlyData} loading={loading} />
+          <YearlyStats 
+          serverData={yearlyData} 
+          loading={loading}
+          selectedYear={selectedYearForYearly}
+          onYearChange={setSelectedYearForYearly} />
         )}
       </div>
     </div>

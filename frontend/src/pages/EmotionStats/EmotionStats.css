@@ -76,7 +76,7 @@
 .chart-wrapper {
   height: 220px; /* 차트 높이 고정 */
   width: 100%;
-  background-color: #fcebeb; /* 차트 배경 (연한 핑크) - 이미지 참고 */
+  background-color: transparent; /* 차트 배경 (연한 핑크) - 이미지 참고 */
   border-radius: 15px;
   padding: 10px;
   box-sizing: border-box;
@@ -120,6 +120,24 @@
 }
 .list-card-container::-webkit-scrollbar {
   display: none;
+}
+
+.week-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.week-label {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.date-range {
+  font-size: 11px;
+  color: #888;
+  font-weight: normal;
 }
 
 /* 리스트 아이템들을 감싸는 flex 박스 */

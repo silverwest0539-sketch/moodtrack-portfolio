@@ -10,9 +10,8 @@ const getEmotionIcon = (score) => {
   return '😭';
 };
 
-function MonthlyStats({ 
-  serverData, 
-  loading,
+function MonthlyStats({
+  serverData,
   selectedYear,
   selectedMonth,
   onYearChange,
@@ -26,10 +25,16 @@ function MonthlyStats({
   const defaultScores = [0, 0, 0, 0, 0];
   const scores = serverData?.scores?.length > 0 ? serverData.scores : defaultScores;
 
+  const getWeekDateRange = (weekNum) => {
+    const startDate = (weekNum - 1) * 7 + 1
+    const endDate = Math.min(weekNum * 7, new Date(selectedYear, selectedMonth, 0).getDate())
+    return `(${startDate}일 ~ ${endDate}일)`
+  }
   const weekList = scores
     .map((score, index) => ({
       week: index + 1,
       weekLabel: labels[index],
+      dateRange: getWeekDateRange(index + 1),
       score: score,
       icon: getEmotionIcon(score)
     }))
@@ -43,46 +48,49 @@ function MonthlyStats({
     if (chartInstanceRef.current) { chartInstanceRef.current.destroy() }
 
     chartInstanceRef.current = new ChartJS(ctx, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: '평균 점수',
-          data: scores,
-          backgroundColor: '#FFB6C1',
-          borderColor: '#FF69B4',
-          borderWidth: 2,
-        }],
+  type: 'bar',
+  data: {
+    labels: labels,
+    datasets: [
+      {
+        type: 'bar',
+        label: '평균 점수',
+        data: scores,
+        backgroundColor: 'rgba(255, 182, 193, 0.6)',
+        borderColor: '#ffa3d4ff',
+        borderWidth: 2,
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 110,
-            grid: { color: 'rgba(0,0,0,0.05)' },
-            ticks: {
-              display: true,
-              callback: function (value) {
-                return value === 110 ? '' : value;
-              }
-            }
-          },
-          x: {
-            grid: { display: false }
-          }
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            padding: 10,
-            cornerRadius: 8,
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 120,
+        grid: { color: 'rgba(0,0,0,0.05)' },
+        ticks: {
+          display: true,
+          callback: function (value) {
+            return value === 120 ? '' : value;
           }
         }
       },
-    });
+      x: {
+        grid: { display: false }
+      }
+    },
+    plugins: {
+      legend: { display: false }, // 범례 숨김
+      tooltip: {
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        padding: 10,
+        cornerRadius: 8,
+      }
+    }
+  },
+});
 
     return () => chartInstanceRef.current?.destroy();
   }, [labels, scores]);
@@ -100,19 +108,21 @@ function MonthlyStats({
       {/* 2. 설명 및 선택 영역 */}
       <div className="section-description">
         <p className="main-desc">{selectedYear}년 {selectedMonth}월의 주별 평균 점수예요</p>
-        
-        <div className="date-selector">
-          <select 
-            value={selectedYear} 
+
+        <div className="date-selector-container">
+          <select
+            className='custom-select'
+            value={selectedYear}
             onChange={(e) => onYearChange(Number(e.target.value))}
           >
             <option value={2024}>2024년</option>
             <option value={2025}>2025년</option>
             <option value={2026}>2026년</option>
           </select>
-          
-          <select 
-            value={selectedMonth} 
+
+          <select
+            className='custom-select'
+            value={selectedMonth}
             onChange={(e) => onMonthChange(Number(e.target.value))}
           >
             {Array.from({ length: 12 }, (_, i) => (
@@ -128,7 +138,10 @@ function MonthlyStats({
           <div className="record-list">
             {weekList.map((item, idx) => (
               <div className="record-item" key={idx}>
-                <div className="week-label">WEEK {item.week}</div>
+                <div className="week-info">
+                  <div className="week-label">WEEK {item.week}</div>
+                  <div className="date-range">{item.dateRange}</div>
+                </div>
                 <div className="record-icon">{item.icon}</div>
                 <div className="record-score">{item.score}점</div>
               </div>
@@ -140,7 +153,7 @@ function MonthlyStats({
           </div>
         )}
       </section>
-      
+
       <div className="bottom-nav-spacer"></div>
     </div>
   );

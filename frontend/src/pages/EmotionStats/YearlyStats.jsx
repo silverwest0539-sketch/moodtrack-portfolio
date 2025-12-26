@@ -10,69 +10,95 @@ const getEmotionIcon = (score) => {
   return '😭';
 };
 
-function YearlyStats() {
+function YearlyStats({
+  serverData,
+  loading,
+  selectedYear,
+  onYearChange
+}) {
   const chartCanvasRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
-  // 연도 선택 상태
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const defaultLabels = Array.from({ length: 12 }, (_, i) => `${i + 1}월`);
+  const labels = serverData?.labels?.length > 0 ? serverData.labels : defaultLabels;
+  const defaultScores = Array(12).fill(0);
+  const scores = serverData?.scores?.length > 0 ? serverData.scores : defaultScores;
 
-  const [chartData, setChartData] = useState({ labels: [], scores: [] });
-  const [recordList, setRecordList] = useState([]);
-
-  useEffect(() => {
-    // 1월~12월 라벨
-    const months = Array.from({ length: 12 }, (_, i) => `${i + 1}월`);
-    // 더미 점수 (랜덤 생성 예시)
-    const dummyScores = Array.from({ length: 12 }, () => Math.floor(Math.random() * 40) + 50);
-
-    setChartData({ labels: months, scores: dummyScores });
-
-    const listData = months.map((month, idx) => ({
-      label: `MONTH ${idx + 1}`, // 혹은 그냥 '1월'
-      monthName: month,
-      score: dummyScores[idx],
-      icon: getEmotionIcon(dummyScores[idx]),
-    }));
-    setRecordList(listData);
-
-  }, [selectedYear]);
+  const monthList = scores
+    .map((score, index) => ({
+      month: index + 1,
+      monthLabel: labels[index],
+      score: score,
+      icon: getEmotionIcon(score)
+    }))
+    .filter(item => item.score > 0);
 
   // 차트 렌더링 (Bar Chart)
   useEffect(() => {
     if (!chartCanvasRef.current) return;
+
     const ctx = chartCanvasRef.current.getContext('2d');
 
-    if (chartInstanceRef.current) chartInstanceRef.current.destroy();
+    if (chartInstanceRef.current) {chartInstanceRef.current.destroy()};
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(147, 112, 219, 0.4)');
+    gradient.addColorStop(1, 'rgba(147, 112, 219, 0.0)');
 
     chartInstanceRef.current = new ChartJS(ctx, {
       type: 'bar',
       data: {
-        labels: chartData.labels,
+        labels: labels,
         datasets: [{
-          label: '평균 점수',
-          data: chartData.scores,
-          backgroundColor: 'rgba(255, 159, 64, 0.6)', // 연간은 주황색 계열 예시
-          borderRadius: 4,
+          label: '월별 평균 점수',
+          data: scores,
+          borderColor: '#9370DB',
+          backgroundColor: gradient,
+          borderWidth: 2,
+          pointBackgroundColor: '#fff',
+          pointBorderColor: '#9370DB',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          tension: 0.4,
+          fill: true,
         }],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          y: { beginAtZero: true, max: 100, grid: { color: 'rgba(0,0,0,0.05)' } },
-          x: { grid: { display: false } }
+          y: {
+            beginAtZero: true,
+            max: 120,
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: {
+              display: true,
+              callback: function(value) {
+                return value === 120 ? '' : value;
+              }
+            }
+          },
+          x: {
+            grid: { display: false }
+          }
         },
-        plugins: { legend: { display: false } }
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.7)',
+            padding: 10,
+            cornerRadius: 8,
+          }
+        }
       },
     });
 
     return () => chartInstanceRef.current?.destroy();
-  }, [chartData]);
+  }, [labels, scores]);
 
   return (
     <div className="weekly-stats-container"> {/* 구조 재사용 */}
-      
+
       {/* 1. 그래프 영역 */}
       <section className="chart-card">
         <div className="chart-wrapper">
@@ -87,33 +113,37 @@ function YearlyStats() {
         </p>
         <div className="date-selector-container">
           {/* 연도 선택만 존재 */}
-          <select 
-            className="custom-select" 
-            value={selectedYear} 
-            onChange={(e) => setSelectedYear(Number(e.target.value))}
+          <select
+            className="custom-select"
+            value={selectedYear}
+            onChange={(e) => onYearChange(Number(e.target.value))}
           >
             <option value="2024">2024년</option>
             <option value="2025">2025년</option>
+            <option value={2026}>2026년</option>
           </select>
         </div>
       </div>
 
       {/* 3. 리스트 영역 */}
       <section className="list-card-container">
-        <div className="record-list">
-          {recordList.map((item, idx) => (
-            <div className="record-item" key={idx}>
-              <div className="record-date">
-                {/* 1월, 2월... 로 표시 */}
-                <span className="date-num">{item.monthName}</span>
+        {monthList.length > 0 ? (
+          <div className="record-list">
+            {monthList.map((item, idx) => (
+              <div className="record-item" key={idx}>
+                <div className="month-label">{item.month}월</div>
+                <div className="record-icon">{item.icon}</div>
+                <div className="record-score">{item.score}점</div>
               </div>
-              <div className="record-icon">{item.icon}</div>
-              <div className="record-score">{item.score}점</div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-list">
+            <p>선택한 연도의 기록이 없어요 😅</p>
+          </div>
+        )}
       </section>
-
+      
       <div className="bottom-nav-spacer"></div>
     </div>
   );
