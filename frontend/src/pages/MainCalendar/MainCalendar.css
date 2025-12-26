@@ -264,3 +264,42 @@
     margin-bottom: 2px;
   }
 }
+
+.day-cell {
+  position: relative;
+  overflow: hidden;
+}
+
+/* 날짜 숫자는 구석으로 쓱 */
+.day-number {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+/* 가운데에 대문짝 */
+.emotion-center {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  /* 버튼 클릭 방해 안 하게 */
+  pointer-events: none;
+}
+
+.emotion-emoji {
+  font-size: 34px;   /* 대문짝 핵심 */
+  line-height: 1;
+}
+
+.emotion-score {
+  margin-top: 6px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
