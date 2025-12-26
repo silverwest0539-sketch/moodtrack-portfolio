@@ -23,8 +23,12 @@ function EmotionStats() {
   const [monthlyData, setMonthlyData] = useState(null);
   const [yearlyData, setYearlyData] = useState(null);
 
+  // Monthly 선택 상태
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1)
+
   // --- API 호출 (Source A의 로직 유지) ---
-  
+
   /* 1. 주간 통계 API 호출 */
   useEffect(() => {
     const fetchWeeklyStats = async () => {
@@ -51,10 +55,12 @@ function EmotionStats() {
     const fetchMonthlyStats = async () => {
       try {
         setLoading(true);
+
         const res = await axios.get(
-          'http://localhost:3000/api/emotion-stats/monthly',
+          `http://localhost:3000/api/emotion-stats/monthly?year=${selectedYear}&month=${selectedMonth}`,
           { withCredentials: true }
         );
+
         if (res.data?.success) {
           setMonthlyData(res.data.monthly);
         }
@@ -65,7 +71,7 @@ function EmotionStats() {
       }
     };
     fetchMonthlyStats();
-  }, []);
+  }, [selectedYear, selectedMonth]);
 
   /* 3. 연간 통계 API 호출 */
   useEffect(() => {
@@ -114,11 +120,18 @@ function EmotionStats() {
         {activePeriod === 'weekly' && (
           <WeeklyStats serverData={weeklyData} loading={loading} />
         )}
-        
+
         {activePeriod === 'monthly' && (
-          <MonthlyStats serverData={monthlyData} loading={loading} />
+          <MonthlyStats 
+          serverData={monthlyData} 
+          loading={loading}
+          selectedYear={selectedYear}
+          selectedMonth={selectedMonth}
+          onYearChnage={setSelectedYear}
+          onMonthChange={setSelectedMonth}
+          />
         )}
-        
+
         {activePeriod === 'yearly' && (
           <YearlyStats serverData={yearlyData} loading={loading} />
         )}
