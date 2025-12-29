@@ -31,10 +31,10 @@ body, html {
 
 /* 가로형 로고에 최적화 */
 .app-logo {
-  max-width: 420px;
-  width: 100%;
+  width: 50%;
   height: auto;
   object-fit: contain;
+  /* margin-top: 30px; */
 }
 
 /* 공통 카드 */

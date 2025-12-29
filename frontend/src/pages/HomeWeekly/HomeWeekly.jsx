@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HomeWeekly.css';
-import logo from '../../assets/images/logos/logo3.PNG'; // 로고 경로는 실제 프로젝트에 맞게 확인 필요
+import logo from '../../assets/images/logos/logo6.PNG'; // 로고 경로는 실제 프로젝트에 맞게 확인 필요
 
 const GREETINGS = [,
   "오늘도 기록하러 와줘서 고마워요",
