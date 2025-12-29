@@ -1,89 +1,103 @@
 /* src/pages/EmotionStats/MonthDetail/MonthDetail.css */
 
-/* 페이지 배경 */
+/* 페이지 전체 컨테이너 */
 #analysis-result-page.month-detail-page {
   height: 100vh;
+  overflow: hidden;
+
   box-sizing: border-box;
-  padding: 3rem 1.5rem 5rem 1.5rem;
+  padding: 2rem 1.5rem 6rem 1.5rem;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
-  
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-  color: #ffffff;
+
+  background: linear-gradient(180deg, #FFF5EC 0%, #FFD6C7 100%);
+  font-family: 'Pretendard', sans-serif;
 }
 
-/* 타이틀 섹션 */
-.month-detail-title {
+/* 1. 타이틀 섹션 */
+.month-title {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
   width: 100%;
 }
 
-.month-detail-title h2 {
-  font-size: 1.3rem;
+.month-title h2 {
+  font-size: 1.4rem;
   margin: 0;
   font-weight: 700;
-  color: #fff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(65, 52, 48, 0.5);
 }
 
-/* 차트 컨테이너 (유리 효과) */
-.month-detail-chart-container {
-  width: 90%; /* ✅ 화면의 90% 사용 */
-  max-width: none; /* ✅ 최대 너비 제한 제거 */
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
-  border-radius: 30px;
-  padding: 2rem;
-  padding-bottom: 3rem;
-  margin-bottom: 1rem;
-  box-sizing: border-box;
-}
+/* 2. 카드 형태 (그래프 컨테이너) */
+.stat-card {
+  width: 100%;
+  max-width: 600px;
 
-/* 차트 높이 */
-.month-detail-bar-chart {
-  height: 250px;
-  width: 100%; /* ✅ 컨테이너 너비에 맞춤 */
-}
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 
-.month-detail-line-chart {
-  height: 250px;
-  width: 100%; /* ✅ 컨테이너 너비에 맞춤 */
-}
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 32px 0 rgba(100, 50, 50, 0.08);
+  border-radius: 24px;
 
-/* 차트 라벨 */
-.month-detail-chart-label {
-  text-align: center;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
+  padding: 1.2rem;
   margin-bottom: 1.5rem;
-  opacity: 0.9;
-  font-weight: 500;
-  color: #fff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+  box-sizing: border-box;
+  animation: fadeUp 0.8s ease;
 }
 
-/* 뒤로가기 링크 */
-.back-link {
-  margin-top: 0.5rem;
-  margin-bottom: 2rem;
+.chart-wrapper {
+  height: 225px;
+  width: 100%;
+  position: relative;
+}
+
+/* 3. 카드 내부 하단 라벨 */
+.card-label {
   text-align: center;
-  color: #fff;
-  font-size: 1rem;
-  cursor: pointer;
-  text-decoration: underline;
-  opacity: 0.8;
-  transition: opacity 0.2s;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  font-size: 0.95rem;
+  margin-top: 0.8rem;
+  margin-bottom: 0;
+  font-weight: 600;
+  color: #5D4037;
+  opacity: 0.9;
 }
 
-.back-link:hover {
-  opacity: 1;
+/* 4. 뒤로가기 버튼 */
+.footer-actions {
+  margin-top: 0.1rem;
+  display: flex;
+  justify-content: center;
+}
+
+#analysis-result-page.month-detail-page .footer-actions .btn-back {
+  all: unset;
+  cursor: pointer;
+
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(53, 45, 43, 0.6);
+
+  text-decoration: underline;
+  text-underline-offset: 4px;
+
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+#analysis-result-page.month-detail-page .footer-actions .btn-back:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* 애니메이션 */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

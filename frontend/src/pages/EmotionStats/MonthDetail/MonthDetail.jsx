@@ -28,14 +28,11 @@ function MonthDetail() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // YearlyStats에서 전달받은 데이터
   const { year, month } = location.state || {};
 
-  // 서버 데이터 상태
   const [monthData, setMonthData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // API 호출
   useEffect(() => {
     if (!year || !month) {
       alert('잘못된 접근입니다.');
@@ -52,11 +49,8 @@ function MonthDetail() {
         );
         const data = await res.json();
 
-        if (data.success) {
-          setMonthData(data.monthDetail);
-        } else {
-          alert('데이터 조회 실패');
-        }
+        if (data.success) setMonthData(data.monthDetail);
+        else alert('데이터 조회 실패');
       } catch (error) {
         console.error('월 상세 조회 에러:', error);
       } finally {
@@ -67,31 +61,46 @@ function MonthDetail() {
     fetchMonthDetail();
   }, [year, month, navigate]);
 
-  // 로딩 중
   if (loading) {
     return (
       <div id="analysis-result-page" className="month-detail-page">
-        <p style={{ marginTop: '40vh', textAlign: 'center', color: '#fff' }}>
-          데이터 불러오는 중...
-        </p>
+        <section className="month-title">
+          <h2>{year}년 {month}월</h2>
+        </section>
+        <div className="stat-card">
+          <p style={{ textAlign: 'center', margin: 0, color: '#5D4037', fontWeight: 600 }}>
+            데이터 불러오는 중...
+          </p>
+        </div>
       </div>
     );
   }
 
-  // 데이터 없음
   if (!monthData) {
     return (
       <div id="analysis-result-page" className="month-detail-page">
-        <p style={{ marginTop: '40vh', textAlign: 'center', color: '#fff' }}>
-          데이터를 불러올 수 없습니다.
-        </p>
+        <section className="month-title">
+          <h2>{year}년 {month}월</h2>
+        </section>
+        <div className="stat-card">
+          <p style={{ textAlign: 'center', margin: 0, color: '#5D4037', fontWeight: 600 }}>
+            데이터를 불러올 수 없습니다.
+          </p>
+        </div>
+        <div className="footer-actions">
+          <button
+            className="btn-back"
+            onClick={() => navigate('/emotion-stats', { state: { activeTab: 'yearly' } })}
+          >
+            ← 통계로 돌아가기
+          </button>
+        </div>
       </div>
     );
   }
 
-  // 차트 데이터 구성
   const barChartData = {
-    labels: monthData.labels, // ['1일', '2일', ...]
+    labels: monthData.labels,
     datasets: [
       {
         label: `${year}년 ${month}월`,
@@ -119,14 +128,14 @@ function MonthDetail() {
         beginAtZero: true,
         max: 110,
         ticks: {
-          color: '#fff',
+          color: '#5D4037',
           stepSize: 20,
-          callback: (value) => value < 105 ? `${value}점` : '',
+          callback: (value) => (value < 105 ? `${value}점` : ''),
         },
-        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+        grid: { color: 'rgba(93, 64, 55, 0.12)' },
       },
       x: {
-        ticks: { color: '#fff', font: { size: 11 } },
+        ticks: { color: '#5D4037', font: { size: 11 } },
         grid: { display: false },
       },
     },
@@ -162,8 +171,8 @@ function MonthDetail() {
       {
         label: '불안',
         data: monthData.emotions?.anxiety || [],
-        borderColor: '#b3ffb7ff',
-        backgroundColor: 'rgba(255, 219, 154, 0.2)',
+        borderColor: '#B3FFB7',
+        backgroundColor: 'rgba(179, 255, 183, 0.2)',
         tension: 0.3,
         borderWidth: 2,
       },
@@ -181,74 +190,73 @@ function MonthDetail() {
   const lineChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'bottom',
-        labels: {
-          color: '#fff',
-          font: { size: 11, weight: 'bold' },
-          padding: 10,
-          usePointStyle: true,
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: (context) => `${context.dataset.label}: ${context.parsed.y}%`,
+  plugins: {
+    legend: {
+      display: true,
+      position: 'bottom',
+      labels: {
+        color: '#5D4037',
+        font: { size: 11, weight: 'bold' },
+        padding: 10,
+        usePointStyle: true,
+        boxWidth: 8,
+
+        // ✅ 추가: 범례 점을 진하게 "꽉 찬" 동그라미로
+        generateLabels: (chart) => {
+          const labels =
+            ChartJS.defaults.plugins.legend.labels.generateLabels(chart);
+
+          labels.forEach((item) => {
+            const ds = chart.data.datasets[item.datasetIndex];
+            item.pointStyle = 'circle';
+            item.fillStyle = ds.borderColor;   // 채움색을 borderColor로
+            item.strokeStyle = ds.borderColor; // 테두리도 동일
+            item.lineWidth = 0;                // 테두리 두께 제거(더 꽉 찬 느낌)
+          });
+
+          return labels;
         },
       },
     },
-    scales: {
-      y: {
-        beginAtZero: true,
-        max: 110,
-        ticks: {
-          color: '#fff',
-          stepSize: 20,
-          callback: (value) => value < 105 ? `${value}%` : '',
-        },
-        grid: { color: 'rgba(255, 255, 255, 0.1)' },
-      },
-      x: {
-        ticks: { color: '#fff', font: { size: 10 } },
-        grid: { display: false },
-      },
-    },
-  };
+  },
+};
 
   return (
     <div id="analysis-result-page" className="month-detail-page">
-      {/* 타이틀 */}
-      <section className="month-detail-title">
+      {/* 1) 타이틀 */}
+      <section className="month-title">
         <h2>{year}년 {month}월</h2>
       </section>
 
-      {/* 일별 점수 차트 */}
-      <div className="month-detail-chart-container">
-        <div className="month-detail-bar-chart">
+      {/* 2) 카드 1: 바 차트 */}
+      <div className="stat-card">
+        <div className="chart-wrapper">
           <Bar data={barChartData} options={barChartOptions} />
-          <p className="month-detail-chart-label">일별 감정 점수</p>
         </div>
+        <p className="card-label">일별 감정 점수</p>
       </div>
 
-      {/* 감정별 변화 차트 */}
-      <div className="month-detail-chart-container">
-        <div className="month-detail-line-chart">
+      {/* 3) 카드 2: 라인 차트 */}
+      <div className="stat-card">
+        <div className="chart-wrapper">
           <Line data={lineChartData} options={lineChartOptions} />
-          <p className="month-detail-chart-label">감정별 변화 추이</p>
         </div>
+        <p className="card-label">감정별 변화 추이</p>
       </div>
 
-
-      {/* 뒤로가기 텍스트 */}
-      <p
-        className="back-link"
-        onClick={() => navigate('/emotion-stats', {
-          state: { activeTab: 'yearly' }
-        })}
-      >
-        ← 통계로 돌아가기
-      </p>
+      {/* 4) 뒤로가기 */}
+      <div className="footer-actions">
+        <button
+          className="btn-back"
+          onClick={() =>
+            navigate('/emotion-stats', {
+              state: { activeTab: 'yearly' },
+            })
+          }
+        >
+          ← 통계로 돌아가기
+        </button>
+      </div>
     </div>
   );
 }
