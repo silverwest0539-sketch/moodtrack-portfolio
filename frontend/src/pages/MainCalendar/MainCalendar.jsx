@@ -1,6 +1,7 @@
 // 메인 캘린더 페이지
 
 import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './MainCalendar.css';
 
@@ -74,6 +75,7 @@ function formatDateLabel(date) {
 }
 
 function MainCalendar() {
+  const navigate = useNavigate()
   const today = new Date();
 
   // 현재 보고 있는 연/월
@@ -86,45 +88,45 @@ function MainCalendar() {
   // 나중에 일기 데이터 표시용 (지금은 비어 있음)
   const [entries, setEntries] = useState();
 
- useEffect(() => {
-  const fetchMonthEntries = async () => {
-    try {
-      const year = currentYear;
-      const month = currentMonth + 1;
+  useEffect(() => {
+    const fetchMonthEntries = async () => {
+      try {
+        const year = currentYear;
+        const month = currentMonth + 1;
 
-      const res = await axios.get(
-        'http://localhost:3000/api/diary/month',
-        {
-          params: { year, month },
-          withCredentials: true, // ✅ 세션 쿠키
+        const res = await axios.get(
+          'http://localhost:3000/api/diary/month',
+          {
+            params: { year, month },
+            withCredentials: true, // ✅ 세션 쿠키
+          }
+        );
+
+        const data = res.data;
+
+        if (!data?.success) {
+          setEntries({});
+          return;
         }
-      );
 
-      const data = res.data;
+        const map = {};
+        for (const e of data.entries || []) {
+          const dateKey = e.dateKey ?? e.diaryDate;
+          const score = Number(e.score ?? e.finalScore);
 
-      if (!data?.success) {
+          if (!dateKey) continue;
+          map[dateKey] = { score };
+        }
+
+        setEntries(map);
+      } catch (err) {
+        console.error('월별 조회 실패:', err);
         setEntries({});
-        return;
       }
+    };
 
-      const map = {};
-      for (const e of data.entries || []) {
-        const dateKey = e.dateKey ?? e.diaryDate;
-        const score = Number(e.score ?? e.finalScore);
-
-        if (!dateKey) continue;
-        map[dateKey] = { score };
-      }
-
-      setEntries(map);
-    } catch (err) {
-      console.error('월별 조회 실패:', err);
-      setEntries({});
-    }
-  };
-
-  fetchMonthEntries();
-}, [currentYear, currentMonth]);
+    fetchMonthEntries();
+  }, [currentYear, currentMonth]);
 
 
   const weeks = useMemo(
@@ -162,9 +164,22 @@ function MainCalendar() {
   // ✅ 핵심: 클릭한 날짜로 선택 + (나중에 다른 달 날짜까지 나오면) 연/월도 동기화
   const handleSelectDate = (date) => {
     if (!date) return;
-    setSelectedDate(date);
-    setCurrentYear(date.getFullYear());
-    setCurrentMonth(date.getMonth());
+
+    const dateStr = formatDateKey(date);
+    const entry = entries?.[dateStr];
+
+    // 일기가 있으면 조회 페이지로, 없으면 작성 페이지로
+    if (entry && entry.score) {
+      navigate(`/diary-view?date=${dateStr}`, {
+        state: {
+          date: dateStr.replace(/-/g, '.'),
+          score: entry.score,
+          emotion: getEmoji(entry.score),
+        }
+      });
+    } else {
+      navigate(`/write-option?date=${dateStr}`);
+    }
   };
 
   const handleWriteDiary = () => {
@@ -177,10 +192,10 @@ function MainCalendar() {
     <div id="main-container">
       {/* 1. 상단 헤더 */}
       <header className="top-bar">
-          <div className="date-indicator">
-            <span className="year-sm">{currentYear}</span>
-            <span className="month-lg">{currentMonth + 1}월</span>
-          </div>
+        <div className="date-indicator">
+          <span className="year-sm">{currentYear}</span>
+          <span className="month-lg">{currentMonth + 1}월</span>
+        </div>
 
         <div className="header-actions">
           <button

@@ -5,11 +5,51 @@ const transporter = require('../server/config/emailConfig')
 const kakaoConfig = require('../server/config/kakaoConfig')
 const axios = require('axios')
 
+// streak 체크 함수 추가
+async function checkAndUpdateStreak(userId) {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
+    const [userRows] = await pool.query(
+      `SELECT LAST_DIARY_DATE, STREAK_DAYS FROM USERS WHERE USER_ID = ?`,
+      [userId]
+    );
+
+    if (userRows.length === 0) return;
+
+    const lastDiaryDate = userRows[0].LAST_DIARY_DATE
+      ? new Date(userRows[0].LAST_DIARY_DATE)
+      : null;
+
+    if (lastDiaryDate) {
+      lastDiaryDate.setHours(0, 0, 0, 0);
+    }
+
+    // 마지막 일기 날짜가 없으면 그냥 리턴
+    if (!lastDiaryDate) {
+      return;
+    }
+
+    const diffDays = Math.floor((today - lastDiaryDate) / (1000 * 60 * 60 * 24));
+
+    // 하루 이상 건너뛰었으면 streak 초기화
+    if (diffDays > 1) {
+      await pool.query(
+        `UPDATE USERS SET STREAK_DAYS = 0 WHERE USER_ID = ?`,
+        [userId]
+      );
+      console.log(`Streak 초기화: User ${userId} - ${diffDays}일 건너뜀`);
+    }
+
+  } catch (error) {
+    console.error('Streak 체크 에러:', error);
+  }
+}
 
 // 회원가입
 exports.signup = async (req, res) => {
-    console.log('📦 req.body:', req.body);
+  console.log('📦 req.body:', req.body);
   try {
     const { loginId, email, password, confirmPassword, nickname } = req.body;
 
@@ -110,10 +150,10 @@ exports.signup = async (req, res) => {
 const authCodes = {};
 
 // 이메일 인증번호 발송
-exports.sendAuthCode = async (req,res)=>{
+exports.sendAuthCode = async (req, res) => {
   try {
-    const {email} = req.body
-    
+    const { email } = req.body
+
     if (!email) {
       return res.status(400).json({
         success: false,
@@ -122,20 +162,20 @@ exports.sendAuthCode = async (req,res)=>{
     }
 
     // 랜덤 인증번호 생성
-    const authCode = Math.floor(100000 + Math.random()*900000).toString()
+    const authCode = Math.floor(100000 + Math.random() * 900000).toString()
 
     // 인증번호 저장 (5분 후 자동 삭제)
     authCodes[email] = authCode
-    setTimeout(()=>{
-        delete authCodes[email]
-    }, 5*60*1000)
+    setTimeout(() => {
+      delete authCodes[email]
+    }, 5 * 60 * 1000)
 
     // 이메일 발송 설정
     const mailOptions = {
-        from: 'silverwest0539@gmail.com',
-        to: email,
-        subject: 'MoodTrack 회원가입 인증번호',
-        html: `
+      from: 'silverwest0539@gmail.com',
+      to: email,
+      subject: 'MoodTrack 회원가입 인증번호',
+      html: `
             <div style="padding: 20px; font-family: Arial, sans-serif;">
                 <h2 style="color: #7F7FD5;">MoodTrack 이메일 인증</h2>
                 <p>회원가입을 위한 인증번호입니다.</p>
@@ -144,24 +184,24 @@ exports.sendAuthCode = async (req,res)=>{
                 </div>
                 <p style="color: #666;">인증번호는 5분간 유효합니다.</p>
             </div>
-        `        
+        `
     }
 
     // 이메일 발송
-    transporter.sendMail(mailOptions, (err, rows)=>{
-        if (err) {
-            console.log('이메일 발송 실패:', err)
-            return res.status(500).json({
-              success: false,
-              message: '이메일 발송에 실패했습니다.',
-            })
-        } else {
-            console.log('이메일 발송 성공:', rows.response)
-              return res.status(200).json({
-              success: true,
-              message: '인증번호가 발송되었습니다.',
-            })
-        }
+    transporter.sendMail(mailOptions, (err, rows) => {
+      if (err) {
+        console.log('이메일 발송 실패:', err)
+        return res.status(500).json({
+          success: false,
+          message: '이메일 발송에 실패했습니다.',
+        })
+      } else {
+        console.log('이메일 발송 성공:', rows.response)
+        return res.status(200).json({
+          success: true,
+          message: '인증번호가 발송되었습니다.',
+        })
+      }
     })
   } catch (error) {
     console.error('이메일 발송 에러: ', error)
@@ -173,8 +213,8 @@ exports.sendAuthCode = async (req,res)=>{
 }
 
 // 인증번호 확인
-exports.verifyAuthCode = async (req,res)=>{
-  try{
+exports.verifyAuthCode = async (req, res) => {
+  try {
     const { email, code } = req.body
 
     if (!code) {
@@ -229,7 +269,6 @@ exports.login = async (req, res) => {
     );
 
     if (rows.length === 0) {
-      // 로그인 실패 메시지 (존재하지 않는 아이디)
       return res.status(400).json({
         success: false,
         message: '존재하지 않는 아이디입니다.',
@@ -241,7 +280,6 @@ exports.login = async (req, res) => {
     // 3) 비밀번호 비교
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      // 로그인 실패 메시지 (비밀번호 불일치)
       return res.status(400).json({
         success: false,
         message: '비밀번호가 일치하지 않습니다.',
@@ -255,6 +293,9 @@ exports.login = async (req, res) => {
       email: user.email,
       nickname: user.nickname
     };
+
+    // 로그인 성공 후 streak 체크
+    await checkAndUpdateStreak(user.user_id);
 
     // 4) 비밀번호 제거 후 응답
     delete user.password;
@@ -310,38 +351,38 @@ exports.withdraw = async (req, res) => {
 
   try {
 
-  conn = await pool.getConnection();
+    conn = await pool.getConnection();
 
-  // 트랜잭션으로 묶기
-  await conn.beginTransaction();
+    // 트랜잭션으로 묶기
+    await conn.beginTransaction();
 
-  if (kakaoToken) {
-    await axios.post(
-      'https://kapi.kakao.com/v1/user/unlink',
-      {},
-      {
-        headers: {
-           Authorization: `Bearer ${kakaoToken}`,
-        },
-      }
+    if (kakaoToken) {
+      await axios.post(
+        'https://kapi.kakao.com/v1/user/unlink',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${kakaoToken}`,
+          },
+        }
+      );
+    }
+
+    const [result] = await conn.query(
+      `DELETE FROM USERS WHERE USER_ID = ?`,
+      [userId]
     );
-  }
 
-  const [result] = await conn.query(
-    `DELETE FROM USERS WHERE USER_ID = ?`,
-  [userId]
-  );
+    if (result.affectedRows === 0) {
+      await conn.rollback() // 잘못되면 되돌리기
+      return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+    }
 
-  if (result.affectedRows === 0){
-    await conn.rollback() // 잘못되면 되돌리기
-    return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-  }
+    await conn.commit();
 
-  await conn.commit();
-
-  req.session.destroy(() => { // 세션에서 지우기
-    return res.json({ success: true, message: '회원탈퇴 완료' });
-  });
+    req.session.destroy(() => { // 세션에서 지우기
+      return res.json({ success: true, message: '회원탈퇴 완료' });
+    });
 
   } catch (err) {
     if (conn) await conn.rollback();
@@ -362,7 +403,7 @@ exports.kakaoAuth = (req, res) => {
       });
     }
 
-    const url = 
+    const url =
       `${kakaoConfig.AUTH_URL}` +
       `?client_id=${encodeURIComponent(kakaoConfig.CLIENT_ID)}` +
       `&redirect_uri=${encodeURIComponent(kakaoConfig.REDIRECT_URI)}` +
@@ -408,7 +449,7 @@ exports.kakaoCallback = async (req, res) => {
 
     console.log('[KAKAO ACCESS TOKEN]', accessToken ? accessToken.slice(0, 10) + '...' : accessToken);
 
-    
+
     if (!accessToken) {
       return res.status(500).json({
         success: false,
@@ -449,6 +490,9 @@ exports.kakaoCallback = async (req, res) => {
         providerUserId: user.PROVIDER_USER_ID
       };
 
+      // 카카오 로그인 시에도 streak 체크
+      await checkAndUpdateStreak(user.USER_ID);
+
       return res.redirect(`${FRONTEND_URL}/`);
     }
 
@@ -461,10 +505,10 @@ exports.kakaoCallback = async (req, res) => {
     };
 
     return res.redirect(`${FRONTEND_URL}/signup?mode=kakao`);
-    } catch (err) {
-      console.error('kakaoCallback error:', err.response?.data || err.message);
-      return res.redirect(`${FRONTEND_URL}/login?error=kakao_fail`);
-    }
+  } catch (err) {
+    console.error('kakaoCallback error:', err.response?.data || err.message);
+    return res.redirect(`${FRONTEND_URL}/login?error=kakao_fail`);
+  }
 }
 
 // 비회원일 때 추가 정보 받아서 로그인
@@ -473,7 +517,7 @@ exports.kakaoComplete = async (req, res) => {
   try {
     const social = req.session.socialSignup;
 
-    if (!social || social.provider !== 'kakao'){
+    if (!social || social.provider !== 'kakao') {
       return res.status(401).json({
         success: false,
         message: '소셜 가입 세션이 만료되었습니다. 다시 시도해 주세요.'
@@ -482,7 +526,7 @@ exports.kakaoComplete = async (req, res) => {
 
     const { email, nickname } = req.body
     const { providerUserId } = social;
-    
+
     // 이메일 중복 방지: 이미 사용 중인 EMAIL이면 막기
     const [dup] = await pool.query(
       `SELECT USER_ID FROM USERS WHERE EMAIL = ? LIMIT 1`,
@@ -492,7 +536,7 @@ exports.kakaoComplete = async (req, res) => {
       return res.status(409).json({ success: false, message: '이미 사용 중인 이메일입니다.' });
     }
 
-      // (1) 혹시 사이에 누가 가입했을 수도 있으니 한번 더 방어 조회
+    // (1) 혹시 사이에 누가 가입했을 수도 있으니 한번 더 방어 조회
     const [exists] = await pool.query(
       `SELECT user_id, nickname, provider, provider_user_id
        FROM USERS

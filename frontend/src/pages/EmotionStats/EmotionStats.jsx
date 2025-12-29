@@ -132,7 +132,7 @@ function EmotionStats() {
           loading={loading}
           selectedYear={selectedYear}
           selectedMonth={selectedMonth}
-          onYearChnage={setSelectedYear}
+          onYearChange={setSelectedYear}
           onMonthChange={setSelectedMonth}
           />
         )}
