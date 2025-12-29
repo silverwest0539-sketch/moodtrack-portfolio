@@ -126,11 +126,11 @@ function MonthDetail() {
     scales: {
       y: {
         beginAtZero: true,
-        max: 110,
+        max: 120,
         ticks: {
           color: '#5D4037',
           stepSize: 20,
-          callback: (value) => (value < 105 ? `${value}점` : ''),
+          callback: (value) => (value < 110 ? `${value}점` : ''),
         },
         grid: { color: 'rgba(93, 64, 55, 0.12)' },
       },
@@ -147,42 +147,47 @@ function MonthDetail() {
       {
         label: '기쁨',
         data: monthData.emotions?.joy || [],
-        borderColor: '#FFB5C2',
-        backgroundColor: 'rgba(255, 181, 194, 0.2)',
-        tension: 0.3,
+        borderColor: '#FFAB91', // 코랄 (가독성 조정)
+        backgroundColor: 'rgba(255, 171, 145, 0.2)',
+        tension: 0.4,
         borderWidth: 2,
+        pointBackgroundColor: '#FFAB91',
       },
       {
         label: '슬픔',
         data: monthData.emotions?.sadness || [],
-        borderColor: '#A8D8EA',
-        backgroundColor: 'rgba(168, 216, 234, 0.2)',
-        tension: 0.3,
+        borderColor: '#90CAF9', // 스카이 블루
+        backgroundColor: 'rgba(144, 202, 249, 0.2)',
+        tension: 0.4,
         borderWidth: 2,
+        pointBackgroundColor: '#90CAF9',
       },
       {
         label: '화남',
         data: monthData.emotions?.anger || [],
-        borderColor: '#FFDB9A',
-        backgroundColor: 'rgba(255, 219, 154, 0.2)',
-        tension: 0.3,
+        borderColor: '#EF9A9A', // 소프트 레드
+        backgroundColor: 'rgba(239, 154, 154, 0.2)',
+        tension: 0.4,
         borderWidth: 2,
+        pointBackgroundColor: '#EF9A9A',
       },
       {
         label: '불안',
         data: monthData.emotions?.anxiety || [],
-        borderColor: '#B3FFB7',
-        backgroundColor: 'rgba(179, 255, 183, 0.2)',
-        tension: 0.3,
+        borderColor: '#B39DDB', // 소프트 레드
+        backgroundColor: 'rgba(239, 154, 154, 0.2)',
+        tension: 0.4,
         borderWidth: 2,
+        pointBackgroundColor: '#B39DDB',
       },
       {
         label: '중립',
         data: monthData.emotions?.neutral || [],
-        borderColor: '#C9A9E9',
-        backgroundColor: 'rgba(201, 169, 233, 0.2)',
-        tension: 0.3,
+        borderColor: '#a7a7a7ff',
+        backgroundColor: 'rgba(239, 154, 154, 0.2)',
+        tension: 0.4,
         borderWidth: 2,
+        pointBackgroundColor: '#a7a7a7ff',
       },
     ],
   };
@@ -190,36 +195,52 @@ function MonthDetail() {
   const lineChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: true,
-      position: 'bottom',
-      labels: {
-        color: '#5D4037',
-        font: { size: 11, weight: 'bold' },
-        padding: 10,
-        usePointStyle: true,
-        boxWidth: 8,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom',
+        labels: {
+          color: '#5D4037',
+          font: { size: 11, weight: 'bold' },
+          padding: 10,
+          usePointStyle: true,
+          boxWidth: 8,
 
-        // ✅ 추가: 범례 점을 진하게 "꽉 찬" 동그라미로
-        generateLabels: (chart) => {
-          const labels =
-            ChartJS.defaults.plugins.legend.labels.generateLabels(chart);
+          generateLabels: (chart) => {
+            const labels =
+              ChartJS.defaults.plugins.legend.labels.generateLabels(chart);
 
-          labels.forEach((item) => {
-            const ds = chart.data.datasets[item.datasetIndex];
-            item.pointStyle = 'circle';
-            item.fillStyle = ds.borderColor;   // 채움색을 borderColor로
-            item.strokeStyle = ds.borderColor; // 테두리도 동일
-            item.lineWidth = 0;                // 테두리 두께 제거(더 꽉 찬 느낌)
-          });
+            labels.forEach((item) => {
+              const ds = chart.data.datasets[item.datasetIndex];
+              item.pointStyle = 'circle';
+              item.fillStyle = ds.borderColor;
+              item.strokeStyle = ds.borderColor;
+              item.lineWidth = 0;
+            });
 
-          return labels;
+            return labels;
+          },
         },
       },
     },
-  },
-};
+    // ✅ scales 추가
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 120,
+        ticks: {
+          color: '#5D4037',
+          stepSize: 20,
+          callback: (value) => (value < 110 ? `${value}점` : ''),
+        },
+        grid: { color: 'rgba(93, 64, 55, 0.12)' },
+      },
+      x: {
+        ticks: { color: '#5D4037', font: { size: 11 } },
+        grid: { display: false },
+      },
+    },
+  };
 
   return (
     <div id="analysis-result-page" className="month-detail-page">

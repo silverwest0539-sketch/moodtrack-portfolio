@@ -186,20 +186,20 @@ function WeekDetail() {
             {
                 label: '불안',
                 data: weekData.emotions?.anxiety || [],
-                borderColor: '#EF9A9A', // 소프트 레드
+                borderColor: '#B39DDB', // 소프트 레드
                 backgroundColor: 'rgba(239, 154, 154, 0.2)',
                 tension: 0.4,
                 borderWidth: 2,
-                pointBackgroundColor: '#EF9A9A',
+                pointBackgroundColor: '#B39DDB',
             },
             {
                 label: '중립',
                 data: weekData.emotions?.neutral || [],
-                borderColor: '#B39DDB', // 소프트 퍼플
-                backgroundColor: 'rgba(179, 157, 219, 0.2)',
+                borderColor: '#a7a7a7ff',
+                backgroundColor: 'rgba(239, 154, 154, 0.2)',
                 tension: 0.4,
                 borderWidth: 2,
-                pointBackgroundColor: '#B39DDB',
+                pointBackgroundColor: '#a7a7a7ff',
             },
         ],
     };
@@ -231,12 +231,12 @@ function WeekDetail() {
         scales: {
             y: {
                 beginAtZero: true,
-                max: 110,
+                max: 120,
                 ticks: {
                     color: chartTextColor, // Y축 글씨 브라운
                     font: { size: 11 },
                     stepSize: 20,
-                    callback: (value) => value < 105 ? `${value}%` : '',
+                    callback: (value) => value < 110 ? `${value}%` : '',
                 },
                 grid: {
                     color: chartGridColor, // 그리드 연한 브라운

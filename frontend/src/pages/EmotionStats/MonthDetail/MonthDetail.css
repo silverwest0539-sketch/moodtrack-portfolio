@@ -33,9 +33,9 @@
 }
 
 /* 2. 카드 형태 (그래프 컨테이너) */
-.stat-card {
+#analysis-result-page.month-detail-page .stat-card {
   width: 100%;
-  max-width: 600px;
+  max-width: 500px;
 
   background: rgba(255, 255, 255, 0.45);
   backdrop-filter: blur(12px);
