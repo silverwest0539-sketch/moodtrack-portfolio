@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HomeWeekly.css';
-import logo from '../../assets/images/logos/4logo.PNG'; // 로고 경로는 실제 프로젝트에 맞게 확인 필요
+import logo from '../../assets/images/logos/logo3.PNG'; // 로고 경로는 실제 프로젝트에 맞게 확인 필요
 
 const GREETINGS = [,
   "오늘도 기록하러 와줘서 고마워요",
@@ -162,7 +162,6 @@ const HomeWeekly = () => {
     }
 
     if (todayData.score) {
-      alert('오늘은 이미 기록을 남기셨어요!')
       navigate(`/diary-view?date=${todayData.dateStr}`, {
         state: {
           date: todayData.dateStr.replace(/-/g, '.'),
@@ -192,9 +191,9 @@ const HomeWeekly = () => {
         <p className="profile-streak">
           <strong>{streak}</strong>일째 연속 출석 중!
         </p>
-        <p className="profile-points">
+        {/* <p className="profile-points">
           🅿️ {points} 포인트
-        </p>
+        </p> */}
       </section>
 
       {/* 2️⃣ 이번 주 출석 현황 */}
@@ -205,7 +204,7 @@ const HomeWeekly = () => {
 
         <div className="week-check">
           {DAY_NAMES_KO.map((dayName, index) => {
-            // ✅ 이번 주에 해당하는 날짜만 체크
+            // 이번 주에 해당하는 날짜만 체크
             const today = new Date();
             const thisWeekStart = new Date(today);
             thisWeekStart.setDate(today.getDate() - today.getDay()); // 이번 주 일요일
@@ -214,7 +213,7 @@ const HomeWeekly = () => {
             const recordExists = weekDays.some(d => {
               return d.dayIndex === index &&
                 d.score &&
-                d.dateObj >= thisWeekStart; // ✅ 이번 주 데이터만
+                d.dateObj >= thisWeekStart; // 이번 주 데이터만
             });
 
             return (
@@ -236,31 +235,52 @@ const HomeWeekly = () => {
           {weekDays.length > 0 ? (
             (() => {
               const todayIndex = weekDays.findIndex(d => d.isToday);
-              const startIndex = todayIndex >= 3 ? todayIndex - 3 : 0;
+              const today = weekDays[todayIndex];
+              
+              // 오늘 이전 2일 가져오기
+              const startIndex = todayIndex >= 2 ? todayIndex - 2 : 0;
               const recentDays = weekDays.slice(startIndex, todayIndex);
 
-              return recentDays.map((day) => (
-                <div
-                  key={day.dateStr}
-                  className="emotion-card vertical"
-                  onClick={() => handleCardClick(day)}
-                  style={{ cursor: 'pointer' }}>
-                  {/* 날짜 */}
-                  <span className="emotion-date">
-                    {day.dayName} {day.dayNum}
-                  </span>
+              return (
+                <>
+                  {/* 오늘 이전 2일 */}
+                  {recentDays.map((day) => (
+                    <div
+                      key={day.dateStr}
+                      className="emotion-card vertical"
+                      onClick={() => handleCardClick(day)}
+                      style={{ cursor: 'pointer' }}>
+                      <span className="emotion-date">
+                        {day.dayName} {day.dayNum}
+                      </span>
+                      <span className="emotion-emoji">
+                        {day.emotion || ''}
+                      </span>
+                      <span className="emotion-score">
+                        {day.score ? `${day.score}점` : ''}
+                      </span>
+                    </div>
+                  ))}
 
-                  {/* 감정 이모지 */}
-                  <span className="emotion-emoji">
-                    {day.emotion || ''}
-                  </span>
-
-                  {/* 점수 */}
-                  <span className="emotion-score">
-                    {day.score ? `${day.score}점` : ''}
-                  </span>
-                </div>
-              ));
+                  {/* 오늘 카드 */}
+                  {today && (
+                    <div
+                      className={`emotion-card vertical ${today.score ? '' : 'today-card'}`}
+                      onClick={handleWriteClick}
+                      style={{ cursor: 'pointer' }}>
+                      <span className="emotion-date">
+                        {today.score ? today.dayName : ''} {today.score ? today.dayNum : ''}
+                      </span>
+                      <span className={today.score ? "emotion-emoji" : "today-comment"}>
+                        {today.score ? today.emotion : '오늘 하루는 어땠나요?'}
+                      </span>
+                      <span className={today.score ? "emotion-score" : "today-record"}>
+                        {today.score ? `${today.score}점` : '기록하러 가기 ▶'}
+                      </span>
+                    </div>
+                  )}
+                </>
+              );
             })()
           ) : (
             <div className="no-record-message">아직 기록된 감정이 없어요.</div>
@@ -268,14 +288,14 @@ const HomeWeekly = () => {
         </div>
       </section>
 
-      {/* 4️⃣ 기록하기 CTA (오늘) */}
+      {/* 기록하기 CTA (오늘)
       <section
         className="card cta-card"
         onClick={handleWriteClick}
       >
         <span>오늘 하루는 어땠나요?</span>
         <strong>기록하러 가기 ▶</strong>
-      </section>
+      </section> */}
 
     </div>
   );

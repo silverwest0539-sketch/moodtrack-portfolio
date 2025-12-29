@@ -33,7 +33,7 @@ function EmotionResult({ onViewStats }) {
   const [yesterdayData, setYesterdayData] = useState(null)
   const [isLoadingYesterday, setIsLoadingYesterday] = useState(false)
 
-  const emotionOrder = ['기쁨', '슬픔', '화남', '중립']
+  const emotionOrder = ['기쁨', '슬픔', '화남', '불안', '중립']
 
   // =========================================================
   // [수정 1] 점수(0~100)에 따른 5단계 레벨 결정 함수
@@ -105,6 +105,7 @@ function EmotionResult({ onViewStats }) {
           '#FFB7B2', // 기쁨 (Soft Rose)
           '#A9DEF9', // 슬픔 (Soft Sky)
           '#E2A3C7', // 화남 (Muted Magenta - 자극적이지 않게)
+          '#dbffe1ff', // 불안
           '#D0D0E0', // 중립 (Soft Grayish Purple)
         ],
         borderWidth: 2,

@@ -160,6 +160,14 @@ function MonthDetail() {
         borderWidth: 2,
       },
       {
+        label: '불안',
+        data: monthData.emotions?.anxiety || [],
+        borderColor: '#b3ffb7ff',
+        backgroundColor: 'rgba(255, 219, 154, 0.2)',
+        tension: 0.3,
+        borderWidth: 2,
+      },
+      {
         label: '중립',
         data: monthData.emotions?.neutral || [],
         borderColor: '#C9A9E9',
@@ -222,7 +230,7 @@ function MonthDetail() {
           <p className="month-detail-chart-label">일별 감정 점수</p>
         </div>
       </div>
-    
+
       {/* 감정별 변화 차트 */}
       <div className="month-detail-chart-container">
         <div className="month-detail-line-chart">
@@ -230,13 +238,13 @@ function MonthDetail() {
           <p className="month-detail-chart-label">감정별 변화 추이</p>
         </div>
       </div>
-      
+
 
       {/* 뒤로가기 텍스트 */}
-      <p 
+      <p
         className="back-link"
         onClick={() => navigate('/emotion-stats', {
-            state: { activeTab: 'yearly' }
+          state: { activeTab: 'yearly' }
         })}
       >
         ← 통계로 돌아가기

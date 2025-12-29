@@ -211,6 +211,7 @@ exports.getWeekDetailStats = async (req, res) => {
             joy: [],
             sadness: [],
             anger: [],
+            anxiety: [],
             neutral: []
         }
 
@@ -235,18 +236,21 @@ exports.getWeekDetailStats = async (req, res) => {
                         emotions.joy.push(emotionData['기쁨'] || 0)
                         emotions.sadness.push(emotionData['슬픔'] || 0)
                         emotions.anger.push(emotionData['화남'] || 0)
+                        emotions.anxiety.push(emotionData['불안'] || 0)
                         emotions.neutral.push(emotionData['중립'] || 0)
                     } catch (e) {
                         console.error('감정 데이터 파싱 에러:', e)
                         emotions.joy.push(0)
                         emotions.sadness.push(0)
                         emotions.anger.push(0)
+                        emotions.anxiety.push(0)
                         emotions.neutral.push(0)
                     }
                 } else {
                     emotions.joy.push(0)
                     emotions.sadness.push(0)
                     emotions.anger.push(0)
+                    emotions.anxiety.push(0)
                     emotions.neutral.push(0)
                 }
             } else {
@@ -254,6 +258,7 @@ exports.getWeekDetailStats = async (req, res) => {
                 emotions.joy.push(0)
                 emotions.sadness.push(0)
                 emotions.anger.push(0)
+                emotions.anxiety.push(0)
                 emotions.neutral.push(0)
             }
         }
@@ -266,7 +271,7 @@ exports.getWeekDetailStats = async (req, res) => {
                     scores: thisWeekScores
                 },
                 labels,
-                emotions  // ✅ 감정 데이터 추가
+                emotions
             }
         })
     } catch (error) {
@@ -388,6 +393,7 @@ exports.getMonthDetailStats = async (req, res) => {
             joy: [],
             sadness: [],
             anger: [],
+            anxiety: [],
             neutral: []
         }
 
@@ -412,17 +418,20 @@ exports.getMonthDetailStats = async (req, res) => {
                         emotions.joy.push(emotionData['기쁨'] || 0)
                         emotions.sadness.push(emotionData['슬픔'] || 0)
                         emotions.anger.push(emotionData['화남'] || 0)
+                        emotions.anxiety.push(emotionData['불안'] || 0)
                         emotions.neutral.push(emotionData['중립'] || 0)
                     } catch (e) {
                         emotions.joy.push(0)
                         emotions.sadness.push(0)
                         emotions.anger.push(0)
+                        emotions.anxiety.push(0)
                         emotions.neutral.push(0)
                     }
                 } else {
                     emotions.joy.push(0)
                     emotions.sadness.push(0)
                     emotions.anger.push(0)
+                    emotions.anxiety.push(0)
                     emotions.neutral.push(0)
                 }
             } else {
@@ -430,6 +439,7 @@ exports.getMonthDetailStats = async (req, res) => {
                 emotions.joy.push(0)
                 emotions.sadness.push(0)
                 emotions.anger.push(0)
+                emotions.anxiety.push(0)
                 emotions.neutral.push(0)
             }
         }
@@ -491,6 +501,7 @@ exports.getYearlyEmotionStats = async (req, res) => {
                 joy: [],
                 sadness: [],
                 anger: [],
+                anxiety: [],
                 neutral: []
             }
         }
@@ -500,7 +511,7 @@ exports.getYearlyEmotionStats = async (req, res) => {
             const monthIndex = date.getMonth()
 
             emotionsByMonth[monthIndex].scores.push(row.EMO_SCORE)
-            
+
             if (row.EMOTION_DETAIL) {
                 try {
                     const emotionData = typeof row.EMOTION_DETAIL === 'string'
@@ -510,6 +521,7 @@ exports.getYearlyEmotionStats = async (req, res) => {
                     emotionsByMonth[monthIndex].joy.push(emotionData['기쁨'] || 0)
                     emotionsByMonth[monthIndex].sadness.push(emotionData['슬픔'] || 0)
                     emotionsByMonth[monthIndex].anger.push(emotionData['화남'] || 0)
+                    emotionsByMonth[monthIndex].anxiety.push(emotionData['불안'] || 0)
                     emotionsByMonth[monthIndex].neutral.push(emotionData['중립'] || 0)
                 } catch (e) {
                     console.error('감정 데이터 파싱 에러:', e)
@@ -525,12 +537,13 @@ exports.getYearlyEmotionStats = async (req, res) => {
                 scores[i] = Math.round(avg)
             }
         }
-        
+
         // 감정별 월평균 계산
         const emotions = {
             joy: [],
             sadness: [],
             anger: [],
+            anxiety: [],
             neutral: []
         }
 
@@ -551,6 +564,11 @@ exports.getYearlyEmotionStats = async (req, res) => {
             emotions.anger.push(
                 monthData.anger.length > 0
                     ? Math.round(monthData.anger.reduce((a, b) => a + b, 0) / monthData.anger.length)
+                    : 0
+            )
+            emotions.anxiety.push(
+                monthData.anxiety.length > 0
+                    ? Math.round(monthData.anxiety.reduce((a, b) => a + b, 0) / monthData.anxiety.length)
                     : 0
             )
             emotions.neutral.push(

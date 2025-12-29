@@ -23,6 +23,7 @@ body, html {
 /* 상단 로고 영역 */
 .weekly-header {
   display: flex;
+  height: 10%;
   justify-content: center;
   align-items: center;
   margin-bottom: 16px;
@@ -107,6 +108,21 @@ body, html {
   gap: 10px;
 }
 
+.emotion-card.vertical.today-card {
+  flex: 1;
+  background: #f7f7f7;
+  border-radius: 16px;
+  padding: 12px 12px 50px 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 250px;
+}
+
+
 /* 세로형 감정 카드 */
 .emotion-card.vertical {
   flex: 1;
@@ -117,25 +133,27 @@ body, html {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  /* justify-content: center; */
 
-  height: 150px;
+  height: 250px;
 }
 
 /* 날짜 */
 .emotion-date {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #777;
+  margin-bottom: 3rem;
 }
 
 /* 감정 이모지 */
 .emotion-emoji {
-  font-size: 2rem;
+  font-size: 3rem;
+  margin-bottom: 2rem;
 }
 
 /* 점수 */
 .emotion-score {
-  font-size: 0.9rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #333;
 }
@@ -146,4 +164,16 @@ body, html {
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
+}
+
+
+.today-comment {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.today-record {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
 }
