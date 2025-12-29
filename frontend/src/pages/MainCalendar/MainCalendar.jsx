@@ -276,29 +276,7 @@ function MainCalendar() {
         <span className="fab-text">오늘의 일기 쓰기</span>
       </button>
 
-      {/* 5. 하단 네비게이션 바 */}
-      <nav className="bottom-nav">
-        <button className="nav-item active" type="button">
-          🏠
-          <br />
-          홈
-        </button>
-        <button className="nav-item" type="button">
-          📊
-          <br />
-          통계
-        </button>
-        <button className="nav-item" type="button">
-          🎁
-          <br />
-          콘텐츠
-        </button>
-        <button className="nav-item" type="button">
-          👤
-          <br />
-          마이
-        </button>
-      </nav>
+
     </div>
   );
 }
