@@ -265,16 +265,6 @@ function MainCalendar() {
         ))}
       </section>
 
-      {/* 4. 플로팅 "오늘의 일기 쓰기" 버튼 */}
-      <button
-        id="fab-write"
-        className="fab-btn"
-        type="button"
-        onClick={handleWriteDiary}
-      >
-        <span className="fab-icon">✏️</span>
-        <span className="fab-text">오늘의 일기 쓰기</span>
-      </button>
 
 
     </div>
