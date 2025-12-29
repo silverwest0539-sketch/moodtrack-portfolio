@@ -136,15 +136,15 @@ function WeekDetail() {
                     stepSize: 20,
                     callback: (value) => value < 110 ? `${value}점` : '',
                 },
-                grid: { 
+                grid: {
                     color: chartGridColor, // 그리드 연한 브라운
-                    drawBorder: false 
+                    drawBorder: false
                 },
             },
             x: {
-                ticks: { 
+                ticks: {
                     color: chartTextColor, // X축 글씨 브라운
-                    font: { size: 12, weight: 'bold' } 
+                    font: { size: 12, weight: 'bold' }
                 },
                 grid: { display: false },
             },
@@ -154,7 +154,7 @@ function WeekDetail() {
 
     // 2. 감정별 변화 차트 (Line Chart)
     const emotionChartData = {
-        labels: weekData.labels, 
+        labels: weekData.labels,
         datasets: [
             {
                 label: '기쁨',
@@ -177,6 +177,15 @@ function WeekDetail() {
             {
                 label: '화남',
                 data: weekData.emotions?.anger || [],
+                borderColor: '#EF9A9A', // 소프트 레드
+                backgroundColor: 'rgba(239, 154, 154, 0.2)',
+                tension: 0.4,
+                borderWidth: 2,
+                pointBackgroundColor: '#EF9A9A',
+            },
+            {
+                label: '불안',
+                data: weekData.emotions?.anxiety || [],
                 borderColor: '#EF9A9A', // 소프트 레드
                 backgroundColor: 'rgba(239, 154, 154, 0.2)',
                 tension: 0.4,
@@ -229,15 +238,15 @@ function WeekDetail() {
                     stepSize: 20,
                     callback: (value) => value < 105 ? `${value}%` : '',
                 },
-                grid: { 
+                grid: {
                     color: chartGridColor, // 그리드 연한 브라운
                     drawBorder: false
                 },
             },
             x: {
-                ticks: { 
+                ticks: {
                     color: chartTextColor, // X축 글씨 브라운
-                    font: { size: 11, weight: 'bold' } 
+                    font: { size: 11, weight: 'bold' }
                 },
                 grid: { display: false },
             },
@@ -279,7 +288,7 @@ function WeekDetail() {
                 </button>
             </div>
         </div>
-    );S
+    ); S
 }
 
 export default WeekDetail;
