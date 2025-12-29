@@ -28,8 +28,8 @@
   font-size: 1.4rem;
   margin: 0;
   font-weight: 700;
-  color: #ffffff;
-  text-shadow: 0 2px 4px rgba(65, 52, 48, 0.5);
+  color: #5D4037;
+  /* text-shadow: 0 2px 4px rgba(65, 52, 48, 0.5); */
 }
 
 /* 2. 카드 형태 (그래프 컨테이너) */
@@ -80,10 +80,10 @@
   all: unset;
   cursor: pointer;
 
-  color: #ffffff;
+  color: #5D4037;
   font-size: 1rem;
   font-weight: 600;
-  text-shadow: 0 1px 3px rgba(53, 45, 43, 0.6);
+  /* text-shadow: 0 1px 3px rgba(53, 45, 43, 0.6); */
 
   text-decoration: underline;
   text-underline-offset: 4px;
