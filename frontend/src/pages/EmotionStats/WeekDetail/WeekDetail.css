@@ -1,85 +1,117 @@
 /* src/pages/EmotionStats/WeekDetail/WeekDetail.css */
 
-/* 페이지 배경 */
+/* 페이지 전체 컨테이너 */
 #analysis-result-page.week-detail-page {
-  height: 100vh;
+  /* 수정: 스크롤 방지를 위해 뷰포트 높이로 고정하고 스크롤 숨김 */
+  height: 100vh; 
+  overflow: hidden; 
+  
   box-sizing: border-box;
-  padding: 3rem 1.5rem 5rem 1.5rem;
+  
+  /* 수정: 상하 여백 압축 (하단은 네비게이션 바 공간 확보) */
+  padding: 2rem 1.5rem 6rem 1.5rem; 
+  
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
   
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-  color: #ffffff;
+  /* 배경은 그대로 유지 */
+  background: linear-gradient(180deg, #FFF5EC 0%, #FFD6C7 100%);
+  font-family: 'Pretendard', sans-serif;
 }
 
-/* 타이틀 섹션 */
-.week-detail-title {
+/* 1. 타이틀 섹션 */
+.week-title {
   text-align: center;
-  margin-bottom: 1rem;
+  /* 수정: 하단 여백 축소 */
+  margin-bottom: 1.2rem; 
   width: 100%;
 }
 
-.week-detail-title h2 {
-  font-size: 1.3rem;
+.week-title h2 {
+  font-size: 1.4rem; /* 폰트 크기 살짝 조정 */
   margin: 0;
   font-weight: 700;
-  color: #fff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(65, 52, 48, 0.5);
 }
 
-/* 차트 컨테이너 (유리 효과) */
-.week-detail-chart-container {
+/* 2. 카드 형태 (그래프 컨테이너) */
+.stat-card {
   width: 100%;
-  max-width: 360px;
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
-  border-radius: 30px;
-  padding: 2rem;
-  margin-bottom: 1rem;
+  max-width: 380px;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 32px 0 rgba(100, 50, 50, 0.08);
+  border-radius: 24px;
+  
+  /* 수정: 카드 내부 패딩 축소 */
+  padding: 1.2rem; 
+  /* 수정: 카드 사이 여백 축소 */
+  margin-bottom: 1.5rem; 
+  
   box-sizing: border-box;
+  animation: fadeUp 0.8s ease;
 }
 
-.week-detail-bar-chart {
-  height: 250px; /* 원하는 높이 조절 */
+.chart-wrapper {
+  /* 수정: 차트 높이 대폭 축소 (가장 중요) */
+  height: 225px; 
+  width: 100%;
+  position: relative;
 }
 
-.week-detail-line-chart {
-  height: 250px;
-}
-
-/* 차트 라벨 */
-.week-detail-chart-label {
+/* 3. 카드 내부 하단 라벨 */
+.card-label {
   text-align: center;
-  font-size: 0.9rem;
-  margin-top: 0.2rem;
-  margin-bottom: 1rem;
+  font-size: 0.95rem; /* 크기 살짝 조정 */
+  /* 수정: 상단 여백 축소 */
+  margin-top: 0.8rem; 
+  margin-bottom: 0;
+  font-weight: 600;
+  color: #5D4037;
   opacity: 0.9;
-  font-weight: 500;
-  color: #fff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* 뒤로가기 링크 */
-.back-link {
-  margin-top: 0.5rem;
-  margin-bottom: 2rem;
-  text-align: center;
-  color: #fff;
-  font-size: 1rem;
+/* 4. 뒤로가기 버튼 */
+.footer-actions {
+  /* 수정: 상단 여백 축소 */
+  margin-top: 0.1rem; 
+  display: flex;
+  justify-content: center;
+}
+
+/* 기존 .btn-back 대신 이걸로 교체 */
+#analysis-result-page.week-detail-page .footer-actions .btn-back {
+  all: unset;               /* 다른 전역 button 스타일 싹 초기화 */
   cursor: pointer;
+
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(53, 45, 43, 0.6);
+
   text-decoration: underline;
-  opacity: 0.8;
-  transition: opacity 0.2s;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  text-underline-offset: 4px;
+
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.back-link:hover {
-  opacity: 1;
+#analysis-result-page.week-detail-page .footer-actions .btn-back:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+.btn-back:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* 애니메이션 */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

@@ -98,7 +98,7 @@
   animation: fadeUp 0.8s ease;
   
   /* 중요: 배경이 밝으므로 글씨가 묻히지 않게 진한 그림자 적용 */
-  color: #ffffff;
+  color: #f1eeee;
   text-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), 
                0 2px 4px rgba(0, 0, 0, 0.25);
 }
@@ -189,7 +189,7 @@
   transition: all 0.3s ease;
   
   /* 버튼 텍스트도 그림자 살짝 */
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   margin-bottom: 1.5rem;
 }
 

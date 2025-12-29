@@ -99,16 +99,6 @@ const BottomNav = () => {
       </button>
 
 
-      {/* 중앙 플로팅 버튼 (오늘의 일기 쓰기) */}
-      <div className="nav-center">
-        <button
-          className="fab-write-btn"
-          // [변경] prompt -> write-option
-          onClick={handleWriteClick}
-        >
-          ✏️
-        </button>
-      </div>
 
       {/* 오른쪽 메뉴 */}
 

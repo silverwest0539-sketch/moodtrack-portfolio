@@ -35,6 +35,10 @@ function WeekDetail() {
     const [weekData, setWeekData] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    // 디자인 컬러 상수 (브라운 톤)
+    const chartTextColor = '#5D4037'; // 텍스트: 딥 코코아 브라운
+    const chartGridColor = 'rgba(93, 64, 55, 0.1)'; // 그리드: 연한 브라운
+
     // API 호출
     useEffect(() => {
         if (!year || !month || !weekNum) {
@@ -67,41 +71,43 @@ function WeekDetail() {
         fetchWeekDetail();
     }, [year, month, weekNum, navigate]);
 
-    // 로딩 중
+    // 로딩 중 (글씨 색상을 브라운으로 변경)
     if (loading) {
         return (
-            <div id="analysis-result-page">
-                <p style={{ marginTop: '40vh', textAlign: 'center', color: '#fff' }}>
+            <div id="analysis-result-page" className="week-detail-page">
+                <p style={{ marginTop: '40vh', textAlign: 'center', color: chartTextColor }}>
                     데이터 불러오는 중...
                 </p>
             </div>
         );
     }
 
-    // 데이터 없음
+    // 데이터 없음 (글씨 색상을 브라운으로 변경)
     if (!weekData) {
         return (
-            <div id="analysis-result-page">
-                <p style={{ marginTop: '40vh', textAlign: 'center', color: '#fff' }}>
+            <div id="analysis-result-page" className="week-detail-page">
+                <p style={{ marginTop: '40vh', textAlign: 'center', color: chartTextColor }}>
                     데이터를 불러올 수 없습니다.
                 </p>
             </div>
         );
     }
 
-    // 점수 차트
+    // 1. 점수 차트 (Bar Chart)
     const barChartData = {
         labels: weekData.labels,
         datasets: [
             {
                 label: weekData.thisWeek.label,
                 data: weekData.thisWeek.scores,
-                backgroundColor: 'rgba(255, 107, 107, 0.6)',
-                borderColor: '#FF6B6B',
-                borderWidth: 2,
+                // 밝은 배경에 어울리는 부드러운 코랄 핑크로 조정
+                backgroundColor: '#FF8A80',
+                borderRadius: 6, // 막대 끝 둥글게
+                barThickness: 20, // 막대 두께 조정
             },
         ],
     };
+
     const barChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -110,6 +116,11 @@ function WeekDetail() {
                 display: false
             },
             tooltip: {
+                titleColor: chartTextColor,
+                bodyColor: chartTextColor,
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                borderColor: 'rgba(255, 255, 255, 0.5)',
+                borderWidth: 1,
                 callbacks: {
                     label: (context) => `${context.parsed.y}점`,
                 },
@@ -120,55 +131,66 @@ function WeekDetail() {
                 beginAtZero: true,
                 max: 120,
                 ticks: {
-                    color: '#fff',
+                    color: chartTextColor, // Y축 글씨 브라운
+                    font: { size: 11 },
                     stepSize: 20,
                     callback: (value) => value < 110 ? `${value}점` : '',
                 },
-                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                grid: { 
+                    color: chartGridColor, // 그리드 연한 브라운
+                    drawBorder: false 
+                },
             },
             x: {
-                ticks: { color: '#fff', font: { size: 12, weight: 'bold' } },
+                ticks: { 
+                    color: chartTextColor, // X축 글씨 브라운
+                    font: { size: 12, weight: 'bold' } 
+                },
                 grid: { display: false },
             },
         },
     };
 
 
-    // 감정별 변화 차트
+    // 2. 감정별 변화 차트 (Line Chart)
     const emotionChartData = {
-        labels: weekData.labels, // ['1일', '2일', ...]
+        labels: weekData.labels, 
         datasets: [
             {
                 label: '기쁨',
                 data: weekData.emotions?.joy || [],
-                borderColor: '#FFB5C2',
-                backgroundColor: 'rgba(255, 181, 194, 0.2)',
-                tension: 0.3,
+                borderColor: '#FFAB91', // 코랄 (가독성 조정)
+                backgroundColor: 'rgba(255, 171, 145, 0.2)',
+                tension: 0.4,
                 borderWidth: 2,
+                pointBackgroundColor: '#FFAB91',
             },
             {
                 label: '슬픔',
                 data: weekData.emotions?.sadness || [],
-                borderColor: '#A8D8EA',
-                backgroundColor: 'rgba(168, 216, 234, 0.2)',
-                tension: 0.3,
+                borderColor: '#90CAF9', // 스카이 블루
+                backgroundColor: 'rgba(144, 202, 249, 0.2)',
+                tension: 0.4,
                 borderWidth: 2,
+                pointBackgroundColor: '#90CAF9',
             },
             {
                 label: '화남',
                 data: weekData.emotions?.anger || [],
-                borderColor: '#FFDB9A',
-                backgroundColor: 'rgba(255, 219, 154, 0.2)',
-                tension: 0.3,
+                borderColor: '#EF9A9A', // 소프트 레드
+                backgroundColor: 'rgba(239, 154, 154, 0.2)',
+                tension: 0.4,
                 borderWidth: 2,
+                pointBackgroundColor: '#EF9A9A',
             },
             {
                 label: '중립',
                 data: weekData.emotions?.neutral || [],
-                borderColor: '#C9A9E9',
-                backgroundColor: 'rgba(201, 169, 233, 0.2)',
-                tension: 0.3,
+                borderColor: '#B39DDB', // 소프트 퍼플
+                backgroundColor: 'rgba(179, 157, 219, 0.2)',
+                tension: 0.4,
                 borderWidth: 2,
+                pointBackgroundColor: '#B39DDB',
             },
         ],
     };
@@ -181,13 +203,17 @@ function WeekDetail() {
                 display: true,
                 position: 'bottom',
                 labels: {
-                    color: '#fff',
-                    font: { size: 11, weight: 'bold' },
-                    padding: 10,
+                    color: chartTextColor, // 범례 글씨 브라운
+                    font: { size: 12, weight: 'bold' },
+                    padding: 15,
                     usePointStyle: true,
+                    boxWidth: 8
                 },
             },
             tooltip: {
+                titleColor: chartTextColor,
+                bodyColor: chartTextColor,
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
                 callbacks: {
                     label: (context) => `${context.dataset.label}: ${context.parsed.y}%`,
                 },
@@ -198,14 +224,21 @@ function WeekDetail() {
                 beginAtZero: true,
                 max: 110,
                 ticks: {
-                    color: '#fff',
+                    color: chartTextColor, // Y축 글씨 브라운
+                    font: { size: 11 },
                     stepSize: 20,
                     callback: (value) => value < 105 ? `${value}%` : '',
                 },
-                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                grid: { 
+                    color: chartGridColor, // 그리드 연한 브라운
+                    drawBorder: false
+                },
             },
             x: {
-                ticks: { color: '#fff', font: { size: 11, weight: 'bold' } },
+                ticks: { 
+                    color: chartTextColor, // X축 글씨 브라운
+                    font: { size: 11, weight: 'bold' } 
+                },
                 grid: { display: false },
             },
         },
@@ -214,39 +247,39 @@ function WeekDetail() {
     return (
         <div id="analysis-result-page" className="week-detail-page">
             {/* 타이틀 */}
-            <section className="week-detail-title">
+            <section className="week-title">
                 <h2>{year}년 {month}월 {weekData.thisWeek.label}</h2>
             </section>
 
-            {/* 일별 점수 차트 */}
-            <div className="week-detail-chart-container">
-                <div className="week-detail-bar-chart">
+            {/* 일별 점수 차트 (카드 스타일 적용) */}
+            <div className="stat-card">
+                <div className="chart-wrapper">
                     <Bar data={barChartData} options={barChartOptions} />
-                    <p className="week-detail-chart-label">일별 감정 점수</p>
                 </div>
+                <p className="card-label">일별 감정 점수</p>
             </div>
 
-
-            {/* 감정별 변화 차트 */}
-            <div className="week-detail-chart-container">
-                <div style={{ height: '250px' }}>
+            {/* 감정별 변화 차트 (카드 스타일 적용) */}
+            <div className="stat-card">
+                <div className="chart-wrapper">
                     <Line data={emotionChartData} options={emotionChartOptions} />
-                    <p className="week-detail-chart-label">감정별 변화 추이</p>
                 </div>
+                <p className="card-label">감정별 변화 추이</p>
             </div>
 
-
-            {/* 뒤로가기 텍스트 */}
-            <p
-                className="back-link"
-                onClick={() => navigate('/emotion-stats', {
-                    state: { activeTab: 'monthly' }
-                })}
-            >
-                ← 통계로 돌아가기
-            </p>
+            {/* 뒤로가기 버튼 */}
+            <div className="footer-actions">
+                <button
+                    className="btn-back"
+                    onClick={() => navigate('/emotion-stats', {
+                        state: { activeTab: 'monthly' }
+                    })}
+                >
+                    ← 통계로 돌아가기
+                </button>
+            </div>
         </div>
-    );
+    );S
 }
 
 export default WeekDetail;
