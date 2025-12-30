@@ -31,8 +31,8 @@ body, html {
 
 /* 가로형 로고에 최적화 */
 .app-logo {
-  width: 50%;
-  height: auto;
+  width: 200vh;
+  height: 20vh;
   object-fit: contain;
   /* margin-top: 30px; */
 }
@@ -147,7 +147,7 @@ body, html {
 
 /* 감정 이모지 */
 .emotion-emoji {
-  font-size: 3rem;
+  font-size: 2.5rem;
   margin-bottom: 2rem;
 }
 

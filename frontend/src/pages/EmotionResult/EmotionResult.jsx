@@ -102,11 +102,11 @@ function EmotionResult({ onViewStats }) {
       {
         data: emotionValues,
         backgroundColor: [
-          '#FFB7B2', // 기쁨 (Soft Rose)
-          '#A9DEF9', // 슬픔 (Soft Sky)
-          '#E2A3C7', // 화남 (Muted Magenta - 자극적이지 않게)
-          '#dbffe1ff', // 불안
-          '#D0D0E0', // 중립 (Soft Grayish Purple)
+          '#FFAB91', // 기쁨 (Soft Rose)
+          '#90CAF9', // 슬픔 (Soft Sky)
+          '#EF9A9A', // 화남 (Muted Magenta - 자극적이지 않게)
+          '#B39DDB', // 불안
+          '#a7a7a7ff', // 중립 (Soft Grayish Purple)
         ],
         borderWidth: 2,
         borderColor: 'rgba(255, 255, 255, 0.5)', // 경계선 추가로 부드럽게
@@ -128,7 +128,7 @@ function EmotionResult({ onViewStats }) {
       legend: {
         position: 'bottom',
         labels: {
-          color: '#fff', // 모든 테마에서 흰색 글씨 유지 (가독성 위해 배경 명도 조절됨)
+          color: '#5D4037', // 모든 테마에서 흰색 글씨 유지 (가독성 위해 배경 명도 조절됨)
           font: { size: 12, weight: '500' },
           padding: 15,
           usePointStyle: true,
@@ -145,12 +145,12 @@ function EmotionResult({ onViewStats }) {
   }
 
   const lineChartData = {
-    labels: ['기쁨', '슬픔', '화남', '중립'],
+    labels: ['기쁨', '슬픔', '화남', '불안', '중립'],
     datasets: [
       {
         label: '어제',
         data: yesterdayEmotionValues,
-        borderColor: '#FFDAC1', // 살구색
+        borderColor: '#ffb482ff', // 살구색
         backgroundColor: 'rgba(255, 218, 193, 0.3)',
         tension: 0.4,
         borderWidth: 2,
@@ -174,18 +174,18 @@ function EmotionResult({ onViewStats }) {
     plugins: {
       legend: {
         position: 'top',
-        labels: { color: '#fff', font: { size: 12 }, boxWidth: 8, boxHeight: 8 },
+        labels: { color: '#5D4037', font: { size: 12 }, boxWidth: 8, boxHeight: 8 },
       },
     },
     scales: {
       y: {
         beginAtZero: true,
         max: 110,
-        ticks: { color: 'rgba(255,255,255,0.8)', stepSize: 20 },
+        ticks: { color: '#5D4037', stepSize: 20 },
         grid: { color: 'rgba(255, 255, 255, 0.1)' },
       },
       x: {
-        ticks: { color: '#fff', font: { size: 12 } },
+        ticks: { color: '#5D4037', font: { size: 12 } },
         grid: { display: false },
       },
     },

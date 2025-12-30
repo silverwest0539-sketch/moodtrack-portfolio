@@ -227,8 +227,8 @@
   margin-top: 1rem;
   opacity: 0.9;
   font-weight: 500;
-  color: #fff;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  color: #5D4037;
+  /* text-shadow: 0 1px 3px rgba(0,0,0,0.3); */
 }
 
 .comparison-comment-box {
@@ -239,6 +239,7 @@
   font-size: 0.95rem;
   box-shadow: 0 4px 15px rgba(0,0,0,0.05);
   line-height: 1.5;
+  margin-bottom: 5rem;
 }
 
 /* 애니메이션 */

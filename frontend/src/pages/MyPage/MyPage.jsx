@@ -99,10 +99,10 @@ function MyPage() {
           <strong>{streak}</strong>일째 연속 출석 중!
         </p>
 
-        <p className="my-points">
+        {/* <p className="my-points">
           <span className="my-point-icon">🅿️</span>
           <span>{points} 포인트</span>
-        </p>
+        </p> */}
       </section>
 
       {/* 2) 회원정보 카드 */}
