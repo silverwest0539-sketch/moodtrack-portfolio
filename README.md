@@ -15,10 +15,11 @@ MoodTrack는 사용자가 작성한 일기 텍스트를 AI가 분석하여
 - 개발 기간: 2025. 12. 17 ~ 2025. 12. 31
 
 ### 담당 역할 (본인)
-- AI 감정 분석 모델 파인튜닝 (KC-BERT / KoELECTRA 비교 실험)
+- AI 감정 분석 모델 파인튜닝 (KcBERT)
 - 데이터 전처리 및 클래스 불균형 처리
 - Flask 기반 감정 분석 API 구현
 - 모델 추론 결과를 백엔드와 연동
+- 일기 관련 CRUD 구현
 
 ---
 
@@ -31,13 +32,13 @@ MoodTrack는 사용자가 작성한 일기 텍스트를 AI가 분석하여
 ---
 
 ## 기술 스택
-Language: JavaScript, Python
-Server: Node.js (Express), Flask
-Framework / Library: React (Vite), Chart.js
-DB: MySQL
-IDE: Visual Studio Code
-AI: KcBERT (Fine-tuning)
-Collab: GitHub, MyBox
+- Language: JavaScript, Python
+- Server: Node.js (Express), Flask
+- Framework / Library: React (Vite), Chart.js
+- DB: MySQL
+- IDE: Visual Studio Code
+- AI: KcBERT (Fine-tuning)
+- Collab: GitHub, MyBox
 
 ---
 
